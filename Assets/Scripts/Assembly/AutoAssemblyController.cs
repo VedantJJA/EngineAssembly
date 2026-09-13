@@ -43,8 +43,8 @@ namespace EngineAssembly
         [SerializeField] private bool animateSequence = true;
 
         [Tooltip("Delay in seconds between consecutive part snaps when animating.")]
-        [Range(0.05f, 2f)]
-        [SerializeField] private float delayBetweenParts = 0.35f;
+        [Range(0.02f, 2f)]
+        [SerializeField] private float delayBetweenParts = 0.14f;
 
         [Tooltip("Whether individual parts use smooth easing motion when snapping.")]
         [SerializeField] private bool smoothSnap = true;
@@ -91,6 +91,14 @@ namespace EngineAssembly
                 {
                     mgr.gameObject.AddComponent<AutoAssemblyController>();
                 }
+                else
+                {
+                    var player = FindAnyObjectByType<PlayerAssemblyController>();
+                    if (player != null)
+                    {
+                        player.gameObject.AddComponent<AutoAssemblyController>();
+                    }
+                }
             }
         }
 
@@ -123,7 +131,18 @@ namespace EngineAssembly
 
             if (autoAssembleAllKey != KeyCode.None && InputHelper.IsKeyDown(autoAssembleAllKey))
             {
-                AssembleWhole();
+                if (PlayerAssemblyController.Instance != null)
+                {
+                    PlayerAssemblyController.Instance.AutoAssembleAllForRecording();
+                }
+                else
+                {
+                    var seq = GetOrderedPartsSequence();
+                    if (seq != null)
+                    {
+                        ExecuteInstantAssembly(seq.Where(p => p != null && !p.IsSnapped).ToList());
+                    }
+                }
             }
 
             if (autoAssembleToOrderIndexKey != KeyCode.None && InputHelper.IsKeyDown(autoAssembleToOrderIndexKey))
@@ -342,6 +361,30 @@ namespace EngineAssembly
 
         private List<AssemblyPart> GetOrderedPartsSequence()
         {
+            var all = AssemblyPart.AllParts;
+            if (all != null && all.Count > 0)
+            {
+                var list = all.Where(p => p != null).ToList();
+                list.Sort((a, b) =>
+                {
+                    bool aIsSubBase = a.ParentSubAssembly != null && (a.ParentSubAssembly.RootPart == a || a.ParentSubAssembly.GetFirstPart() == a);
+                    bool bIsSubBase = b.ParentSubAssembly != null && (b.ParentSubAssembly.RootPart == b || b.ParentSubAssembly.GetFirstPart() == b);
+                    if (aIsSubBase && !bIsSubBase) return -1;
+                    if (!aIsSubBase && bIsSubBase) return 1;
+
+                    if (a.ParentSubAssembly != null && b.ParentSubAssembly != null && a.ParentSubAssembly == b.ParentSubAssembly)
+                    {
+                        return b.LocalOrderIndex.CompareTo(a.LocalOrderIndex);
+                    }
+
+                    if (a.ParentSubAssembly != null && b.ParentSubAssembly == null) return -1;
+                    if (a.ParentSubAssembly == null && b.ParentSubAssembly != null) return 1;
+
+                    return b.AssemblyOrderIndex.CompareTo(a.AssemblyOrderIndex);
+                });
+                return list;
+            }
+
             EnsureManager();
             if (manager != null)
             {
@@ -349,7 +392,6 @@ namespace EngineAssembly
                 return manager.AssemblyParts.ToList();
             }
 
-            // Fallback: search scene and sort descending (highest index first)
             var found = FindObjectsByType<AssemblyPart>(FindObjectsInactive.Exclude).ToList();
             return found.OrderByDescending(p => p.AssemblyOrderIndex).ToList();
         }

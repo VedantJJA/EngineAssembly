@@ -779,24 +779,28 @@ namespace EngineAssembly
             // Create flash container object standalone first to prevent self-cloning recursion
             GameObject flashObj = new GameObject($"{gameObject.name}_SnapFlash");
 
-            Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (unlitShader == null) unlitShader = Shader.Find("Sprites/Default");
+            Shader shader = Shader.Find("EngineAssembly/GhostHologramURP");
+            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
 
-            Material flashMat = new Material(unlitShader)
+            Material flashMat = new Material(shader)
             {
                 name = "SnapFlash_Instance"
             };
 
-            // Configure transparent flash material with high opacity (less transparency)
+            // Configure transparent flash material on top-most overlay layer
             flashMat.SetFloat("_Surface", 1.0f); // Transparent
             flashMat.SetFloat("_Blend", 0.0f);   // Alpha blend
             flashMat.SetInt("_ZWrite", 0);
-            flashMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
-            flashMat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 200;
+            flashMat.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.Always);
+            flashMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+            flashMat.SetFloat("_CullMode", (float)UnityEngine.Rendering.CullMode.Off);
+            flashMat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Overlay + 200;
 
             Color baseColor = snapFlashColor;
             if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, baseColor);
             else flashMat.color = baseColor;
+            if (flashMat.HasProperty(RimColorProp)) flashMat.SetColor(RimColorProp, baseColor * 1.5f);
 
             CloneFlashMeshHierarchy(transform, flashObj.transform, flashMat, 0);
 
@@ -824,6 +828,7 @@ namespace EngineAssembly
                     Color currentColor = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
                     if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, currentColor);
                     else flashMat.color = currentColor;
+                    if (flashMat.HasProperty(RimColorProp)) flashMat.SetColor(RimColorProp, currentColor * 1.5f);
 
                     yield return null;
                 }
@@ -853,8 +858,8 @@ namespace EngineAssembly
                 Transform childSource = source.GetChild(i);
                 if (childSource == null) continue;
 
-                // Never clone ghosts, flash effects, sockets, or attached other parts/sub-assemblies
-                if (childSource.name.Contains("Ghost") || childSource.name.Contains("Flash") || childSource.name.Contains("Socket")) continue;
+                // Never clone ghosts, flash effects, sockets, hover highlights, or attached other parts/sub-assemblies
+                if (childSource.name.Contains("Ghost") || childSource.name.Contains("Flash") || childSource.name.Contains("Socket") || childSource.name.Contains("Hover") || childSource.name.Contains("Highlight")) continue;
                 if (childSource.GetComponent<AssemblyPart>() != null) continue;
                 if (childSource.GetComponent<SubAssembly>() != null) continue;
 
@@ -920,7 +925,10 @@ namespace EngineAssembly
 
         private IEnumerator BriefGhostHintRoutine(float duration)
         {
-            CheckGhostVisibility(transform.position);
+            if (activeGhostInstances.Count == 0)
+            {
+                SetupGhost(force: true);
+            }
             SetGhostVisible(true);
             yield return new WaitForSeconds(duration);
             if (!isSelected && !isSnapped)
@@ -934,10 +942,12 @@ namespace EngineAssembly
             // Create flash container object standalone first to prevent self-cloning recursion
             GameObject flashObj = new GameObject($"{gameObject.name}_HintFlash");
 
-            Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (unlitShader == null) unlitShader = Shader.Find("Sprites/Default");
+            // Use GhostHologramURP with ZTest Always so next/prev part glow appears on the top-most layer, overlaying other objects!
+            Shader shader = Shader.Find("EngineAssembly/GhostHologramURP");
+            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
 
-            Material flashMat = new Material(unlitShader)
+            Material flashMat = new Material(shader)
             {
                 name = "HintFlash_Instance"
             };
@@ -945,8 +955,19 @@ namespace EngineAssembly
             flashMat.SetFloat("_Surface", 1.0f); // Transparent
             flashMat.SetFloat("_Blend", 0.0f);   // Alpha blend
             flashMat.SetInt("_ZWrite", 0);
-            flashMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
-            flashMat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 200;
+            flashMat.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.Always);
+            flashMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
+            flashMat.SetFloat("_CullMode", (float)UnityEngine.Rendering.CullMode.Off);
+            flashMat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Overlay + 300;
+
+            if (flashMat.HasProperty(RimColorProp))
+            {
+                flashMat.SetColor(RimColorProp, hintColor * 1.6f);
+            }
+            if (flashMat.HasProperty("_AlphaMultiplier")) flashMat.SetFloat("_AlphaMultiplier", 0.95f);
+            if (flashMat.HasProperty("_RimPower")) flashMat.SetFloat("_RimPower", 1.8f);
+            if (flashMat.HasProperty("_PulseSpeed")) flashMat.SetFloat("_PulseSpeed", 4.5f);
+            if (flashMat.HasProperty("_PulseIntensity")) flashMat.SetFloat("_PulseIntensity", 0.35f);
 
             Color baseColor = hintColor;
             if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, baseColor);
@@ -968,10 +989,11 @@ namespace EngineAssembly
                 while (t < halfCycle)
                 {
                     t += Time.deltaTime;
-                    float alpha = Mathf.Lerp(0.05f, hintColor.a > 0.1f ? hintColor.a : 0.85f, t / halfCycle);
+                    float alpha = Mathf.Lerp(0.05f, hintColor.a > 0.1f ? hintColor.a : 0.9f, t / halfCycle);
                     Color c = new Color(hintColor.r, hintColor.g, hintColor.b, alpha);
                     if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, c);
                     else flashMat.color = c;
+                    if (flashMat.HasProperty(RimColorProp)) flashMat.SetColor(RimColorProp, c * 1.6f);
                     yield return null;
                 }
 
@@ -979,10 +1001,11 @@ namespace EngineAssembly
                 while (t < halfCycle)
                 {
                     t += Time.deltaTime;
-                    float alpha = Mathf.Lerp(hintColor.a > 0.1f ? hintColor.a : 0.85f, 0.05f, t / halfCycle);
+                    float alpha = Mathf.Lerp(hintColor.a > 0.1f ? hintColor.a : 0.9f, 0.05f, t / halfCycle);
                     Color c = new Color(hintColor.r, hintColor.g, hintColor.b, alpha);
                     if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, c);
                     else flashMat.color = c;
+                    if (flashMat.HasProperty(RimColorProp)) flashMat.SetColor(RimColorProp, c * 1.6f);
                     yield return null;
                 }
             }
@@ -1365,25 +1388,42 @@ namespace EngineAssembly
         }
 
         /// <summary>
-        /// Checks whether a given snap point or socket is already occupied by a snapped part in the scene.
+        /// Checks whether a given snap point or socket is already occupied by another snapped part in the scene.
         /// </summary>
-        public static bool IsSlotOccupied(Transform snapPoint, AssemblySocket socket = null)
+        public static bool IsSlotOccupied(Transform snapPoint, AssemblySocket socket = null, AssemblyPart partCalling = null)
         {
-            if (socket != null && socket.IsOccupied) return true;
+            if (socket != null && socket.IsOccupied && socket.CurrentPart != null && socket.CurrentPart.IsSnapped && socket.CurrentPart != partCalling)
+            {
+                return true;
+            }
 
             if (snapPoint != null)
             {
                 AssemblySocket sock = socket ?? snapPoint.GetComponent<AssemblySocket>() ?? snapPoint.GetComponentInParent<AssemblySocket>();
-                if (sock != null && sock.IsOccupied) return true;
+                if (sock != null && sock.IsOccupied && sock.CurrentPart != null && sock.CurrentPart.IsSnapped && sock.CurrentPart != partCalling)
+                {
+                    return true;
+                }
 
                 for (int i = 0; i < s_AllActiveParts.Count; i++)
                 {
                     var other = s_AllActiveParts[i];
-                    if (other != null && other.IsSnapped)
+                    if (other == null || other == partCalling || !other.IsSnapped) continue;
+
+                    // Another part explicitly assigned to this target
+                    if (other.TargetSnapPoint == snapPoint) return true;
+                    if (sock != null && other.TargetSocket == sock) return true;
+
+                    // Or if another part from the same sequence group or interchangeable geometry group is already snapped right at this snap point
+                    bool isSameGroupOrType = partCalling != null && (
+                        other.partId == partCalling.partId ||
+                        (!string.IsNullOrEmpty(other.GeometryGroupId) && string.Equals(other.GeometryGroupId, partCalling.GeometryGroupId, System.StringComparison.OrdinalIgnoreCase)) ||
+                        (partCalling.OrderIndex > 0 && partCalling.GroupIndex > 0 && other.OrderIndex == partCalling.OrderIndex && other.GroupIndex == partCalling.GroupIndex)
+                    );
+
+                    if (isSameGroupOrType && Vector3.Distance(other.transform.position, snapPoint.position) < 0.015f)
                     {
-                        if (other.TargetSnapPoint == snapPoint) return true;
-                        if (other.TargetSocket != null && (other.TargetSocket == sock || other.TargetSocket.SnapTransform == snapPoint)) return true;
-                        if (Vector3.Distance(other.transform.position, snapPoint.position) < 0.06f) return true;
+                        return true;
                     }
                 }
             }
@@ -1404,7 +1444,8 @@ namespace EngineAssembly
                 var p = s_AllActiveParts[i];
                 if (p == null) continue;
 
-                if (p.OrderIndex == this.OrderIndex && 
+                if (this.OrderIndex > 0 && this.GroupIndex > 0 &&
+                    p.OrderIndex == this.OrderIndex && 
                     p.GroupIndex == this.GroupIndex && 
                     p.ParentSubAssembly == this.ParentSubAssembly)
                 {
@@ -1417,10 +1458,26 @@ namespace EngineAssembly
                         ps = pt.GetComponent<AssemblySocket>() ?? pt.GetComponentInParent<AssemblySocket>();
                     }
 
-                    if (pt != null && !IsSlotOccupied(pt, ps))
+                    if (pt != null && !IsSlotOccupied(pt, ps, this))
                     {
                         freeSocket = ps;
                         freeSnapPoint = pt;
+                        return true;
+                    }
+                }
+            }
+
+            // Also check geometry group sockets if not found in sequence group
+            if (!string.IsNullOrEmpty(geometryGroupId))
+            {
+                var allSockets = AssemblySocket.AllActiveSockets;
+                for (int i = 0; i < allSockets.Count; i++)
+                {
+                    var s = allSockets[i];
+                    if (s != null && !IsSlotOccupied(s.SnapTransform, s, this) && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        freeSocket = s;
+                        freeSnapPoint = s.SnapTransform;
                         return true;
                     }
                 }
@@ -1433,11 +1490,57 @@ namespace EngineAssembly
         /// Initializes translucent ghosts at all compatible sockets (or the default snap target).
         /// If this part belongs to a geometry group or sequence group, all available matching sockets in the scene show ghost holograms.
         /// </summary>
-        private void SetupGhost()
+        public void SetupGhost(bool force = false)
         {
-            if (!showGhostOnSelect || !isSelected || isSnapped) return;
+            if (!force && (!showGhostOnSelect || !isSelected || isSnapped)) return;
 
             CleanupAllGhosts();
+
+            // Resolve target socket if null and geometry group is specified
+            if (TargetSnapPoint == null && !string.IsNullOrEmpty(geometryGroupId))
+            {
+                var allSockets = AssemblySocket.AllActiveSockets;
+                for (int i = 0; i < allSockets.Count; i++)
+                {
+                    var s = allSockets[i];
+                    if (s != null && !s.IsOccupied && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetSocket = s;
+                        targetSnapPoint = s.SnapTransform;
+                        break;
+                    }
+                }
+
+                if (TargetSnapPoint == null)
+                {
+                    for (int i = 0; i < s_AllActiveParts.Count; i++)
+                    {
+                        var p = s_AllActiveParts[i];
+                        if (p != null && p != this && !string.IsNullOrEmpty(p.GeometryGroupId) && string.Equals(p.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (p.IsSnapped) continue;
+                            Transform pt = p.TargetSnapPoint;
+                            AssemblySocket ps = p.TargetSocket;
+                            if (pt != null && (ps == null || !ps.IsOccupied))
+                            {
+                                targetSnapPoint = pt;
+                                targetSocket = ps;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Resolve target socket if null and matching sequence group exists
+            if (TargetSnapPoint == null)
+            {
+                if (FindUnoccupiedGroupSocket(out AssemblySocket freeSocket, out Transform freeSnap))
+                {
+                    targetSocket = freeSocket;
+                    targetSnapPoint = freeSnap != null ? freeSnap : freeSocket?.SnapTransform;
+                }
+            }
 
             // Gather all compatible targets
             List<(Transform snapTarget, AssemblySocket sock)> targets = new List<(Transform, AssemblySocket)>();
@@ -1450,7 +1553,8 @@ namespace EngineAssembly
                 if (p == null) continue;
 
                 bool isSameGroup = (p == this) || 
-                    (p.OrderIndex == this.OrderIndex && 
+                    (this.OrderIndex > 0 && this.GroupIndex > 0 &&
+                     p.OrderIndex == this.OrderIndex && 
                      p.GroupIndex == this.GroupIndex && 
                      p.ParentSubAssembly == this.ParentSubAssembly);
 
@@ -1464,7 +1568,7 @@ namespace EngineAssembly
                     ps = pt.GetComponent<AssemblySocket>() ?? pt.GetComponentInParent<AssemblySocket>();
                 }
 
-                if (pt != null && !IsSlotOccupied(pt, ps))
+                if (pt != null && !IsSlotOccupied(pt, ps, this))
                 {
                     bool alreadyInTargets = false;
                     for (int t = 0; t < targets.Count; t++)
@@ -1485,7 +1589,7 @@ namespace EngineAssembly
                 for (int i = 0; i < allSockets.Count; i++)
                 {
                     var s = allSockets[i];
-                    if (s != null && !IsSlotOccupied(s.SnapTransform, s) && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                    if (s != null && !IsSlotOccupied(s.SnapTransform, s, this) && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
                     {
                         targets.Add((s.SnapTransform, s));
                     }
@@ -1501,7 +1605,7 @@ namespace EngineAssembly
 
                         Transform pt = p.TargetSnapPoint;
                         AssemblySocket ps = p.TargetSocket;
-                        if (pt != null && !IsSlotOccupied(pt, ps))
+                        if (pt != null && !IsSlotOccupied(pt, ps, this))
                         {
                             bool alreadyInTargets = false;
                             for (int t = 0; t < targets.Count; t++)
@@ -1517,13 +1621,30 @@ namespace EngineAssembly
                 }
             }
 
-            // 2. If no group sockets found, fallback to this part's own targetSnapPoint / targetSocket
+            // 2. Fallback: ALWAYS ensure this part's own designated targetSnapPoint / targetSocket is added if targets is empty
             if (targets.Count == 0)
             {
                 Transform target = TargetSnapPoint;
-                if (target != null && !IsSlotOccupied(target, targetSocket))
+                if (target != null)
                 {
                     targets.Add((target, targetSocket));
+                }
+            }
+
+            // 3. Ultimate fallback: if targets is still empty, search for any unoccupied socket that accepts this part
+            if (targets.Count == 0)
+            {
+                var allSockets = AssemblySocket.AllActiveSockets;
+                for (int i = 0; i < allSockets.Count; i++)
+                {
+                    var s = allSockets[i];
+                    if (s != null && !s.IsOccupied && s.CanAcceptPart(this))
+                    {
+                        targets.Add((s.SnapTransform, s));
+                        if (targetSocket == null) targetSocket = s;
+                        if (targetSnapPoint == null) targetSnapPoint = s.SnapTransform;
+                        break;
+                    }
                 }
             }
 
@@ -1715,7 +1836,7 @@ namespace EngineAssembly
             // Enable transparency flags on standard URP shaders
             mat.SetFloat("_Surface", 1.0f); // Transparent
             mat.SetFloat("_Blend", 0.0f);   // Alpha blend
-            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 100;
+            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Overlay + 100;
 
             return mat;
         }

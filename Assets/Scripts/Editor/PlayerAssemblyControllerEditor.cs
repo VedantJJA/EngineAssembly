@@ -29,8 +29,19 @@ namespace EngineAssembly.Editor
             SerializedProperty savePartsProp = serializedObject.FindProperty("savePlacedPartsToSceneOnExit");
             SerializedProperty savePlayerProp = serializedObject.FindProperty("savePlayerPositionOnExit");
 
+            SerializedProperty autoAdvanceProp = serializedObject.FindProperty("autoAdvanceIndexOnDisassemble");
+            SerializedProperty stepDelayProp = serializedObject.FindProperty("stepByStepAssembleDelay");
+
             EditorGUILayout.PropertyField(savePartsProp, new GUIContent("Save Placed Parts on Exit"));
             EditorGUILayout.PropertyField(savePlayerProp, new GUIContent("Save Player Position on Exit"));
+            if (autoAdvanceProp != null)
+            {
+                EditorGUILayout.PropertyField(autoAdvanceProp, new GUIContent("⚡ Auto-Advance Index (Auto-Step)", "Default state for auto-advancing sequence index on disassembly. Can also be toggled with [X] key at runtime."));
+            }
+            if (stepDelayProp != null)
+            {
+                EditorGUILayout.PropertyField(stepDelayProp, new GUIContent("Step-by-Step Assembly Speed", "Delay between consecutive snaps during auto-assembly (default 0.14s: brisk cadence, not too slow, faster than normal speed)."));
+            }
 
             EditorGUILayout.Space(6);
 
@@ -97,12 +108,13 @@ namespace EngineAssembly.Editor
                     }
                     EditorGUILayout.EndHorizontal();
 
-                    controller.AutoAdvanceIndexOnDisassemble = EditorGUILayout.Toggle(
-                        new GUIContent("Auto-Advance Index", "If enabled, index auto-advances after each part. If disabled, multiple parts stay in the current group on the current index until changed with J/L or I/K."),
-                        controller.AutoAdvanceIndexOnDisassemble);
-
-                    EditorGUILayout.Space(4);
                 }
+
+                controller.AutoAdvanceIndexOnDisassemble = EditorGUILayout.Toggle(
+                    new GUIContent("⚡ Auto-Advance Index (X)", "If enabled, sequence index auto-advances after each disassembled part. Toggle at runtime with [X]."),
+                    controller.AutoAdvanceIndexOnDisassemble);
+
+                EditorGUILayout.Space(4);
 
                 // Undo & Auto Assemble buttons
                 EditorGUILayout.Space(2);
@@ -114,10 +126,18 @@ namespace EngineAssembly.Editor
                 }
                 EditorGUI.EndDisabledGroup();
 
-                if (GUILayout.Button(new GUIContent("⚙ Auto Assemble All (Y)", "Assembles all engine parts into sockets so you can cleanly record disassembly from scratch."), GUILayout.Height(28)))
+                Color prevBtnColor = GUI.backgroundColor;
+                if (controller.IsAutoAssemblingInProgress)
+                {
+                    GUI.backgroundColor = new Color(1f, 0.55f, 0.1f, 1f);
+                }
+                string inspectorBtnLabel = controller.IsAutoAssemblingInProgress ? "⚡ Instant Build (Y)" : "⚙ Auto Assemble All (Y)";
+                string inspectorBtnTooltip = controller.IsAutoAssemblingInProgress ? "Instantly complete the assembly process!" : "Start normal-fast speed auto assembly in reverse order (Y)";
+                if (GUILayout.Button(new GUIContent(inspectorBtnLabel, inspectorBtnTooltip), GUILayout.Height(28)))
                 {
                     controller.AutoAssembleAllForRecording();
                 }
+                GUI.backgroundColor = prevBtnColor;
                 EditorGUILayout.EndHorizontal();
 
                 // Quick Status Fields
@@ -125,17 +145,24 @@ namespace EngineAssembly.Editor
                 EditorGUILayout.LabelField("Is Crawling:", controller.IsCrawling ? "YES (Low Stance)" : "No (Standing)");
                 EditorGUILayout.LabelField("Recording Mode:", controller.IsRecordingDisassembly ? $"ACTIVE (Recorded: {controller.RecordedDisassemblyStates.Count} parts)" : "Inactive");
 
-                // Save Recorded Disassembly to File & Scene Button
+                // Save Recorded Disassembly Buttons (Permanent vs Temporary)
                 if (controller.RecordedDisassemblyStates != null && controller.RecordedDisassemblyStates.Count > 0)
                 {
                     EditorGUILayout.Space(4);
+                    EditorGUILayout.BeginHorizontal();
                     Color prevC = GUI.backgroundColor;
                     GUI.backgroundColor = new Color(0.2f, 0.7f, 1.0f);
-                    if (GUILayout.Button(new GUIContent("💾 Save Recorded Disassembly to File & Scene", "Permanently writes the recorded disassembly sequence to Assets/RecordedDisassemblySequence.json and saves scene layout."), GUILayout.Height(28)))
+                    if (GUILayout.Button(new GUIContent($"💾 Perm Save [{controller.PermanentSaveKey}]", "Permanently writes the recorded disassembly sequence to Assets/RecordedDisassemblySequence.json and captures scene layout."), GUILayout.Height(28)))
                     {
-                        controller.SaveRecordedDisassemblyNow();
+                        controller.SavePermanent();
+                    }
+                    GUI.backgroundColor = new Color(0.85f, 0.75f, 0.25f);
+                    if (GUILayout.Button(new GUIContent($"⚡ Temp Save [{controller.TemporarySaveKey}]", "Saves the recorded sequence into memory without modifying disk or scene files."), GUILayout.Height(28)))
+                    {
+                        controller.SaveTemporary();
                     }
                     GUI.backgroundColor = prevC;
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 // Recorded Disassembly State Info List

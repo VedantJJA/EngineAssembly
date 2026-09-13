@@ -74,6 +74,15 @@ namespace EngineAssembly
         public Vector3 SnapPosition => SnapTransform.position;
         public Quaternion SnapRotation => SnapTransform.rotation;
 
+        private void Awake()
+        {
+            if (isOccupied && (currentPart == null || !currentPart.IsSnapped))
+            {
+                isOccupied = false;
+                currentPart = null;
+            }
+        }
+
         private void Reset()
         {
             if (string.IsNullOrEmpty(socketId) || socketId == "PartSocket")
@@ -87,7 +96,7 @@ namespace EngineAssembly
         /// </summary>
         public bool AttachPart(AssemblyPart part)
         {
-            if (isOccupied)
+            if (isOccupied && currentPart != null && currentPart != part && currentPart.IsSnapped)
             {
                 Debug.LogWarning($"[AssemblySocket] {name} is already occupied by {currentPart.name}!", this);
                 return false;
@@ -117,8 +126,13 @@ namespace EngineAssembly
         /// </summary>
         public bool CanAcceptPart(AssemblyPart part)
         {
-            if (isOccupied) return false;
             if (part == null) return false;
+
+            // Reject only if occupied by a different, currently-snapped part
+            if (isOccupied && currentPart != null && currentPart != part && currentPart.IsSnapped)
+            {
+                return false;
+            }
 
             // 0. Geometry Group matching (interchangeable parts like identical spark plugs, pistons, etc.)
             string group = GeometryGroupId;
@@ -131,24 +145,27 @@ namespace EngineAssembly
             }
 
             // 0.5 Sequence Group matching (parts sharing the exact same OrderIndex and GroupIndex)
-            // Allows placing any part of a group into any of its group's item slots
-            if (targetPart != null && 
-                targetPart.OrderIndex == part.OrderIndex && 
-                targetPart.GroupIndex == part.GroupIndex && 
-                targetPart.ParentSubAssembly == part.ParentSubAssembly)
+            // Allows placing any part of a group into any of its group's item slots (only for positive recorded IDs)
+            if (part.OrderIndex > 0 && part.GroupIndex > 0)
             {
-                return true;
-            }
-
-            var allParts = AssemblyPart.AllParts;
-            for (int i = 0; i < allParts.Count; i++)
-            {
-                var p = allParts[i];
-                if (p != null && (p.TargetSocket == this || p.TargetSnapPoint == transform || p.TargetSnapPoint == SnapTransform || (snapAnchor != null && p.TargetSnapPoint == snapAnchor)))
+                if (targetPart != null && 
+                    targetPart.OrderIndex == part.OrderIndex && 
+                    targetPart.GroupIndex == part.GroupIndex && 
+                    targetPart.ParentSubAssembly == part.ParentSubAssembly)
                 {
-                    if (p.OrderIndex == part.OrderIndex && p.GroupIndex == part.GroupIndex && p.ParentSubAssembly == part.ParentSubAssembly)
+                    return true;
+                }
+
+                var allParts = AssemblyPart.AllParts;
+                for (int i = 0; i < allParts.Count; i++)
+                {
+                    var p = allParts[i];
+                    if (p != null && (p.TargetSocket == this || p.TargetSnapPoint == transform || p.TargetSnapPoint == SnapTransform || (snapAnchor != null && p.TargetSnapPoint == snapAnchor)))
                     {
-                        return true;
+                        if (p.OrderIndex == part.OrderIndex && p.GroupIndex == part.GroupIndex && p.ParentSubAssembly == part.ParentSubAssembly)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
