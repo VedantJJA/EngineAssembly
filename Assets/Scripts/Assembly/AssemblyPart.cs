@@ -18,6 +18,7 @@ namespace EngineAssembly
         // Static registry of all active parts in the scene for order checking
         private static readonly List<AssemblyPart> s_AllActiveParts = new List<AssemblyPart>();
         public static IReadOnlyList<AssemblyPart> AllActiveParts => s_AllActiveParts;
+        public static IReadOnlyList<AssemblyPart> AllParts => s_AllActiveParts;
 
         [Header("Part Information")]
         [Tooltip("Identifier for this part (e.g. 'Crankshaft', 'Piston_1', 'OilPan').")]
@@ -102,6 +103,12 @@ namespace EngineAssembly
         [FormerlySerializedAs("assemblyOrderIndex")]
         [SerializeField] private int orderIndex = 0;
 
+        [Tooltip("Local order index within a parent SubAssembly. Used for scoped ordering within a sub-assembly group. Ignored for top-level parts.")]
+        [SerializeField] private int localOrderIndex = 0;
+
+        [Tooltip("Group index within the current assembly order index for grouping identical or related parts together (e.g. 4 spark plugs, 8 bolts). Parts with the same orderIndex and groupIndex share equal priority.")]
+        [SerializeField] private int groupIndex = 1;
+
         [Tooltip("Other parts that MUST be snapped before this part can be snapped.")]
         [SerializeField] private List<AssemblyPart> prerequisiteParts = new List<AssemblyPart>();
 
@@ -149,10 +156,92 @@ namespace EngineAssembly
         public bool IsSelected => isSelected;
         public bool IsSnapped => isSnapped;
         public bool IsInSnapZone => isInSnapZone;
-        public int OrderIndex => orderIndex;
+        public int OrderIndex
+        {
+            get => orderIndex;
+            set => orderIndex = value;
+        }
         public int AssemblyOrderIndex => orderIndex;
+        public int LocalOrderIndex
+        {
+            get => localOrderIndex;
+            set => localOrderIndex = value;
+        }
+        public int GroupIndex
+        {
+            get => groupIndex;
+            set => groupIndex = Mathf.Max(1, value);
+        }
         public List<AssemblyPart> PrerequisiteParts => prerequisiteParts;
         public IReadOnlyList<GameObject> ActiveGhostInstances => activeGhostInstances;
+
+        [Header("Sub-Assembly (Optional)")]
+        [Tooltip("If this part is the root representing a SubAssembly, it is linked here.")]
+        [SerializeField] private SubAssembly subAssemblyRoot;
+
+        [Tooltip("If this part belongs to a SubAssembly, its parent SubAssembly is linked here.")]
+        [SerializeField] private SubAssembly parentSubAssembly;
+
+        public SubAssembly SubAssemblyRoot
+        {
+            get
+            {
+                if (subAssemblyRoot == null) subAssemblyRoot = GetComponent<SubAssembly>();
+                return subAssemblyRoot;
+            }
+            set => subAssemblyRoot = value;
+        }
+
+        public SubAssembly ParentSubAssembly
+        {
+            get
+            {
+                if (parentSubAssembly == null && transform.parent != null)
+                {
+                    parentSubAssembly = transform.parent.GetComponent<SubAssembly>();
+                    if (parentSubAssembly == null)
+                    {
+                        parentSubAssembly = transform.parent.GetComponentInParent<SubAssembly>();
+                    }
+                }
+                return parentSubAssembly;
+            }
+            set => parentSubAssembly = value;
+        }
+
+        public bool IsSubAssemblyRoot => SubAssemblyRoot != null;
+        public bool IsBarePart => SubAssemblyRoot == null && ParentSubAssembly == null;
+
+        /// <summary>
+        /// Returns true if this part is the first part (base anchor) of its parent sub-assembly.
+        /// </summary>
+        public bool IsFirstSubAssemblyPart
+        {
+            get
+            {
+                SubAssembly parent = ParentSubAssembly;
+                if (parent != null)
+                {
+                    return parent.GetFirstPart() == this;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether this part can float in mid-air when detached.
+        /// Only SubAssembly roots and the first part of a SubAssembly can float in the air.
+        /// All other parts (bare standalone parts and secondary sub-assembly children) follow gravity.
+        /// </summary>
+        public bool CanFloatInAir
+        {
+            get
+            {
+                if (IsSubAssemblyRoot) return true;
+                if (IsFirstSubAssemblyPart) return true;
+                return false;
+            }
+        }
 
         public Transform TargetSnapPoint
         {
@@ -194,6 +283,24 @@ namespace EngineAssembly
             return highestIndex + 1;
         }
 
+        /// <summary>
+        /// Calculates the next sequential local order index within the parent sub-assembly.
+        /// </summary>
+        public int CalculateNextLocalOrderIndex()
+        {
+            if (parentSubAssembly == null) return 1;
+
+            int highest = 0;
+            foreach (var p in parentSubAssembly.ChildParts)
+            {
+                if (p != null && p != this && p.localOrderIndex > highest)
+                {
+                    highest = p.localOrderIndex;
+                }
+            }
+            return highest + 1;
+        }
+
         private void Reset()
         {
             orderIndex = CalculateNextOrderIndex();
@@ -223,11 +330,24 @@ namespace EngineAssembly
                 rb = gameObject.AddComponent<Rigidbody>();
             }
 
-            // Ensure part follows gravity until snapped
+            if (parentSubAssembly == null && transform.parent != null)
+            {
+                parentSubAssembly = transform.parent.GetComponent<SubAssembly>();
+            }
+
+            // Ensure part follows gravity until snapped, unless it can float in the air (sub-assembly root or first part)
             if (!isSnapped && rb != null)
             {
-                rb.useGravity = true;
-                rb.isKinematic = false;
+                if (CanFloatInAir)
+                {
+                    rb.useGravity = false;
+                    rb.isKinematic = true;
+                }
+                else
+                {
+                    rb.useGravity = true;
+                    rb.isKinematic = false;
+                }
             }
 
             partColliders = GetComponentsInChildren<Collider>(true);
@@ -405,6 +525,16 @@ namespace EngineAssembly
         {
             if (isSnapped) return true;
 
+            // Check if this part is a SubAssembly root and if it is fully assembled
+            if (SubAssemblyRoot != null && !SubAssemblyRoot.CanDockIntoParent(out string subReason))
+            {
+                Debug.LogWarning($"[AssemblyPart] Cannot snap {PartDisplayName}: {subReason}", this);
+                onSnapRejected?.Invoke();
+                if (showGhostOnSelect) SetGhostVisible(false);
+                isInSnapZone = false;
+                return false;
+            }
+
             // Check if prerequisites are satisfied
             if (!IsOrderPriorityMet(out int blockingIndex, out string blockingName))
             {
@@ -422,6 +552,16 @@ namespace EngineAssembly
                 if (showGhostOnSelect) SetGhostVisible(false);
                 isInSnapZone = false;
                 return false;
+            }
+
+            // If target socket is already occupied, check if an alternate unoccupied socket in this sequence group is available
+            if (targetSocket != null && targetSocket.IsOccupied && targetSocket.CurrentPart != this)
+            {
+                if (FindUnoccupiedGroupSocket(out AssemblySocket freeSocket, out Transform freeSnap))
+                {
+                    targetSocket = freeSocket;
+                    targetSnapPoint = freeSnap != null ? freeSnap : freeSocket?.SnapTransform;
+                }
             }
 
             // Check if socket allows it
@@ -447,6 +587,12 @@ namespace EngineAssembly
         public bool SnapDirectly(bool smooth = true, bool ignorePrerequisites = false)
         {
             if (isSnapped) return true;
+
+            if (SubAssemblyRoot != null && !ignorePrerequisites && !SubAssemblyRoot.CanDockIntoParent(out string subReason))
+            {
+                Debug.LogWarning($"[AssemblyPart] Cannot auto-snap {PartDisplayName}: {subReason}", this);
+                return false;
+            }
 
             if (!ignorePrerequisites)
             {
@@ -630,12 +776,8 @@ namespace EngineAssembly
 
         private IEnumerator SnapFlashRoutine()
         {
-            // Real model stays completely untouched, so it NEVER disappears!
+            // Create flash container object standalone first to prevent self-cloning recursion
             GameObject flashObj = new GameObject($"{gameObject.name}_SnapFlash");
-            flashObj.transform.SetParent(transform, false);
-            flashObj.transform.localPosition = Vector3.zero;
-            flashObj.transform.localRotation = Quaternion.identity;
-            flashObj.transform.localScale = Vector3.one;
 
             Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
             if (unlitShader == null) unlitShader = Shader.Find("Sprites/Default");
@@ -656,7 +798,13 @@ namespace EngineAssembly
             if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, baseColor);
             else flashMat.color = baseColor;
 
-            CloneFlashMeshHierarchy(transform, flashObj.transform, flashMat);
+            CloneFlashMeshHierarchy(transform, flashObj.transform, flashMat, 0);
+
+            // Now safely parent the flash hierarchy under transform
+            flashObj.transform.SetParent(transform, false);
+            flashObj.transform.localPosition = Vector3.zero;
+            flashObj.transform.localRotation = Quaternion.identity;
+            flashObj.transform.localScale = Vector3.one;
 
             int flashCount = Mathf.Max(1, snapFlashCount);
             float totalDuration = snapFlashDuration > 0.05f ? snapFlashDuration : 0.45f;
@@ -685,8 +833,10 @@ namespace EngineAssembly
             Destroy(flashMat);
         }
 
-        private void CloneFlashMeshHierarchy(Transform source, Transform destination, Material flashMat)
+        public void CloneFlashMeshHierarchy(Transform source, Transform destination, Material flashMat, int depth = 0)
         {
+            if (depth > 8) return; // Hard recursion guard to absolutely prevent StackOverflowException
+
             if (source.TryGetComponent<MeshFilter>(out var mf) && source.TryGetComponent<MeshRenderer>(out _))
             {
                 MeshFilter newMf = destination.gameObject.AddComponent<MeshFilter>();
@@ -701,7 +851,12 @@ namespace EngineAssembly
             for (int i = 0; i < source.childCount; i++)
             {
                 Transform childSource = source.GetChild(i);
-                if (childSource.name.Contains("Ghost") || childSource.name.Contains("SnapFlash")) continue;
+                if (childSource == null) continue;
+
+                // Never clone ghosts, flash effects, sockets, or attached other parts/sub-assemblies
+                if (childSource.name.Contains("Ghost") || childSource.name.Contains("Flash") || childSource.name.Contains("Socket")) continue;
+                if (childSource.GetComponent<AssemblyPart>() != null) continue;
+                if (childSource.GetComponent<SubAssembly>() != null) continue;
 
                 GameObject childDest = new GameObject(childSource.name);
                 childDest.transform.SetParent(destination, false);
@@ -709,9 +864,134 @@ namespace EngineAssembly
                 childDest.transform.localRotation = childSource.localRotation;
                 childDest.transform.localScale = childSource.localScale;
 
-                CloneFlashMeshHierarchy(childSource, childDest.transform, flashMat);
+                CloneFlashMeshHierarchy(childSource, childDest.transform, flashMat, depth + 1);
             }
         }
+
+        #region Guidance / Hint Flashing
+
+        private Coroutine currentHintRoutine = null;
+
+        /// <summary>
+        /// Pulses this part with a glowing hint color to guide the player (e.g. Next Assembly / Disassembly).
+        /// </summary>
+        public void FlashHint(Color hintColor, int flashCount = 3, float duration = 0.65f)
+        {
+            if (gameObject.activeInHierarchy)
+            {
+                if (currentHintRoutine != null)
+                {
+                    StopCoroutine(currentHintRoutine);
+                    currentHintRoutine = null;
+                }
+
+                Transform oldFlash = transform.Find($"{gameObject.name}_HintFlash");
+                if (oldFlash != null)
+                {
+                    if (Application.isPlaying) Destroy(oldFlash.gameObject);
+                    else DestroyImmediate(oldFlash.gameObject);
+                }
+
+                currentHintRoutine = StartCoroutine(HintFlashRoutine(hintColor, flashCount, duration));
+            }
+        }
+
+        /// <summary>
+        /// Flashes cyan to indicate this is the next part in the assembly sequence,
+        /// and briefly displays its destination ghost silhouette.
+        /// </summary>
+        public void FlashAssemblyHint()
+        {
+            FlashHint(new Color(0.15f, 0.9f, 1f, 0.9f), 3, 0.65f);
+
+            if (!isSnapped && TargetSnapPoint != null && gameObject.activeInHierarchy)
+            {
+                StartCoroutine(BriefGhostHintRoutine(1.2f));
+            }
+        }
+
+        /// <summary>
+        /// Flashes amber/orange to indicate this is the next part to be disassembled.
+        /// </summary>
+        public void FlashDisassemblyHint()
+        {
+            FlashHint(new Color(1f, 0.45f, 0.1f, 0.9f), 3, 0.65f);
+        }
+
+        private IEnumerator BriefGhostHintRoutine(float duration)
+        {
+            CheckGhostVisibility(transform.position);
+            SetGhostVisible(true);
+            yield return new WaitForSeconds(duration);
+            if (!isSelected && !isSnapped)
+            {
+                SetGhostVisible(false);
+            }
+        }
+
+        private IEnumerator HintFlashRoutine(Color hintColor, int flashCount, float duration)
+        {
+            // Create flash container object standalone first to prevent self-cloning recursion
+            GameObject flashObj = new GameObject($"{gameObject.name}_HintFlash");
+
+            Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (unlitShader == null) unlitShader = Shader.Find("Sprites/Default");
+
+            Material flashMat = new Material(unlitShader)
+            {
+                name = "HintFlash_Instance"
+            };
+
+            flashMat.SetFloat("_Surface", 1.0f); // Transparent
+            flashMat.SetFloat("_Blend", 0.0f);   // Alpha blend
+            flashMat.SetInt("_ZWrite", 0);
+            flashMat.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
+            flashMat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 200;
+
+            Color baseColor = hintColor;
+            if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, baseColor);
+            else flashMat.color = baseColor;
+
+            CloneFlashMeshHierarchy(transform, flashObj.transform, flashMat, 0);
+
+            // Now safely parent the flash hierarchy under transform
+            flashObj.transform.SetParent(transform, false);
+            flashObj.transform.localPosition = Vector3.zero;
+            flashObj.transform.localRotation = Quaternion.identity;
+            flashObj.transform.localScale = Vector3.one;
+
+            float halfCycle = (duration / Mathf.Max(1, flashCount)) * 0.5f;
+
+            for (int i = 0; i < flashCount; i++)
+            {
+                float t = 0f;
+                while (t < halfCycle)
+                {
+                    t += Time.deltaTime;
+                    float alpha = Mathf.Lerp(0.05f, hintColor.a > 0.1f ? hintColor.a : 0.85f, t / halfCycle);
+                    Color c = new Color(hintColor.r, hintColor.g, hintColor.b, alpha);
+                    if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, c);
+                    else flashMat.color = c;
+                    yield return null;
+                }
+
+                t = 0f;
+                while (t < halfCycle)
+                {
+                    t += Time.deltaTime;
+                    float alpha = Mathf.Lerp(hintColor.a > 0.1f ? hintColor.a : 0.85f, 0.05f, t / halfCycle);
+                    Color c = new Color(hintColor.r, hintColor.g, hintColor.b, alpha);
+                    if (flashMat.HasProperty(BaseColorProp)) flashMat.SetColor(BaseColorProp, c);
+                    else flashMat.color = c;
+                    yield return null;
+                }
+            }
+
+            Destroy(flashObj);
+            Destroy(flashMat);
+        }
+
+        #endregion
 
         /// <summary>
         /// Detaches/unsnaps the part and restores its physics.
@@ -742,8 +1022,23 @@ namespace EngineAssembly
 
             if (rb != null)
             {
-                rb.isKinematic = false;
-                rb.useGravity = true;
+                if (CanFloatInAir)
+                {
+                    // Sub-assembly root or first part floats in the air
+                    if (!rb.isKinematic)
+                    {
+                        rb.linearVelocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
+                    }
+                    rb.useGravity = false;
+                    rb.isKinematic = true;
+                }
+                else
+                {
+                    // Secondary parts and bare parts follow gravity
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                }
             }
 
             onUnsnapped?.Invoke();
@@ -751,6 +1046,11 @@ namespace EngineAssembly
             if (AssemblyManager.Instance != null)
             {
                 AssemblyManager.Instance.NotifyPartUnsnapped(this);
+            }
+
+            if (PlayerAssemblyController.Instance != null && PlayerAssemblyController.Instance.IsRecordingDisassembly)
+            {
+                PlayerAssemblyController.Instance.RecordDisassembly(this);
             }
 
             return true;
@@ -775,7 +1075,43 @@ namespace EngineAssembly
 
             if (!isSnapped) return true;
 
-            // 1. Check if any parts with LOWER orderIndex are currently snapped (lower numbers are removed first)
+            // In Disassembly Recording Mode / Edit Mode, COMPLETELY IGNORE all previously set assembly order!
+            // Any part can be disassembled in any sequence to record the desired order.
+            if (PlayerAssemblyController.Instance != null && PlayerAssemblyController.Instance.IsRecordingDisassembly)
+            {
+                return true;
+            }
+
+            // 0a. Check SubAssembly rule: If this part is a child component of a SubAssembly that is docked in the parent assembly,
+            // it cannot be disassembled individually until the entire sub-assembly is removed as a whole!
+            if (parentSubAssembly != null && parentSubAssembly.RootPart != null && parentSubAssembly.RootPart.IsSnapped)
+            {
+                blockingPartName = parentSubAssembly.SubAssemblyName;
+                blockingReason = $"Cannot disassemble component while sub-assembly '{parentSubAssembly.SubAssemblyName}' is mounted in the main assembly! Remove the entire sub-assembly first.";
+                return false;
+            }
+
+            // 0b. If this part belongs to a fully assembled sub-assembly, Shift MUST be pressed to start disassembly!
+            // (Only for starting disassembly: once any part is unsnapped, IsFullyAssembled becomes false).
+            if (parentSubAssembly != null && parentSubAssembly.IsFullyAssembled)
+            {
+                bool isShiftHeld = InputHelper.IsKeyHeld(KeyCode.LeftShift) || InputHelper.IsKeyHeld(KeyCode.RightShift);
+                if (!isShiftHeld)
+                {
+                    blockingPartName = parentSubAssembly.SubAssemblyName;
+                    blockingReason = $"Sub-assembly '{parentSubAssembly.SubAssemblyName}' is fully assembled. Hold [Shift] to start disassembly.";
+                    return false;
+                }
+            }
+
+            // If this part belongs to a sub-assembly, scope disassembly order to local indices within that sub-assembly
+            if (parentSubAssembly != null)
+            {
+                return CanDisassembleLocal(out blockingReason, out blockingPartName);
+            }
+
+            // 1. Check if any parts with LOWER orderIndex are currently snapped
+            // (Parts with equal orderIndex share equal priority and can be disassembled in any order)
             AssemblyPart lowestOrderPart = null;
             int lowestOrder = int.MaxValue;
 
@@ -783,13 +1119,20 @@ namespace EngineAssembly
             {
                 var other = s_AllActiveParts[i];
                 if (other == null || other == this) continue;
+                // Skip parts that belong to a sub-assembly (they are scoped locally)
+                if (other.parentSubAssembly != null) continue;
 
-                if (other.IsSnapped && other.OrderIndex < this.orderIndex)
+                if (other.IsSnapped)
                 {
-                    if (other.OrderIndex < lowestOrder)
+                    bool isLowerOrder = other.OrderIndex < this.orderIndex;
+
+                    if (isLowerOrder)
                     {
-                        lowestOrder = other.OrderIndex;
-                        lowestOrderPart = other;
+                        if (other.OrderIndex < lowestOrder)
+                        {
+                            lowestOrder = other.OrderIndex;
+                            lowestOrderPart = other;
+                        }
                     }
                 }
             }
@@ -819,9 +1162,55 @@ namespace EngineAssembly
         }
 
         /// <summary>
+        /// Checks disassembly eligibility scoped to the local sub-assembly context using localOrderIndex.
+        /// </summary>
+        private bool CanDisassembleLocal(out string blockingReason, out string blockingPartName)
+        {
+            blockingReason = null;
+            blockingPartName = null;
+
+            if (parentSubAssembly == null) return true;
+
+            // Check if any sibling parts with LOWER localOrderIndex are currently snapped
+            // (Parts with equal localOrderIndex share equal priority and can be disassembled in any order)
+            foreach (var sibling in parentSubAssembly.ChildParts)
+            {
+                if (sibling == null || sibling == this) continue;
+
+                if (sibling.IsSnapped)
+                {
+                    bool isLowerOrder = sibling.localOrderIndex < this.localOrderIndex;
+
+                    if (isLowerOrder)
+                    {
+                        blockingPartName = sibling.PartDisplayName;
+                        blockingReason = $"Remove '{sibling.PartDisplayName}' (Local Index: {sibling.localOrderIndex}) first within sub-assembly '{parentSubAssembly.SubAssemblyName}'";
+                        return false;
+                    }
+                }
+            }
+
+            // Check if any sibling snapped parts have this part as a prerequisite
+            foreach (var sibling in parentSubAssembly.ChildParts)
+            {
+                if (sibling == null || sibling == this) continue;
+
+                if (sibling.IsSnapped && sibling.PrerequisiteParts != null && sibling.PrerequisiteParts.Contains(this))
+                {
+                    blockingPartName = sibling.PartDisplayName;
+                    blockingReason = $"Remove dependent part '{sibling.PartDisplayName}' first within sub-assembly '{parentSubAssembly.SubAssemblyName}'";
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Returns true if all other parts in the scene with a strictly higher orderIndex have already been snapped.
         /// Reverse assembly order: Higher numbers are placed first, lower numbers placed last.
         /// Parts with the same orderIndex share equal priority and do not block each other.
+        /// When the part belongs to a sub-assembly, checks are scoped to local indices within that sub-assembly.
         /// </summary>
         public bool IsOrderPriorityMet()
         {
@@ -833,21 +1222,86 @@ namespace EngineAssembly
             blockingOrderIndex = -1;
             blockingPartName = null;
 
+            // In Disassembly Recording Mode / Edit Mode, completely ignore assembly order
+            if (PlayerAssemblyController.Instance != null && PlayerAssemblyController.Instance.IsRecordingDisassembly)
+            {
+                return true;
+            }
+
+            // If this part belongs to a sub-assembly, scope order checks to local indices
+            if (parentSubAssembly != null)
+            {
+                return IsLocalOrderPriorityMet(out blockingOrderIndex, out blockingPartName);
+            }
+
             int highestBlockingOrder = -1;
             AssemblyPart highestBlockingPart = null;
 
+            // In reverse order: higher numbers must be snapped first!
+            // Parts with equal orderIndex share equal priority and can be assembled in any order!
             for (int i = 0; i < s_AllActiveParts.Count; i++)
             {
                 var other = s_AllActiveParts[i];
                 if (other == null || other == this) continue;
+                // Skip parts that belong to a sub-assembly (they are scoped locally)
+                if (other.parentSubAssembly != null) continue;
 
-                // In reverse order: higher numbers must be snapped first!
-                if (other.OrderIndex > this.orderIndex && !other.IsSnapped)
+                if (!other.IsSnapped)
                 {
-                    if (other.OrderIndex > highestBlockingOrder)
+                    bool isHigherOrder = other.OrderIndex > this.orderIndex;
+
+                    if (isHigherOrder)
                     {
-                        highestBlockingOrder = other.OrderIndex;
-                        highestBlockingPart = other;
+                        if (other.OrderIndex > highestBlockingOrder)
+                        {
+                            highestBlockingOrder = other.OrderIndex;
+                            highestBlockingPart = other;
+                        }
+                    }
+                }
+            }
+
+            if (highestBlockingPart != null)
+            {
+                blockingOrderIndex = highestBlockingOrder;
+                blockingPartName = highestBlockingPart.PartDisplayName;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks order priority scoped to the local sub-assembly using localOrderIndex.
+        /// Higher local indices must be snapped before lower local indices.
+        /// </summary>
+        private bool IsLocalOrderPriorityMet(out int blockingOrderIndex, out string blockingPartName)
+        {
+            blockingOrderIndex = -1;
+            blockingPartName = null;
+
+            if (parentSubAssembly == null) return true;
+
+            int highestBlockingOrder = -1;
+            AssemblyPart highestBlockingPart = null;
+
+            foreach (var sibling in parentSubAssembly.ChildParts)
+            {
+                if (sibling == null || sibling == this) continue;
+
+                // Higher local index must be snapped first (reverse order)
+                // Parts with equal localOrderIndex share equal priority and can be assembled in any order!
+                if (!sibling.IsSnapped)
+                {
+                    bool isHigherOrder = sibling.localOrderIndex > this.localOrderIndex;
+
+                    if (isHigherOrder)
+                    {
+                        if (sibling.localOrderIndex > highestBlockingOrder)
+                        {
+                            highestBlockingOrder = sibling.localOrderIndex;
+                            highestBlockingPart = sibling;
+                        }
                     }
                 }
             }
@@ -867,7 +1321,13 @@ namespace EngineAssembly
         /// </summary>
         public bool ArePrerequisitesMet()
         {
-            // 1. Check order index priority
+            // In Disassembly Recording Mode / Edit Mode, completely ignore prerequisites
+            if (PlayerAssemblyController.Instance != null && PlayerAssemblyController.Instance.IsRecordingDisassembly)
+            {
+                return true;
+            }
+
+            // 1. Check order index priority (scoped to sub-assembly if applicable)
             if (!IsOrderPriorityMet()) return false;
 
             // 2. Check explicit prerequisite parts if any assigned
@@ -905,8 +1365,73 @@ namespace EngineAssembly
         }
 
         /// <summary>
+        /// Checks whether a given snap point or socket is already occupied by a snapped part in the scene.
+        /// </summary>
+        public static bool IsSlotOccupied(Transform snapPoint, AssemblySocket socket = null)
+        {
+            if (socket != null && socket.IsOccupied) return true;
+
+            if (snapPoint != null)
+            {
+                AssemblySocket sock = socket ?? snapPoint.GetComponent<AssemblySocket>() ?? snapPoint.GetComponentInParent<AssemblySocket>();
+                if (sock != null && sock.IsOccupied) return true;
+
+                for (int i = 0; i < s_AllActiveParts.Count; i++)
+                {
+                    var other = s_AllActiveParts[i];
+                    if (other != null && other.IsSnapped)
+                    {
+                        if (other.TargetSnapPoint == snapPoint) return true;
+                        if (other.TargetSocket != null && (other.TargetSocket == sock || other.TargetSocket.SnapTransform == snapPoint)) return true;
+                        if (Vector3.Distance(other.transform.position, snapPoint.position) < 0.06f) return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Finds an unoccupied socket or snap point belonging to any part in the same sequence group.
+        /// </summary>
+        public bool FindUnoccupiedGroupSocket(out AssemblySocket freeSocket, out Transform freeSnapPoint)
+        {
+            freeSocket = null;
+            freeSnapPoint = null;
+
+            for (int i = 0; i < s_AllActiveParts.Count; i++)
+            {
+                var p = s_AllActiveParts[i];
+                if (p == null) continue;
+
+                if (p.OrderIndex == this.OrderIndex && 
+                    p.GroupIndex == this.GroupIndex && 
+                    p.ParentSubAssembly == this.ParentSubAssembly)
+                {
+                    if (p != this && p.IsSnapped) continue;
+
+                    Transform pt = p.TargetSnapPoint;
+                    AssemblySocket ps = p.TargetSocket;
+                    if (ps == null && pt != null)
+                    {
+                        ps = pt.GetComponent<AssemblySocket>() ?? pt.GetComponentInParent<AssemblySocket>();
+                    }
+
+                    if (pt != null && !IsSlotOccupied(pt, ps))
+                    {
+                        freeSocket = ps;
+                        freeSnapPoint = pt;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Initializes translucent ghosts at all compatible sockets (or the default snap target).
-        /// If this part belongs to a geometry group, all available matching sockets in the scene show ghost holograms.
+        /// If this part belongs to a geometry group or sequence group, all available matching sockets in the scene show ghost holograms.
         /// </summary>
         private void SetupGhost()
         {
@@ -917,6 +1442,42 @@ namespace EngineAssembly
             // Gather all compatible targets
             List<(Transform snapTarget, AssemblySocket sock)> targets = new List<(Transform, AssemblySocket)>();
 
+            // 0. Sequence Group matching (parts sharing the exact same OrderIndex and GroupIndex)
+            // Allows placing any part of a group into any of its group's item slots
+            for (int i = 0; i < s_AllActiveParts.Count; i++)
+            {
+                var p = s_AllActiveParts[i];
+                if (p == null) continue;
+
+                bool isSameGroup = (p == this) || 
+                    (p.OrderIndex == this.OrderIndex && 
+                     p.GroupIndex == this.GroupIndex && 
+                     p.ParentSubAssembly == this.ParentSubAssembly);
+
+                if (!isSameGroup) continue;
+                if (p != this && p.IsSnapped) continue;
+
+                Transform pt = p.TargetSnapPoint;
+                AssemblySocket ps = p.TargetSocket;
+                if (ps == null && pt != null)
+                {
+                    ps = pt.GetComponent<AssemblySocket>() ?? pt.GetComponentInParent<AssemblySocket>();
+                }
+
+                if (pt != null && !IsSlotOccupied(pt, ps))
+                {
+                    bool alreadyInTargets = false;
+                    for (int t = 0; t < targets.Count; t++)
+                    {
+                        if (targets[t].snapTarget == pt) { alreadyInTargets = true; break; }
+                    }
+                    if (!alreadyInTargets)
+                    {
+                        targets.Add((pt, ps));
+                    }
+                }
+            }
+
             // 1. If geometry group is specified, find all active unoccupied sockets with matching geometry
             if (!string.IsNullOrEmpty(geometryGroupId))
             {
@@ -924,7 +1485,7 @@ namespace EngineAssembly
                 for (int i = 0; i < allSockets.Count; i++)
                 {
                     var s = allSockets[i];
-                    if (s != null && !s.IsOccupied && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                    if (s != null && !IsSlotOccupied(s.SnapTransform, s) && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
                     {
                         targets.Add((s.SnapTransform, s));
                     }
@@ -940,7 +1501,7 @@ namespace EngineAssembly
 
                         Transform pt = p.TargetSnapPoint;
                         AssemblySocket ps = p.TargetSocket;
-                        if (pt != null && (ps == null || !ps.IsOccupied))
+                        if (pt != null && !IsSlotOccupied(pt, ps))
                         {
                             bool alreadyInTargets = false;
                             for (int t = 0; t < targets.Count; t++)
@@ -960,7 +1521,7 @@ namespace EngineAssembly
             if (targets.Count == 0)
             {
                 Transform target = TargetSnapPoint;
-                if (target != null)
+                if (target != null && !IsSlotOccupied(target, targetSocket))
                 {
                     targets.Add((target, targetSocket));
                 }
@@ -1051,8 +1612,10 @@ namespace EngineAssembly
             }
         }
 
-        private void CloneVisualHierarchy(Transform source, Transform destination, Material ghostMat, AssemblySocket targetSock = null, Transform targetSnap = null)
+        private void CloneVisualHierarchy(Transform source, Transform destination, Material ghostMat, AssemblySocket targetSock = null, Transform targetSnap = null, int depth = 0)
         {
+            if (depth > 8) return; // Hard recursion limit
+
             int ghostLayer = LayerMask.NameToLayer("TransparentFX");
             if (ghostLayer < 0) ghostLayer = 1;
             destination.gameObject.layer = ghostLayer;
@@ -1079,9 +1642,12 @@ namespace EngineAssembly
             for (int i = 0; i < source.childCount; i++)
             {
                 Transform childSource = source.GetChild(i);
+                if (childSource == null) continue;
 
-                // Skip if it's already a ghost, flash, or collider-only object
-                if (childSource.name.Contains("Ghost") || childSource.name.Contains("SnapFlash")) continue;
+                // Skip if it's already a ghost, flash, socket, or other attached assembly parts
+                if (childSource.name.Contains("Ghost") || childSource.name.Contains("Flash") || childSource.name.Contains("Socket")) continue;
+                if (childSource.GetComponent<AssemblyPart>() != null) continue;
+                if (childSource.GetComponent<SubAssembly>() != null) continue;
 
                 GameObject childDest = new GameObject(childSource.name);
                 childDest.transform.SetParent(destination, false);
@@ -1089,7 +1655,7 @@ namespace EngineAssembly
                 childDest.transform.localRotation = childSource.localRotation;
                 childDest.transform.localScale = childSource.localScale;
 
-                CloneVisualHierarchy(childSource, childDest.transform, ghostMat, targetSock, targetSnap);
+                CloneVisualHierarchy(childSource, childDest.transform, ghostMat, targetSock, targetSnap, depth + 1);
             }
         }
 
@@ -1246,11 +1812,12 @@ namespace EngineAssembly
             if (socket != null)
             {
                 targetSocket = socket;
-                targetSnapPoint = socket.SnapTransform;
+                targetSnapPoint = socket.SnapTransform != null ? socket.SnapTransform : socket.transform;
             }
             else if (snapPoint != null)
             {
                 targetSnapPoint = snapPoint;
+                targetSocket = snapPoint.GetComponent<AssemblySocket>() ?? snapPoint.GetComponentInParent<AssemblySocket>();
             }
 
             return TrySnap();

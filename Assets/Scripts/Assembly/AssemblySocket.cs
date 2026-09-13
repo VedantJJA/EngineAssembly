@@ -130,6 +130,29 @@ namespace EngineAssembly
                 }
             }
 
+            // 0.5 Sequence Group matching (parts sharing the exact same OrderIndex and GroupIndex)
+            // Allows placing any part of a group into any of its group's item slots
+            if (targetPart != null && 
+                targetPart.OrderIndex == part.OrderIndex && 
+                targetPart.GroupIndex == part.GroupIndex && 
+                targetPart.ParentSubAssembly == part.ParentSubAssembly)
+            {
+                return true;
+            }
+
+            var allParts = AssemblyPart.AllParts;
+            for (int i = 0; i < allParts.Count; i++)
+            {
+                var p = allParts[i];
+                if (p != null && (p.TargetSocket == this || p.TargetSnapPoint == transform || p.TargetSnapPoint == SnapTransform || (snapAnchor != null && p.TargetSnapPoint == snapAnchor)))
+                {
+                    if (p.OrderIndex == part.OrderIndex && p.GroupIndex == part.GroupIndex && p.ParentSubAssembly == part.ParentSubAssembly)
+                    {
+                        return true;
+                    }
+                }
+            }
+
             // 1. If this socket explicitly designates a specific target part
             if (targetPart != null)
             {

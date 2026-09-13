@@ -194,7 +194,14 @@ namespace EngineAssembly
                 return Mouse.current.position.ReadValue();
             }
 #endif
-            return Input.mousePosition;
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.mousePosition;
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return Vector2.zero;
         }
 
         private bool IsLeftMouseButtonDown()
@@ -205,7 +212,14 @@ namespace EngineAssembly
                 return Mouse.current.leftButton.wasPressedThisFrame;
             }
 #endif
-            return Input.GetMouseButtonDown(0);
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.GetMouseButtonDown(0);
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return false;
         }
 
         private bool IsLeftMouseButtonHeld()
@@ -216,7 +230,14 @@ namespace EngineAssembly
                 return Mouse.current.leftButton.isPressed;
             }
 #endif
-            return Input.GetMouseButton(0);
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.GetMouseButton(0);
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return false;
         }
 
         private bool IsLeftMouseButtonUp()
@@ -227,7 +248,14 @@ namespace EngineAssembly
                 return Mouse.current.leftButton.wasReleasedThisFrame;
             }
 #endif
-            return Input.GetMouseButtonUp(0);
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.GetMouseButtonUp(0);
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return false;
         }
 
         private bool IsRightMouseButtonHeld()
@@ -238,7 +266,14 @@ namespace EngineAssembly
                 return Mouse.current.rightButton.isPressed;
             }
 #endif
-            return Input.GetMouseButton(1);
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.GetMouseButton(1);
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return false;
         }
 
         private float GetMouseScroll()
@@ -249,7 +284,14 @@ namespace EngineAssembly
                 return Mouse.current.scroll.ReadValue().y * 0.01f;
             }
 #endif
-            return Input.mouseScrollDelta.y;
+#if ENABLE_LEGACY_INPUT_MANAGER
+            try
+            {
+                return Input.mouseScrollDelta.y;
+            }
+            catch (System.InvalidOperationException) { }
+#endif
+            return 0f;
         }
 
         #endregion

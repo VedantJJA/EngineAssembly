@@ -20,16 +20,16 @@ namespace EngineAssembly
 
         [Header("Keyboard Controls")]
         [Tooltip("Key to trigger automated assembly of the entire engine.")]
-        [SerializeField] private KeyCode autoAssembleAllKey = KeyCode.U;
+        [SerializeField] private KeyCode autoAssembleAllKey = KeyCode.Y;
 
         [Tooltip("Key to assemble parts down to targetOrderIndex.")]
-        [SerializeField] private KeyCode autoAssembleToOrderIndexKey = KeyCode.I;
+        [SerializeField] private KeyCode autoAssembleToOrderIndexKey = KeyCode.None;
 
         [Tooltip("Key to assemble the next single part in sequence.")]
         [SerializeField] private KeyCode assembleNextStepKey = KeyCode.O;
 
         [Tooltip("Key to disassemble and reset all parts.")]
-        [SerializeField] private KeyCode disassembleAllKey = KeyCode.P;
+        [SerializeField] private KeyCode disassembleAllKey = KeyCode.Delete;
 
         [Header("Assembly Targets")]
         [Tooltip("Target Order Priority index. In reverse mode (high numbers first), all parts with OrderIndex >= targetOrderIndex are assembled.")]
@@ -49,13 +49,6 @@ namespace EngineAssembly
         [Tooltip("Whether individual parts use smooth easing motion when snapping.")]
         [SerializeField] private bool smoothSnap = true;
 
-        [Header("On-Screen Interactive UI")]
-        [Tooltip("Displays a convenient on-screen overlay window with interactive buttons (no Canvas required).")]
-        [SerializeField] private bool showOnScreenGUI = true;
-
-        [Tooltip("Key to toggle the on-screen GUI visibility.")]
-        [SerializeField] private KeyCode toggleGuiKey = KeyCode.F1;
-
         [Header("Events")]
         public UnityEvent onAutoAssemblyStarted;
         public UnityEvent<AssemblyPart> onStepAssembled;
@@ -65,7 +58,6 @@ namespace EngineAssembly
         private Coroutine activeAssemblyRoutine;
         private AssemblyManager manager;
         private bool isAssembling = false;
-        private Rect windowRect = new Rect(20, 20, 320, 370);
 
         public bool IsAssembling => isAssembling;
         public int TargetOrderIndex
@@ -123,27 +115,28 @@ namespace EngineAssembly
 
         private void Update()
         {
-            if (Input.GetKeyDown(toggleGuiKey))
+            // If the player is in Disassembly Recording Mode or Edit Mode, ignore auto-assembly keys so Y/U/I/K/J/L/Z can be used for recording, undo, save, index, and group controls
+            if (PlayerAssemblyController.Instance != null && (PlayerAssemblyController.Instance.IsRecordingDisassembly || PlayerAssemblyController.Instance.IsInEditMode))
             {
-                showOnScreenGUI = !showOnScreenGUI;
+                return;
             }
 
-            if (autoAssembleAllKey != KeyCode.None && Input.GetKeyDown(autoAssembleAllKey))
+            if (autoAssembleAllKey != KeyCode.None && InputHelper.IsKeyDown(autoAssembleAllKey))
             {
                 AssembleWhole();
             }
 
-            if (autoAssembleToOrderIndexKey != KeyCode.None && Input.GetKeyDown(autoAssembleToOrderIndexKey))
+            if (autoAssembleToOrderIndexKey != KeyCode.None && InputHelper.IsKeyDown(autoAssembleToOrderIndexKey))
             {
                 AssembleToOrderIndex(targetOrderIndex);
             }
 
-            if (assembleNextStepKey != KeyCode.None && Input.GetKeyDown(assembleNextStepKey))
+            if (assembleNextStepKey != KeyCode.None && InputHelper.IsKeyDown(assembleNextStepKey))
             {
                 AssembleNextStep();
             }
 
-            if (disassembleAllKey != KeyCode.None && Input.GetKeyDown(disassembleAllKey))
+            if (disassembleAllKey != KeyCode.None && InputHelper.IsKeyDown(disassembleAllKey))
             {
                 DisassembleAll();
             }
@@ -423,110 +416,6 @@ namespace EngineAssembly
             {
                 player.DropHeldPart();
             }
-        }
-
-        #endregion
-
-        #region OnGUI Overlay
-
-        private void OnGUI()
-        {
-            if (!showOnScreenGUI) return;
-
-            GUI.skin.window.fontSize = 12;
-            windowRect = GUI.Window(98721, windowRect, DrawAutoAssemblyWindow, "Auto Assembly Controls");
-        }
-
-        private void DrawAutoAssemblyWindow(int windowID)
-        {
-            EnsureManager();
-            int total = manager != null ? manager.TotalPartsCount : 0;
-            int snapped = manager != null ? manager.SnappedPartsCount : 0;
-
-            GUILayout.BeginVertical();
-
-            // Status bar
-            GUILayout.Label($"Status: {snapped} / {total} Parts Assembled ({(total > 0 ? (snapped * 100 / total) : 0)}%)", GUI.skin.box);
-
-            if (isAssembling)
-            {
-                GUI.color = Color.yellow;
-                GUILayout.Label("Status: Auto-Assembling...", GUI.skin.box);
-                GUI.color = Color.white;
-
-                if (GUILayout.Button("Stop Assembly"))
-                {
-                    StopAutoAssembly();
-                }
-            }
-            else
-            {
-                // Full Assemble
-                GUI.color = new Color(0.4f, 1f, 0.5f);
-                if (GUILayout.Button($"Assemble Whole (Key: {autoAssembleAllKey})", GUILayout.Height(30)))
-                {
-                    AssembleWhole();
-                }
-                GUI.color = Color.white;
-
-                GUILayout.Space(6);
-
-                // Assemble to Order Index
-                GUILayout.BeginHorizontal();
-                GUILayout.Label($"Order Index: {targetOrderIndex}", GUILayout.Width(100));
-                if (GUILayout.Button("-", GUILayout.Width(25))) targetOrderIndex = Mathf.Max(0, targetOrderIndex - 1);
-                if (GUILayout.Button("+", GUILayout.Width(25))) targetOrderIndex++;
-                if (GUILayout.Button($"Assemble >= {targetOrderIndex} ({autoAssembleToOrderIndexKey})"))
-                {
-                    AssembleToOrderIndex(targetOrderIndex);
-                }
-                GUILayout.EndHorizontal();
-
-                // Assemble to Part Count
-                GUILayout.BeginHorizontal();
-                GUILayout.Label($"Step Count: {targetPartCount}", GUILayout.Width(100));
-                if (GUILayout.Button("-", GUILayout.Width(25))) targetPartCount = Mathf.Max(1, targetPartCount - 1);
-                if (GUILayout.Button("+", GUILayout.Width(25))) targetPartCount = Mathf.Min(total > 0 ? total : 999, targetPartCount + 1);
-                if (GUILayout.Button($"Assemble {targetPartCount} Parts"))
-                {
-                    AssembleToPartCount(targetPartCount);
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.Space(6);
-
-                // Single Step
-                if (GUILayout.Button($"Assemble Next Step ({assembleNextStepKey})"))
-                {
-                    AssembleNextStep();
-                }
-
-                // Disassemble All
-                GUI.color = new Color(1f, 0.6f, 0.5f);
-                if (GUILayout.Button($"Disassemble All ({disassembleAllKey})"))
-                {
-                    DisassembleAll();
-                }
-                GUI.color = Color.white;
-            }
-
-            GUILayout.Space(6);
-
-            // Animation Settings
-            animateSequence = GUILayout.Toggle(animateSequence, "Animate Sequential Flight");
-            if (animateSequence)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label($"Delay: {delayBetweenParts:F2}s", GUILayout.Width(80));
-                delayBetweenParts = GUILayout.HorizontalSlider(delayBetweenParts, 0.05f, 1.5f);
-                GUILayout.EndHorizontal();
-            }
-
-            GUILayout.Label($"Press {toggleGuiKey} to toggle this panel", GUI.skin.label);
-
-            GUILayout.EndVertical();
-
-            GUI.DragWindow(new Rect(0, 0, 10000, 20));
         }
 
         #endregion

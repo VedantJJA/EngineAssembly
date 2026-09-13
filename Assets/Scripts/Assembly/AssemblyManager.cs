@@ -67,10 +67,12 @@ namespace EngineAssembly
                 audioSource = GetComponent<AudioSource>();
             }
 
-            // Auto-gather parts if list is empty
+            // Auto-gather parts if list is empty (top-level engine parts and sub-assembly roots only)
             if (assemblyParts == null || assemblyParts.Count == 0)
             {
-                assemblyParts = new List<AssemblyPart>(FindObjectsByType<AssemblyPart>(FindObjectsInactive.Exclude));
+                assemblyParts = FindObjectsByType<AssemblyPart>(FindObjectsInactive.Exclude)
+                    .Where(p => p != null && p.ParentSubAssembly == null)
+                    .ToList();
                 SortPartsByOrderIndex();
             }
         }
@@ -82,6 +84,9 @@ namespace EngineAssembly
 
         public void RegisterPart(AssemblyPart part)
         {
+            // Sub-assembly children are managed locally by their SubAssembly component
+            if (part.ParentSubAssembly != null) return;
+
             if (!assemblyParts.Contains(part))
             {
                 assemblyParts.Add(part);
@@ -134,6 +139,68 @@ namespace EngineAssembly
         public AssemblyPart GetCurrentSequencePart()
         {
             return assemblyParts.FirstOrDefault(p => p != null && !p.IsSnapped);
+        }
+
+        /// <summary>
+        /// Finds the next eligible part to assemble in reverse order sequence whose prerequisites are satisfied.
+        /// </summary>
+        public AssemblyPart GetNextEligibleAssemblyPart()
+        {
+            SortPartsByOrderIndex();
+
+            for (int i = 0; i < assemblyParts.Count; i++)
+            {
+                var part = assemblyParts[i];
+                if (part != null && !part.IsSnapped && IsPartEligibleToAssemble(part))
+                {
+                    return part;
+                }
+            }
+
+            // Fallback: check sub-assembly children and all active parts
+            var allParts = AssemblyPart.AllParts;
+            for (int i = 0; i < allParts.Count; i++)
+            {
+                var part = allParts[i];
+                if (part != null && !part.IsSnapped && part.ArePrerequisitesMet())
+                {
+                    return part;
+                }
+            }
+
+            return assemblyParts.FirstOrDefault(p => p != null && !p.IsSnapped)
+                   ?? allParts.FirstOrDefault(p => p != null && !p.IsSnapped);
+        }
+
+        /// <summary>
+        /// Finds the next eligible part to disassemble in reverse order sequence.
+        /// </summary>
+        public AssemblyPart GetNextEligibleDisassemblyPart()
+        {
+            SortPartsByOrderIndex();
+
+            for (int i = assemblyParts.Count - 1; i >= 0; i--)
+            {
+                var part = assemblyParts[i];
+                if (part != null && part.IsSnapped && IsPartEligibleToDisassemble(part))
+                {
+                    return part;
+                }
+            }
+
+            // Fallback: check sub-assembly children and all active parts
+            var allParts = AssemblyPart.AllParts;
+            for (int i = allParts.Count - 1; i >= 0; i--)
+            {
+                var part = allParts[i];
+                if (part != null && part.IsSnapped && part.CanDisassemble())
+                {
+                    return part;
+                }
+            }
+
+            return assemblyParts.LastOrDefault(p => p != null && p.IsSnapped)
+                   ?? allParts.LastOrDefault(p => p != null && p.IsSnapped);
         }
 
         /// <summary>

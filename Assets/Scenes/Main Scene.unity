@@ -348,8 +348,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 56528033}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.36, y: 1.69, z: 3.32}
+  m_LocalRotation: {x: 0.66191226, y: -0.0016328671, z: 0.74957675, w: -0.0020653063}
+  m_LocalPosition: {x: 0.9210916, y: 1.9970571, z: -1.9650207}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -391,6 +391,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 0
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -413,6 +415,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!1 &197192784
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,6 +627,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 2
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -645,6 +651,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!1 &256896908
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,6 +894,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 0
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -908,6 +918,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!54 &390801928
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1021,8 +1033,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 390801926}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.1340003, y: 1.69, z: 5.33768}
+  m_LocalRotation: {x: 0.001358211, y: -0.9599471, z: -0.0031519162, w: 0.28016028}
+  m_LocalPosition: {x: 0.89060336, y: 2.9961753, z: -1.7318906}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1074,6 +1086,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 1
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -1096,6 +1110,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!64 &659032732
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1202,6 +1218,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 0
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -1224,6 +1242,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!54 &915260369
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1337,8 +1357,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 915260367}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.1340003, y: 1.69, z: 3.32}
+  m_LocalRotation: {x: 0.00016566983, y: -0.6820103, z: -0.000002110121, w: 0.7313426}
+  m_LocalPosition: {x: 0.8137479, y: 1.0000134, z: -1.8027636}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1417,6 +1437,18 @@ MonoBehaviour:
   crosshairSize: 6
   hudCorner: 0
   showHudActionCard: 1
+  nextAssemblyHintKey: 110
+  nextDisassemblyHintKey: 98
+  recordingToggleKey: 287
+  recordingIndexDownKey: 106
+  recordingIndexUpKey: 108
+  recordingGroupUpKey: 105
+  recordingGroupDownKey: 107
+  recordingStartIndex: 1
+  recordingStartGroup: 1
+  autoAdvanceIndexOnDisassemble: 0
+  savePlacedPartsToSceneOnExit: 1
+  savePlayerPositionOnExit: 1
 --- !u!143 &1517666307
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1530,8 +1562,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517666305}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0, y: -0.5075386, z: 0, w: 0.86162907}
+  m_LocalPosition: {x: -1.9533057, y: 1.5799997, z: -2.5937316}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1732,6 +1764,8 @@ MonoBehaviour:
   snapFlashDuration: 0.45
   snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
   orderIndex: 0
+  localOrderIndex: 0
+  groupIndex: 1
   prerequisiteParts: []
   onSelected:
     m_PersistentCalls:
@@ -1754,6 +1788,8 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+  subAssemblyRoot: {fileID: 0}
+  parentSubAssembly: {fileID: 0}
 --- !u!54 &2113404604
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1867,8 +1903,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113404602}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.4800005, y: 1.69, z: 5.33768}
+  m_LocalRotation: {x: 0.00041375624, y: -0.99933606, z: -0.0039470424, w: -0.036217466}
+  m_LocalPosition: {x: 0.8412149, y: 3.9936101, z: -1.5955857}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
