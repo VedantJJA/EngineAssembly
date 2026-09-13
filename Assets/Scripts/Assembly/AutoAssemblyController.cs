@@ -415,6 +415,10 @@ namespace EngineAssembly
         {
             // Drop part from player hands if currently held
             var player = PlayerAssemblyController.Instance;
+            if (player == null)
+            {
+                player = FindAnyObjectByType<PlayerAssemblyController>();
+            }
             if (player != null && player.CurrentHeldPart == part)
             {
                 player.DropHeldPart();

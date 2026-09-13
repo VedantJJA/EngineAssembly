@@ -1,10 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace EngineAssembly
+namespace EngineAssembly.Editor
 {
     [CustomEditor(typeof(AutoAssemblyController))]
-    public class AutoAssemblyControllerEditor : Editor
+    public class AutoAssemblyControllerEditor : UnityEditor.Editor
     {
         private AutoAssemblyController controller;
 

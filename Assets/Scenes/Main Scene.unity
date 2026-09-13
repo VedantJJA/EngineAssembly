@@ -179,14 +179,40 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4976445937008729170, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.538
+      objectReference: {fileID: 0}
+    - target: {fileID: -2322899825843135253, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.4261
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
       propertyPath: m_Name
       value: V8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 256896909}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 197192785}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -1954953444922620419, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 236921585}
+    - targetCorrespondingSourceObject: {fileID: 5135190382945955735, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 688169873}
+    - targetCorrespondingSourceObject: {fileID: -3624070964340019987, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 659032732}
+    - targetCorrespondingSourceObject: {fileID: -3624070964340019987, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 659032731}
   m_SourcePrefab: {fileID: 100100000, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
 --- !u!1 &56528033
 GameObject:
@@ -387,6 +413,63 @@ MonoBehaviour:
   onSnapRejected:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &197192784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 197192785}
+  - component: {fileID: 197192786}
+  m_Layer: 0
+  m_Name: Alternator_belt1_Socket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &197192785
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197192784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5, y: 0.50000006, z: 0.50000006, w: 0.5}
+  m_LocalPosition: {x: 0.22500002, y: 0, z: 0}
+  m_LocalScale: {x: 0.280592, y: 0.280592, z: 0.280592}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 536279845}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &197192786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197192784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e93d4aea0bf851d4295a8019e6775468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.AssemblySocket
+  socketId: Alternator_belt1
+  geometryGroupId: 
+  targetPart: {fileID: 236921585}
+  snapAnchor: {fileID: 0}
+  gizmoColor: {r: 0.2, g: 0.8, b: 1, a: 0.75}
+  gizmoRadius: 0.05
+  showGizmos: 1
+  onPartAttached:
+    m_PersistentCalls:
+      m_Calls: []
+  onPartDetached:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &213403501
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,6 +582,126 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &236921584 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -1954953444922620419, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+  m_PrefabInstance: {fileID: 41158692}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &236921585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 236921584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50286df1479a06245a5fb8605c4990dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.AssemblyPart
+  partId: Alternator_belt1
+  partDisplayName: Alternator_belt1
+  geometryGroupId: 
+  targetSnapPoint: {fileID: 197192785}
+  targetSocket: {fileID: 197192786}
+  snapDistanceThreshold: 0.15
+  requireRotationMatch: 1
+  snapAngleThreshold: 50
+  snapOnRelease: 1
+  smoothSnap: 1
+  snapDuration: 0.25
+  parentToTargetOnSnap: 1
+  showGhostOnSelect: 1
+  ghostRevealDistance: 8
+  ghostMaterial: {fileID: 0}
+  ghostDefaultColor: {r: 0.15, g: 0.6, b: 1, a: 0.4}
+  ghostInRangeColor: {r: 0.3, g: 0.85, b: 1, a: 0.6}
+  ghostLockedColor: {r: 1, g: 0.35, b: 0.2, a: 0.4}
+  customGhostPrefab: {fileID: 0}
+  flashGreenOnSnap: 1
+  snapFlashCount: 3
+  snapFlashDuration: 0.45
+  snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
+  orderIndex: 2
+  prerequisiteParts: []
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeselected:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnterSnapZone:
+    m_PersistentCalls:
+      m_Calls: []
+  onExitSnapZone:
+    m_PersistentCalls:
+      m_Calls: []
+  onSnapped:
+    m_PersistentCalls:
+      m_Calls: []
+  onUnsnapped:
+    m_PersistentCalls:
+      m_Calls: []
+  onSnapRejected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &256896908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 256896909}
+  - component: {fileID: 256896910}
+  m_Layer: 0
+  m_Name: Serpentine_belt2_Socket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &256896909
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256896908}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.5, y: 0.50000006, z: 0.50000006, w: -0.5}
+  m_LocalPosition: {x: 0.24750002, y: -0.045000013, z: 0.35503396}
+  m_LocalScale: {x: 0.280592, y: 0.280592, z: 0.280592}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 536279845}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &256896910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256896908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e93d4aea0bf851d4295a8019e6775468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.AssemblySocket
+  socketId: Serpentine_belt2
+  geometryGroupId: 
+  targetPart: {fileID: 659032731}
+  snapAnchor: {fileID: 0}
+  gizmoColor: {r: 0.2, g: 0.8, b: 1, a: 0.75}
+  gizmoRadius: 0.05
+  showGizmos: 1
+  onPartAttached:
+    m_PersistentCalls:
+      m_Calls: []
+  onPartDetached:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &290066419
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,6 +1028,123 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &536279845 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+  m_PrefabInstance: {fileID: 41158692}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &659032730 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3624070964340019987, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+  m_PrefabInstance: {fileID: 41158692}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &659032731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 659032730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50286df1479a06245a5fb8605c4990dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.AssemblyPart
+  partId: Serpentine_belt2
+  partDisplayName: Serpentine_belt2
+  geometryGroupId: 
+  targetSnapPoint: {fileID: 256896909}
+  targetSocket: {fileID: 256896910}
+  snapDistanceThreshold: 0.15
+  requireRotationMatch: 1
+  snapAngleThreshold: 50
+  snapOnRelease: 1
+  smoothSnap: 1
+  snapDuration: 0.25
+  parentToTargetOnSnap: 1
+  showGhostOnSelect: 1
+  ghostRevealDistance: 8
+  ghostMaterial: {fileID: 0}
+  ghostDefaultColor: {r: 0.15, g: 0.6, b: 1, a: 0.4}
+  ghostInRangeColor: {r: 0.3, g: 0.85, b: 1, a: 0.6}
+  ghostLockedColor: {r: 1, g: 0.35, b: 0.2, a: 0.4}
+  customGhostPrefab: {fileID: 0}
+  flashGreenOnSnap: 1
+  snapFlashCount: 3
+  snapFlashDuration: 0.45
+  snapFlashColor: {r: 0.15, g: 1, b: 0.35, a: 0.9}
+  orderIndex: 1
+  prerequisiteParts: []
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeselected:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnterSnapZone:
+    m_PersistentCalls:
+      m_Calls: []
+  onExitSnapZone:
+    m_PersistentCalls:
+      m_Calls: []
+  onSnapped:
+    m_PersistentCalls:
+      m_Calls: []
+  onUnsnapped:
+    m_PersistentCalls:
+      m_Calls: []
+  onSnapRejected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!64 &659032732
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 659032730}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5078778574009988853, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+--- !u!1 &688169871 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5135190382945955735, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
+  m_PrefabInstance: {fileID: 41158692}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &688169873
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688169871}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3967318882262753541, guid: 8a65f8d06dca0604991be230ead3ac56, type: 3}
 --- !u!1 &915260367
 GameObject:
   m_ObjectHideFlags: 0

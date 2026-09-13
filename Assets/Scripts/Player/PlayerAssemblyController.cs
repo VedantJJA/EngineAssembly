@@ -144,12 +144,21 @@ namespace EngineAssembly
         private float interactionDebounceTimer = 0f;
         private bool requireMouseReleaseBeforeAction = false;
 
+        public static PlayerAssemblyController Instance { get; private set; }
+
         public AssemblyPart CurrentHeldPart => currentHeldPart;
         public bool IsHoldingPart => currentHeldPart != null;
         public bool IsCrawling => isCrawling;
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
             characterController = GetComponent<CharacterController>();
             if (characterController != null)
             {
