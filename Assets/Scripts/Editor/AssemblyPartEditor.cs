@@ -42,7 +42,7 @@ namespace EngineAssembly.Editor
             }
 
             // --- Dropdown 1: Part Properties / Configuration (Closed by default) ---
-            showPropertiesFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(showPropertiesFoldout, "Part Properties / Configuration");
+            showPropertiesFoldout = EditorGUILayout.Foldout(showPropertiesFoldout, "Part Properties / Configuration", true, EditorStyles.foldoutHeader);
             if (showPropertiesFoldout)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -94,19 +94,29 @@ namespace EngineAssembly.Editor
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("snapFlashColor"));
                 EditorGUILayout.Space(6);
 
-                // Assembly Order & Priority
-                EditorGUILayout.LabelField("Assembly Order & Priority", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("orderIndex"));
+                // Assembly Order & Priority (Reverse Order)
+                EditorGUILayout.LabelField("Assembly Order & Priority (Reverse Order)", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox("Reverse Assembly Order:\n- Higher numbers are placed FIRST during assembly.\n- Lower numbers are placed LAST (and disassembled first).", MessageType.None);
+
+                SerializedProperty orderIndexProp = serializedObject.FindProperty("orderIndex");
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(orderIndexProp, new GUIContent("Order Priority"));
+                int nextSuggested = part.CalculateNextOrderIndex();
+                if (GUILayout.Button(new GUIContent($"Set Next ({nextSuggested})", "Recalculates the next sequential order index based on parts currently in the scene."), GUILayout.Width(110)))
+                {
+                    orderIndexProp.intValue = nextSuggested;
+                }
+                EditorGUILayout.EndHorizontal();
+
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("prerequisiteParts"), true);
 
                 EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
 
             EditorGUILayout.Space(6);
 
             // --- Dropdown 2: Assembly Events (Closed by default) ---
-            showEventsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(showEventsFoldout, "Assembly Events");
+            showEventsFoldout = EditorGUILayout.Foldout(showEventsFoldout, "Assembly Events", true, EditorStyles.foldoutHeader);
             if (showEventsFoldout)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -135,7 +145,6 @@ namespace EngineAssembly.Editor
 
                 EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Workflow Tools", EditorStyles.boldLabel);

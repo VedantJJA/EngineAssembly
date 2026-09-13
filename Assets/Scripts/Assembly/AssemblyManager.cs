@@ -101,7 +101,7 @@ namespace EngineAssembly
 
         public void SortPartsByOrderIndex()
         {
-            assemblyParts = assemblyParts.OrderBy(p => p.AssemblyOrderIndex).ToList();
+            assemblyParts = assemblyParts.OrderByDescending(p => p.AssemblyOrderIndex).ToList();
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace EngineAssembly
         }
 
         /// <summary>
-        /// Returns the part expected next in StrictSequence mode.
+        /// Returns the part expected next in StrictSequence mode (highest index first).
         /// </summary>
         public AssemblyPart GetCurrentSequencePart()
         {
@@ -138,7 +138,7 @@ namespace EngineAssembly
 
         /// <summary>
         /// Validates whether a specific part is eligible to be disassembled.
-        /// Opposite of assembly: parts with higher order index or parts that depend on this part must be removed first.
+        /// Opposite of assembly: parts with lower order index or parts that depend on this part must be removed first.
         /// </summary>
         public bool IsPartEligibleToDisassemble(AssemblyPart part)
         {
@@ -160,7 +160,7 @@ namespace EngineAssembly
         }
 
         /// <summary>
-        /// Returns the part expected next for disassembly in StrictSequence mode (the highest index part currently snapped).
+        /// Returns the part expected next for disassembly in StrictSequence mode (the lowest index part currently snapped).
         /// </summary>
         public AssemblyPart GetCurrentDisassemblyPart()
         {

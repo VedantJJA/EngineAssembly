@@ -43,6 +43,31 @@ namespace EngineAssembly
         [SerializeField] private float gravity = -18f;
         [SerializeField] private float jumpHeight = 1.0f;
 
+        [Header("Crawl Settings")]
+        [Tooltip("Movement speed while crawling.")]
+        [SerializeField] private float crawlSpeed = 1.8f;
+
+        [Tooltip("Height of the CharacterController capsule while crawling (ultra-low prone stance).")]
+        [SerializeField] private float crawlHeight = 0.35f;
+
+        [Tooltip("Radius of the CharacterController capsule while crawling.")]
+        [SerializeField] private float crawlRadius = 0.17f;
+
+        [Tooltip("Eye height of the camera above the ground/floor while crawling (e.g. 0.20m = 20cm above the floor).")]
+        [SerializeField] private float crawlCameraY = 0.20f;
+
+        [Tooltip("Speed of transition between standing and crawling.")]
+        [SerializeField] private float crawlTransitionSpeed = 10f;
+
+        [Tooltip("If true, pressing the crawl key toggles crawling. If false, player must hold the crawl key.")]
+        [SerializeField] private bool toggleCrawl = true;
+
+        [Tooltip("Optional transform of the player visual body/mesh. If unassigned, auto-detected or created so camera is never distorted.")]
+        [SerializeField] private Transform visualBody;
+
+        [Tooltip("Layer mask used to check for ceiling obstructions before standing up.")]
+        [SerializeField] private LayerMask ceilingCheckMask = ~0;
+
         [Header("Mouse Look Settings")]
         [SerializeField] private float mouseSensitivity = 2.0f;
         [SerializeField] private float maxPitchAngle = 85f;
@@ -94,6 +119,14 @@ namespace EngineAssembly
         private Vector3 velocity;
         private float cameraPitch = 0f;
         private bool isGrounded;
+        private bool isCrawling = false;
+        private float standingHeight = 2.0f;
+        private float standingRadius = 0.5f;
+        private Vector3 standingCenter = new Vector3(0f, 1.0f, 0f);
+        private float standingCameraY = 0.75f;
+        private float standingEyeOffsetFromBottom = 1.75f;
+        private Vector3 initialVisualScale = Vector3.one;
+        private Vector3 initialVisualLocalPos = Vector3.zero;
 
         // Held Object State
         private AssemblyPart currentHeldPart;
@@ -113,10 +146,22 @@ namespace EngineAssembly
 
         public AssemblyPart CurrentHeldPart => currentHeldPart;
         public bool IsHoldingPart => currentHeldPart != null;
+        public bool IsCrawling => isCrawling;
 
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
+            if (characterController != null)
+            {
+                standingHeight = characterController.height;
+                standingRadius = characterController.radius;
+                standingCenter = characterController.center;
+            }
+
+            // Auto-adapt any legacy serialized inspector values to the new ultra-low stance
+            if (crawlHeight > 0.5f) crawlHeight = 0.35f;
+            if (crawlRadius > crawlHeight * 0.49f) crawlRadius = crawlHeight * 0.48f;
+            if (crawlCameraY > 0.3f) crawlCameraY = 0.20f;
 
             // Auto-locate or create camera if missing
             if (playerCamera == null)
@@ -140,6 +185,9 @@ namespace EngineAssembly
                 // Prevent large engine parts from clipping through the camera near plane
                 playerCamera.nearClipPlane = 0.03f;
                 defaultFov = playerCamera.fieldOfView;
+                standingCameraY = playerCamera.transform.localPosition.y;
+                float standingBottomY = standingCenter.y - (standingHeight * 0.5f);
+                standingEyeOffsetFromBottom = standingCameraY - standingBottomY;
             }
 
             // Auto-create hold point in front of camera
@@ -151,9 +199,80 @@ namespace EngineAssembly
                 holdPoint = hp.transform;
             }
 
+            // Setup or auto-detect player visual body mesh for morphing
+            SetupVisualBody();
+
             // Lock and hide cursor for FPS controls
             LockCursor(true);
         }
+
+        private void SetupVisualBody()
+        {
+            if (visualBody == null)
+            {
+                // 1. Search for existing child visual body (excluding camera and holdPoint)
+                foreach (Transform child in transform)
+                {
+                    if (playerCamera != null && child == playerCamera.transform) continue;
+                    if (holdPoint != null && child == holdPoint) continue;
+
+                    if (child.GetComponentInChildren<MeshRenderer>() != null)
+                    {
+                        visualBody = child;
+                        break;
+                    }
+                }
+
+                // 2. If root has MeshRenderer / MeshFilter, safely migrate to a child to avoid camera non-uniform scale distortion
+                if (visualBody == null)
+                {
+                    MeshFilter rootMf = GetComponent<MeshFilter>();
+                    MeshRenderer rootMr = GetComponent<MeshRenderer>();
+                    if (rootMf != null && rootMr != null)
+                    {
+                        GameObject visObj = new GameObject("PlayerVisualBody");
+                        visObj.transform.SetParent(transform, false);
+                        visObj.transform.localPosition = standingCenter;
+                        visObj.transform.localRotation = Quaternion.identity;
+                        visObj.transform.localScale = Vector3.one;
+
+                        MeshFilter childMf = visObj.AddComponent<MeshFilter>();
+                        childMf.sharedMesh = rootMf.sharedMesh;
+
+                        MeshRenderer childMr = visObj.AddComponent<MeshRenderer>();
+                        childMr.sharedMaterials = rootMr.sharedMaterials;
+                        childMr.shadowCastingMode = rootMr.shadowCastingMode;
+                        childMr.receiveShadows = rootMr.receiveShadows;
+
+                        // Destroy root renderer and filter so root transform stays 1,1,1
+                        Destroy(rootMr);
+                        Destroy(rootMf);
+
+                        visualBody = visObj.transform;
+                    }
+                }
+            }
+
+            if (visualBody != null)
+            {
+                initialVisualScale = visualBody.localScale;
+                initialVisualLocalPos = visualBody.localPosition;
+
+                // Ignore physics collisions between CharacterController and visual body colliders
+                if (characterController != null)
+                {
+                    Collider[] visColliders = visualBody.GetComponentsInChildren<Collider>(true);
+                    for (int i = 0; i < visColliders.Length; i++)
+                    {
+                        if (visColliders[i] != characterController)
+                        {
+                            Physics.IgnoreCollision(characterController, visColliders[i], true);
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void Update()
         {
@@ -180,6 +299,7 @@ namespace EngineAssembly
             }
 
             HandleCursorToggle();
+            HandleCrawl();
             HandleZoom();
             HandleMouseLook();
             HandleMovement();
@@ -187,7 +307,166 @@ namespace EngineAssembly
             UpdateHeldPartPosition();
         }
 
-        #region First-Person Movement & Look
+        #region First-Person Movement, Crawl & Look
+
+        private void HandleCrawl()
+        {
+            // Toggle or hold crawl mode
+            if (toggleCrawl)
+            {
+                if (IsCrawlPressed())
+                {
+                    if (isCrawling)
+                    {
+                        if (CanStandUp())
+                        {
+                            isCrawling = false;
+                        }
+                        else
+                        {
+                            Debug.LogWarning("[PlayerAssemblyController] Cannot stand up: space above is obstructed.");
+                        }
+                    }
+                    else
+                    {
+                        isCrawling = true;
+                    }
+                }
+            }
+            else
+            {
+                bool wantCrawl = IsCrawlHeld();
+                if (wantCrawl)
+                {
+                    isCrawling = true;
+                }
+                else if (isCrawling)
+                {
+                    if (CanStandUp())
+                    {
+                        isCrawling = false;
+                    }
+                }
+            }
+
+            // If player attempts to sprint while crawling and space above is clear, stand up into sprint
+            if (isCrawling && IsSprinting() && CanStandUp())
+            {
+                isCrawling = false;
+            }
+
+            // Target dimensions for CharacterController
+            float targetHeight = isCrawling ? crawlHeight : standingHeight;
+            float targetRadius = isCrawling ? Mathf.Min(crawlRadius, targetHeight * 0.49f) : standingRadius;
+            float bottomY = standingCenter.y - (standingHeight * 0.5f);
+            float targetCenterY = bottomY + (targetHeight * 0.5f);
+
+            // Smoothly interpolate dimensions
+            float currentH = characterController != null ? characterController.height : standingHeight;
+            float currentR = characterController != null ? characterController.radius : standingRadius;
+            float currentCY = characterController != null ? characterController.center.y : targetCenterY;
+
+            float newHeight = Mathf.Lerp(currentH, targetHeight, Time.deltaTime * crawlTransitionSpeed);
+            float newRadius = Mathf.Lerp(currentR, targetRadius, Time.deltaTime * crawlTransitionSpeed);
+            newRadius = Mathf.Min(newRadius, newHeight * 0.49f); // Enforce PhysX height >= 2 * radius constraint
+            float newCenterY = Mathf.Lerp(currentCY, targetCenterY, Time.deltaTime * crawlTransitionSpeed);
+
+            // Update CharacterController (order-sensitive to satisfy height >= 2*radius at each assignment)
+            if (characterController != null)
+            {
+                if (newHeight < characterController.height)
+                {
+                    characterController.radius = newRadius;
+                    characterController.height = newHeight;
+                }
+                else
+                {
+                    characterController.height = newHeight;
+                    characterController.radius = newRadius;
+                }
+                characterController.center = new Vector3(standingCenter.x, newCenterY, standingCenter.z);
+            }
+
+            // Morph player visual body object accordingly
+            if (visualBody != null)
+            {
+                float heightRatio = standingHeight > 0.001f ? (newHeight / standingHeight) : 1f;
+                float radiusRatio = standingRadius > 0.001f ? (newRadius / standingRadius) : 1f;
+
+                visualBody.localScale = new Vector3(
+                    initialVisualScale.x * radiusRatio,
+                    initialVisualScale.y * heightRatio,
+                    initialVisualScale.z * radiusRatio
+                );
+                // Keep the visual mesh anchored cleanly to the floor at bottomY
+                float targetVisualY = bottomY + (newHeight * 0.5f);
+                visualBody.localPosition = new Vector3(initialVisualLocalPos.x, targetVisualY, initialVisualLocalPos.z);
+            }
+
+            // Smoothly interpolate camera local Y position grounded to the floor
+            if (playerCamera != null)
+            {
+                // When crawling, eye height is clamped safely inside the crawling capsule (e.g. 15-20cm above the floor)
+                float maxCrawlEyeHeight = Mathf.Max(0.08f, targetHeight - 0.04f);
+                float crawlEyeHeight = Mathf.Clamp(crawlCameraY, 0.08f, maxCrawlEyeHeight);
+                float targetEyeOffset = isCrawling ? crawlEyeHeight : standingEyeOffsetFromBottom;
+                float targetCamY = bottomY + targetEyeOffset;
+
+                Vector3 camPos = playerCamera.transform.localPosition;
+                camPos.y = Mathf.Lerp(camPos.y, targetCamY, Time.deltaTime * crawlTransitionSpeed);
+                playerCamera.transform.localPosition = camPos;
+            }
+        }
+
+        /// <summary>
+        /// Checks if there is sufficient headroom above the player to stand up without clipping through obstacles.
+        /// </summary>
+        public bool CanStandUp()
+        {
+            if (characterController == null) return true;
+
+            float radius = standingRadius * 0.85f;
+            float bottomY = standingCenter.y - (standingHeight * 0.5f);
+            Vector3 currentTop = transform.position + Vector3.up * (bottomY + characterController.height);
+            Vector3 standingTop = transform.position + Vector3.up * (bottomY + standingHeight);
+
+            if (standingTop.y <= currentTop.y + 0.05f) return true;
+
+            Vector3 point1 = currentTop + Vector3.up * radius;
+            Vector3 point2 = standingTop - Vector3.up * radius;
+            if (point2.y < point1.y) point2 = point1;
+
+            Collider[] colliders = Physics.OverlapCapsule(point1, point2, radius, ceilingCheckMask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                Collider col = colliders[i];
+                if (col == null || col == characterController || col.transform.IsChildOf(transform)) continue;
+                if (currentHeldPart != null && col.transform.IsChildOf(currentHeldPart.transform)) continue;
+                return false;
+            }
+            return true;
+        }
+
+        public void ToggleCrawl()
+        {
+            if (isCrawling)
+            {
+                if (CanStandUp())
+                {
+                    isCrawling = false;
+                }
+            }
+            else
+            {
+                isCrawling = true;
+            }
+        }
+
+        public void SetCrawling(bool crawl)
+        {
+            if (!crawl && isCrawling && !CanStandUp()) return;
+            isCrawling = crawl;
+        }
 
         private void HandleZoom()
         {
@@ -239,16 +518,38 @@ namespace EngineAssembly
             }
 
             Vector2 moveInput = GetMovementInput();
-            bool isSprinting = IsSprinting();
-            float speed = isSprinting ? sprintSpeed : walkSpeed;
+            
+            float speed;
+            if (isCrawling)
+            {
+                speed = crawlSpeed;
+            }
+            else if (IsSprinting())
+            {
+                speed = sprintSpeed;
+            }
+            else
+            {
+                speed = walkSpeed;
+            }
 
             Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
             characterController.Move(moveDirection * (speed * Time.deltaTime));
 
-            // Jump
+            // Jump / Stand up from crawl
             if (IsJumpPressed() && isGrounded)
             {
-                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                if (isCrawling)
+                {
+                    if (CanStandUp())
+                    {
+                        isCrawling = false;
+                    }
+                }
+                else
+                {
+                    velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                }
             }
 
             // Gravity
@@ -798,6 +1099,28 @@ namespace EngineAssembly
             return Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.G);
         }
 
+        private bool IsCrawlPressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null)
+            {
+                return Keyboard.current.cKey.wasPressedThisFrame || Keyboard.current.leftCtrlKey.wasPressedThisFrame;
+            }
+#endif
+            return Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.LeftControl);
+        }
+
+        private bool IsCrawlHeld()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null)
+            {
+                return Keyboard.current.cKey.isPressed || Keyboard.current.leftCtrlKey.isPressed;
+            }
+#endif
+            return Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftControl);
+        }
+
         #endregion
 
         #region Crosshair & Game HUD
@@ -859,6 +1182,14 @@ namespace EngineAssembly
                     detailText = "Release RMB to zoom out";
                     hudAccentColor = new Color(0.35f, 0.75f, 1.0f, 0.9f);
                 }
+                else if (isCrawling)
+                {
+                    keyBadge = "C / SPACE";
+                    actionTitle = "CRAWLING";
+                    targetName = "LOW STANCE";
+                    detailText = "[C] or [Space] to Stand Up | [W,A,S,D] Crawl";
+                    hudAccentColor = new Color(1.0f, 0.75f, 0.2f, 0.95f);
+                }
             }
             else
             {
@@ -871,7 +1202,9 @@ namespace EngineAssembly
                         keyBadge = "CLICK / E";
                         actionTitle = "SNAP TO SOCKET";
                         targetName = currentHeldPart.PartDisplayName;
-                        detailText = "[RMB] Rotate | [Scroll] Distance | [Q] Drop";
+                        detailText = isCrawling
+                            ? "[C] Stand Up | [RMB] Rotate | [Scroll] Distance | [Q] Drop"
+                            : "[RMB] Rotate | [Scroll] Distance | [Q] Drop";
                         hudAccentColor = dotColor;
                     }
                     else
@@ -880,7 +1213,7 @@ namespace EngineAssembly
                         keyBadge = "LOCKED";
                         actionTitle = "SEQUENCE BLOCKED";
                         targetName = currentHeldPart.PartDisplayName;
-                        detailText = $"Assemble earlier parts first (Order Priority: {currentHeldPart.OrderIndex})";
+                        detailText = $"Assemble higher priority parts first (Order: {currentHeldPart.OrderIndex})";
                         hudAccentColor = dotColor;
                     }
                 }
@@ -890,7 +1223,9 @@ namespace EngineAssembly
                     keyBadge = "CLICK / Q";
                     actionTitle = "PLACE ON WORKBENCH";
                     targetName = currentHeldPart.PartDisplayName;
-                    detailText = "[RMB] Hold to Rotate | [Scroll] Adjust Distance";
+                    detailText = isCrawling
+                        ? "[C] Stand Up | [RMB] Hold to Rotate | [Scroll] Distance"
+                        : "[RMB] Hold to Rotate | [Scroll] Adjust Distance";
                     hudAccentColor = new Color(0.35f, 0.75f, 1.0f, 0.9f);
                 }
             }

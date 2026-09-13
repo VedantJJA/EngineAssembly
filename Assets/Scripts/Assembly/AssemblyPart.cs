@@ -173,20 +173,30 @@ namespace EngineAssembly
 
         public GameObject GhostInstance => ghostInstance;
 
-        private void Reset()
+        /// <summary>
+        /// Calculates the next sequential order index based on active and inactive parts in the scene.
+        /// If parts in the scene currently have indices [1, 2, 3, 3], the next index is 4.
+        /// </summary>
+        public int CalculateNextOrderIndex()
         {
-            // Auto-increment orderIndex based on the highest existing index in the scene
-            AssemblyPart[] allSceneParts = FindObjectsByType<AssemblyPart>();
-            int highestIndex = -1;
+            AssemblyPart[] allSceneParts = FindObjectsByType<AssemblyPart>(FindObjectsInactive.Include);
+            int highestIndex = 0;
             foreach (var p in allSceneParts)
             {
-                if (p != this && p.orderIndex > highestIndex)
+                if (p != null && p != this && p.gameObject.scene == gameObject.scene)
                 {
-                    highestIndex = p.orderIndex;
+                    if (p.orderIndex > highestIndex)
+                    {
+                        highestIndex = p.orderIndex;
+                    }
                 }
             }
-            orderIndex = highestIndex + 1;
+            return highestIndex + 1;
+        }
 
+        private void Reset()
+        {
+            orderIndex = CalculateNextOrderIndex();
             partId = gameObject.name;
             partDisplayName = gameObject.name;
         }
@@ -429,9 +439,87 @@ namespace EngineAssembly
         }
 
         /// <summary>
+        /// Programmatically snaps this part into its target snap point or matching socket.
+        /// Useful for automated assembly sequences, tutorial demonstrations, and testing.
+        /// </summary>
+        /// <param name="smooth">Whether to animate the snap movement or place immediately.</param>
+        /// <param name="ignorePrerequisites">If false, validates prerequisites and order priority before snapping.</param>
+        public bool SnapDirectly(bool smooth = true, bool ignorePrerequisites = false)
+        {
+            if (isSnapped) return true;
+
+            if (!ignorePrerequisites)
+            {
+                if (!IsOrderPriorityMet(out int blockingIndex, out string blockingName))
+                {
+                    Debug.LogWarning($"[AssemblyPart] Cannot auto-snap {PartDisplayName}: Must place earlier part '{blockingName}' (Order Priority: {blockingIndex}) before this part (Order Priority: {orderIndex})!", this);
+                    return false;
+                }
+
+                if (!ArePrerequisitesMet())
+                {
+                    Debug.LogWarning($"[AssemblyPart] Cannot auto-snap {PartDisplayName} ({partId}): Missing prerequisite parts!", this);
+                    return false;
+                }
+            }
+
+            // Resolve target socket if null and geometry group is specified
+            if (TargetSnapPoint == null && !string.IsNullOrEmpty(geometryGroupId))
+            {
+                var allSockets = AssemblySocket.AllActiveSockets;
+                for (int i = 0; i < allSockets.Count; i++)
+                {
+                    var s = allSockets[i];
+                    if (s != null && !s.IsOccupied && string.Equals(s.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetSocket = s;
+                        targetSnapPoint = s.SnapTransform;
+                        break;
+                    }
+                }
+
+                if (TargetSnapPoint == null)
+                {
+                    for (int i = 0; i < s_AllActiveParts.Count; i++)
+                    {
+                        var p = s_AllActiveParts[i];
+                        if (p != null && p != this && !string.IsNullOrEmpty(p.GeometryGroupId) && string.Equals(p.GeometryGroupId, geometryGroupId, System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (p.IsSnapped) continue;
+                            Transform pt = p.TargetSnapPoint;
+                            AssemblySocket ps = p.TargetSocket;
+                            if (pt != null && (ps == null || !ps.IsOccupied))
+                            {
+                                targetSnapPoint = pt;
+                                targetSocket = ps;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Transform target = TargetSnapPoint;
+            if (target == null)
+            {
+                Debug.LogWarning($"[AssemblyPart] Cannot auto-snap {PartDisplayName}: No target snap point or socket assigned!", this);
+                return false;
+            }
+
+            if (targetSocket != null && !targetSocket.CanAcceptPart(this))
+            {
+                Debug.LogWarning($"[AssemblyPart] Socket {targetSocket.name} rejected {PartDisplayName}!", this);
+                return false;
+            }
+
+            ExecuteSnap(smooth);
+            return true;
+        }
+
+        /// <summary>
         /// Performs the snap action, disabling physics and locking into the target transform.
         /// </summary>
-        private void ExecuteSnap()
+        private void ExecuteSnap(bool? forceSmooth = null)
         {
             if (snapCoroutine != null) StopCoroutine(snapCoroutine);
 
@@ -463,7 +551,9 @@ namespace EngineAssembly
             // Hide all ghosts
             CleanupAllGhosts();
 
-            if (smoothSnap && gameObject.activeInHierarchy)
+            bool useSmooth = forceSmooth.HasValue ? forceSmooth.Value : smoothSnap;
+
+            if (useSmooth && gameObject.activeInHierarchy)
             {
                 snapCoroutine = StartCoroutine(SmoothSnapRoutine(target.position, target.rotation));
             }
@@ -685,29 +775,29 @@ namespace EngineAssembly
 
             if (!isSnapped) return true;
 
-            // 1. Check if any parts with higher orderIndex are currently snapped
-            AssemblyPart highestOrderPart = null;
-            int highestOrder = -1;
+            // 1. Check if any parts with LOWER orderIndex are currently snapped (lower numbers are removed first)
+            AssemblyPart lowestOrderPart = null;
+            int lowestOrder = int.MaxValue;
 
             for (int i = 0; i < s_AllActiveParts.Count; i++)
             {
                 var other = s_AllActiveParts[i];
                 if (other == null || other == this) continue;
 
-                if (other.IsSnapped && other.OrderIndex > this.orderIndex)
+                if (other.IsSnapped && other.OrderIndex < this.orderIndex)
                 {
-                    if (other.OrderIndex > highestOrder)
+                    if (other.OrderIndex < lowestOrder)
                     {
-                        highestOrder = other.OrderIndex;
-                        highestOrderPart = other;
+                        lowestOrder = other.OrderIndex;
+                        lowestOrderPart = other;
                     }
                 }
             }
 
-            if (highestOrderPart != null)
+            if (lowestOrderPart != null)
             {
-                blockingPartName = highestOrderPart.PartDisplayName;
-                blockingReason = $"Remove '{highestOrderPart.PartDisplayName}' (Order: {highestOrderPart.OrderIndex}) first";
+                blockingPartName = lowestOrderPart.PartDisplayName;
+                blockingReason = $"Remove '{lowestOrderPart.PartDisplayName}' (Order: {lowestOrderPart.OrderIndex}) first";
                 return false;
             }
 
@@ -729,7 +819,8 @@ namespace EngineAssembly
         }
 
         /// <summary>
-        /// Returns true if all other parts in the scene with a strictly lower orderIndex have already been snapped.
+        /// Returns true if all other parts in the scene with a strictly higher orderIndex have already been snapped.
+        /// Reverse assembly order: Higher numbers are placed first, lower numbers placed last.
         /// Parts with the same orderIndex share equal priority and do not block each other.
         /// </summary>
         public bool IsOrderPriorityMet()
@@ -742,17 +833,32 @@ namespace EngineAssembly
             blockingOrderIndex = -1;
             blockingPartName = null;
 
+            int highestBlockingOrder = -1;
+            AssemblyPart highestBlockingPart = null;
+
             for (int i = 0; i < s_AllActiveParts.Count; i++)
             {
                 var other = s_AllActiveParts[i];
                 if (other == null || other == this) continue;
-                if (other.OrderIndex < this.orderIndex && !other.IsSnapped)
+
+                // In reverse order: higher numbers must be snapped first!
+                if (other.OrderIndex > this.orderIndex && !other.IsSnapped)
                 {
-                    blockingOrderIndex = other.OrderIndex;
-                    blockingPartName = other.PartDisplayName;
-                    return false;
+                    if (other.OrderIndex > highestBlockingOrder)
+                    {
+                        highestBlockingOrder = other.OrderIndex;
+                        highestBlockingPart = other;
+                    }
                 }
             }
+
+            if (highestBlockingPart != null)
+            {
+                blockingOrderIndex = highestBlockingOrder;
+                blockingPartName = highestBlockingPart.PartDisplayName;
+                return false;
+            }
+
             return true;
         }
 
