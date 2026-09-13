@@ -105,3 +105,35 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Unconverted CAD parts and raw assemblies
+/[Aa]ssets/V8 Engine(unconverted)/
+/[Aa]ssets/V8 Engine(unconverted).meta
+*.SLDPRT
+*.SLDPRT.meta
+*.SLDASM
+*.SLDASM.meta
+*.step
+*.stp
+*.iges
+*.igs
+*.x_t
+*.x_b
+*.sat
+
+# IDE / Editor configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+[Tt]humbs.db
+[Dd]esktop.ini
