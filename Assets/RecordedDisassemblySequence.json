@@ -1,41 +1,66 @@
 {
-    "savedTimestamp": "2026-09-14 02:19:16",
-    "totalSteps": 5,
+    "savedTimestamp": "2026-09-15 20:48:49",
+    "totalSteps": 22,
     "recordedSteps": [
         {
             "part": {
-                "instanceID": 568105589211452594
+                "instanceID": 568105584918841924
             },
-            "partDisplayName": "_3DGeom3886",
-            "partId": "_3DGeom3886",
+            "partDisplayName": "_3DGeom4814",
+            "partId": "_3DGeom4814",
             "assignedIndex": 1,
             "groupIndex": 1,
             "stepNumber": 1,
             "isSubAssembly": false,
             "subAssemblyName": "",
             "worldPosition": {
-                "x": 3.830000162124634,
+                "x": 3.8999998569488527,
+                "y": 3.5201363563537599,
+                "z": -5.0
+            },
+            "worldRotation": {
+                "x": 2.9802322387695315e-8,
+                "y": 0.7071068286895752,
+                "z": 0.0,
+                "w": -0.7071068286895752
+            },
+            "timestamp": 60.54704284667969,
+            "stateDescription": "Step #1: Disassembled '_3DGeom4814' from Main Assembly => Assembly Index #1 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918843852
+            },
+            "partDisplayName": "_3DGeom4775",
+            "partId": "_3DGeom4775",
+            "assignedIndex": 2,
+            "groupIndex": 1,
+            "stepNumber": 2,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.81000018119812,
                 "y": 2.0999999046325685,
                 "z": -5.179999828338623
             },
             "worldRotation": {
-                "x": -0.982797384262085,
-                "y": -1.1299310391539408e-22,
-                "z": 6.698995447539797e-23,
-                "w": 0.18468734622001649
+                "x": -2.9802322387695315e-8,
+                "y": 0.7071068286895752,
+                "z": 0.0,
+                "w": 0.7071068286895752
             },
-            "timestamp": 11.355146408081055,
-            "stateDescription": "Step #1: Disassembled '_3DGeom3886' from Main Assembly => Assembly Index #1 (Group #1)"
+            "timestamp": 74.74376678466797,
+            "stateDescription": "Step #2: Disassembled '_3DGeom4775' from Main Assembly => Assembly Index #2 (Group #1)"
         },
         {
             "part": {
-                "instanceID": 568105589211452734
+                "instanceID": 568105584918844862
             },
             "partDisplayName": "_3DGeom4516",
             "partId": "_3DGeom4516",
-            "assignedIndex": 2,
+            "assignedIndex": 3,
             "groupIndex": 1,
-            "stepNumber": 2,
+            "stepNumber": 3,
             "isSubAssembly": false,
             "subAssemblyName": "",
             "worldPosition": {
@@ -49,18 +74,143 @@
                 "z": 4.401334733421564e-17,
                 "w": 0.7956668138504028
             },
-            "timestamp": 12.913604736328125,
-            "stateDescription": "Step #2: Disassembled '_3DGeom4516' from Main Assembly => Assembly Index #2 (Group #1)"
+            "timestamp": 90.1649398803711,
+            "stateDescription": "Step #3: Disassembled '_3DGeom4516' from Main Assembly => Assembly Index #3 (Group #1)"
         },
         {
             "part": {
-                "instanceID": 568105589211454190
+                "instanceID": 568105584918843958
+            },
+            "partDisplayName": "_3DGeom3886",
+            "partId": "_3DGeom3886",
+            "assignedIndex": 3,
+            "groupIndex": 2,
+            "stepNumber": 4,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.830000162124634,
+                "y": 2.0999999046325685,
+                "z": -5.179999828338623
+            },
+            "worldRotation": {
+                "x": -0.982797384262085,
+                "y": -1.1299310391539408e-22,
+                "z": 6.698995447539797e-23,
+                "w": 0.18468734622001649
+            },
+            "timestamp": 92.49787902832031,
+            "stateDescription": "Step #4: Disassembled '_3DGeom3886' from Main Assembly => Assembly Index #3 (Group #2)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918843834
+            },
+            "partDisplayName": "_3DGeom4402",
+            "partId": "_3DGeom4402",
+            "assignedIndex": 3,
+            "groupIndex": 3,
+            "stepNumber": 5,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.8399999141693117,
+                "y": 2.6999998092651369,
+                "z": -5.460000038146973
+            },
+            "worldRotation": {
+                "x": -0.6882957220077515,
+                "y": 7.905832305779256e-17,
+                "z": -5.168697283669452e-17,
+                "w": 0.7254302501678467
+            },
+            "timestamp": 94.50669860839844,
+            "stateDescription": "Step #5: Disassembled '_3DGeom4402' from Main Assembly => Assembly Index #3 (Group #3)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918843032
+            },
+            "partDisplayName": "_3DGeom4532.002",
+            "partId": "_3DGeom4532.002",
+            "assignedIndex": 3,
+            "groupIndex": 4,
+            "stepNumber": 6,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.8399999141693117,
+                "y": 2.5799999237060549,
+                "z": -5.779999732971191
+            },
+            "worldRotation": {
+                "x": -0.908092200756073,
+                "y": -8.407088205990874e-18,
+                "z": 3.1195469058657236e-17,
+                "w": 0.41877037286758425
+            },
+            "timestamp": 102.39085388183594,
+            "stateDescription": "Step #6: Disassembled '_3DGeom4532.002' from Main Assembly => Assembly Index #3 (Group #4)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918842514
+            },
+            "partDisplayName": "_3DGeom4532.001",
+            "partId": "_3DGeom4532.001",
+            "assignedIndex": 3,
+            "groupIndex": 5,
+            "stepNumber": 7,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.8400001525878908,
+                "y": 2.8400001525878908,
+                "z": -5.920000076293945
+            },
+            "worldRotation": {
+                "x": 0.9080921411514282,
+                "y": 3.458433538405838e-17,
+                "z": 1.8226279596728174e-17,
+                "w": 0.418770432472229
+            },
+            "timestamp": 108.9754867553711,
+            "stateDescription": "Step #7: Disassembled '_3DGeom4532.001' from Main Assembly => Assembly Index #3 (Group #5)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918841096
+            },
+            "partDisplayName": "_3DGeom4532.003",
+            "partId": "_3DGeom4532.003",
+            "assignedIndex": 3,
+            "groupIndex": 6,
+            "stepNumber": 8,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.8399999141693117,
+                "y": 2.90000057220459,
+                "z": -5.179999828338623
+            },
+            "worldRotation": {
+                "x": -0.908092200756073,
+                "y": -4.196813996095583e-17,
+                "z": -5.672927063619322e-17,
+                "w": 0.41877037286758425
+            },
+            "timestamp": 112.27154541015625,
+            "stateDescription": "Step #8: Disassembled '_3DGeom4532.003' from Main Assembly => Assembly Index #3 (Group #6)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918838886
             },
             "partDisplayName": "_3DGeom4532",
             "partId": "_3DGeom4532",
             "assignedIndex": 3,
-            "groupIndex": 1,
-            "stepNumber": 3,
+            "groupIndex": 7,
+            "stepNumber": 9,
             "isSubAssembly": false,
             "subAssemblyName": "",
             "worldPosition": {
@@ -74,43 +224,168 @@
                 "z": -1.7535137107715618e-18,
                 "w": 0.436293363571167
             },
-            "timestamp": 14.88205623626709,
-            "stateDescription": "Step #3: Disassembled '_3DGeom4532' from Main Assembly => Assembly Index #3 (Group #1)"
+            "timestamp": 113.84197235107422,
+            "stateDescription": "Step #9: Disassembled '_3DGeom4532' from Main Assembly => Assembly Index #3 (Group #7)"
         },
         {
             "part": {
-                "instanceID": 568105589211451726
+                "instanceID": 568105584918840504
             },
-            "partDisplayName": "_3DGeom2640",
-            "partId": "_3DGeom2640",
-            "assignedIndex": 4,
-            "groupIndex": 1,
-            "stepNumber": 4,
+            "partDisplayName": "_3DGeom4350",
+            "partId": "_3DGeom4350",
+            "assignedIndex": 3,
+            "groupIndex": 8,
+            "stepNumber": 10,
             "isSubAssembly": false,
             "subAssemblyName": "",
             "worldPosition": {
-                "x": 2.740000009536743,
-                "y": 2.8599324226379396,
-                "z": -5.939932823181152
+                "x": 3.8499999046325685,
+                "y": 2.115070343017578,
+                "z": -4.547621726989746
             },
             "worldRotation": {
-                "x": -6.97509534575147e-8,
-                "y": 0.9238795638084412,
-                "z": -0.38268357515335085,
-                "w": 2.8891793846241854e-8
+                "x": 0.9080921411514282,
+                "y": -6.42945718743746e-17,
+                "z": -6.410905842403611e-17,
+                "w": 0.418770432472229
             },
-            "timestamp": 16.634958267211915,
-            "stateDescription": "Step #4: Disassembled '_3DGeom2640' from Main Assembly => Assembly Index #4 (Group #1)"
+            "timestamp": 117.8542709350586,
+            "stateDescription": "Step #10: Disassembled '_3DGeom4350' from Main Assembly => Assembly Index #3 (Group #8)"
         },
         {
             "part": {
-                "instanceID": 568105589211460126
+                "instanceID": 568105584918840632
+            },
+            "partDisplayName": "_3DGeom427",
+            "partId": "_3DGeom427",
+            "assignedIndex": 3,
+            "groupIndex": 9,
+            "stepNumber": 11,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.4200000762939455,
+                "y": 2.1097097396850588,
+                "z": -4.25593376159668
+            },
+            "worldRotation": {
+                "x": 0.42261824011802676,
+                "y": 4.6670354032131927e-17,
+                "z": -5.306181649792911e-18,
+                "w": 0.9063078165054321
+            },
+            "timestamp": 128.371337890625,
+            "stateDescription": "Step #11: Disassembled '_3DGeom427' from Main Assembly => Assembly Index #3 (Group #9)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918840632
+            },
+            "partDisplayName": "_3DGeom427",
+            "partId": "_3DGeom427",
+            "assignedIndex": 4,
+            "groupIndex": 1,
+            "stepNumber": 12,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.4200000762939455,
+                "y": 2.1097097396850588,
+                "z": -4.25593376159668
+            },
+            "worldRotation": {
+                "x": 0.42261824011802676,
+                "y": 4.6670354032131927e-17,
+                "z": -5.306181649792911e-18,
+                "w": 0.9063078165054321
+            },
+            "timestamp": 144.64544677734376,
+            "stateDescription": "Step #12: Disassembled '_3DGeom427' from Main Assembly => Assembly Index #4 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918840858
+            },
+            "partDisplayName": "_3DGeom427.001",
+            "partId": "_3DGeom427.001",
+            "assignedIndex": 4,
+            "groupIndex": 1,
+            "stepNumber": 13,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.5399999618530275,
+                "y": 2.1097097396850588,
+                "z": -4.25593376159668
+            },
+            "worldRotation": {
+                "x": 0.42261824011802676,
+                "y": 4.6670354032131927e-17,
+                "z": -5.306181649792911e-18,
+                "w": 0.9063078165054321
+            },
+            "timestamp": 157.85324096679688,
+            "stateDescription": "Step #13: Disassembled '_3DGeom427.001' from Main Assembly => Assembly Index #4 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918840518
+            },
+            "partDisplayName": "_3DGeom4333",
+            "partId": "_3DGeom4333",
+            "assignedIndex": 4,
+            "groupIndex": 2,
+            "stepNumber": 14,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.619999885559082,
+                "y": 2.115070343017578,
+                "z": -4.547621726989746
+            },
+            "worldRotation": {
+                "x": 3.190679009890118e-8,
+                "y": 0.9063078165054321,
+                "z": 0.42261824011802676,
+                "w": -6.842434174814116e-8
+            },
+            "timestamp": 180.38827514648438,
+            "stateDescription": "Step #14: Disassembled '_3DGeom4333' from Main Assembly => Assembly Index #4 (Group #2)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918843306
+            },
+            "partDisplayName": "_3DGeom3771",
+            "partId": "_3DGeom3771",
+            "assignedIndex": 5,
+            "groupIndex": 1,
+            "stepNumber": 15,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.6700000762939455,
+                "y": 2.0999999046325685,
+                "z": -5.179999828338623
+            },
+            "worldRotation": {
+                "x": 8.940696716308594e-8,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "timestamp": 184.1931915283203,
+            "stateDescription": "Step #15: Disassembled '_3DGeom3771' from Main Assembly => Assembly Index #5 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918841938
             },
             "partDisplayName": "_3DGeom2767",
             "partId": "_3DGeom2767",
-            "assignedIndex": 5,
+            "assignedIndex": 6,
             "groupIndex": 1,
-            "stepNumber": 5,
+            "stepNumber": 16,
             "isSubAssembly": false,
             "subAssemblyName": "",
             "worldPosition": {
@@ -124,8 +399,158 @@
                 "z": 0.0,
                 "w": 1.0
             },
-            "timestamp": 17.931514739990236,
-            "stateDescription": "Step #5: Disassembled '_3DGeom2767' from Main Assembly => Assembly Index #5 (Group #1)"
+            "timestamp": 189.51148986816407,
+            "stateDescription": "Step #16: Disassembled '_3DGeom2767' from Main Assembly => Assembly Index #6 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918841938
+            },
+            "partDisplayName": "_3DGeom2767",
+            "partId": "_3DGeom2767",
+            "assignedIndex": 7,
+            "groupIndex": 1,
+            "stepNumber": 17,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 2.9100000858306886,
+                "y": 2.4507248401641847,
+                "z": -5.630136013031006
+            },
+            "worldRotation": {
+                "x": 8.940696716308594e-8,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "timestamp": 191.59762573242188,
+            "stateDescription": "Step #17: Disassembled '_3DGeom2767' from Main Assembly => Assembly Index #7 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918841906
+            },
+            "partDisplayName": "_3DGeom2491",
+            "partId": "_3DGeom2491",
+            "assignedIndex": 8,
+            "groupIndex": 1,
+            "stepNumber": 18,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 2.9700000286102297,
+                "y": 2.4507248401641847,
+                "z": -4.72986364364624
+            },
+            "worldRotation": {
+                "x": 8.940696716308594e-8,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "timestamp": 194.56117248535157,
+            "stateDescription": "Step #18: Disassembled '_3DGeom2491' from Main Assembly => Assembly Index #8 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918844746
+            },
+            "partDisplayName": "_3DGeom2253",
+            "partId": "_3DGeom2253",
+            "assignedIndex": 10,
+            "groupIndex": 1,
+            "stepNumber": 19,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 2.740000009536743,
+                "y": 2.8599326610565187,
+                "z": -4.42006778717041
+            },
+            "worldRotation": {
+                "x": 0.38268351554870608,
+                "y": 1.1286531968294233e-33,
+                "z": 1.3013485616575796e-33,
+                "w": 0.9238796234130859
+            },
+            "timestamp": 214.77157592773438,
+            "stateDescription": "Step #19: Disassembled '_3DGeom2253' from Main Assembly => Assembly Index #10 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918843488
+            },
+            "partDisplayName": "_3DGeom185.001",
+            "partId": "_3DGeom185.001",
+            "assignedIndex": 10,
+            "groupIndex": 1,
+            "stepNumber": 20,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 2.9700000286102297,
+                "y": 2.774773120880127,
+                "z": -4.191789627075195
+            },
+            "worldRotation": {
+                "x": 2.9802322387695315e-8,
+                "y": 0.5000000596046448,
+                "z": -0.5000000596046448,
+                "w": -0.7071068286895752
+            },
+            "timestamp": 223.9170684814453,
+            "stateDescription": "Step #20: Disassembled '_3DGeom185.001' from Main Assembly => Assembly Index #10 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918845062
+            },
+            "partDisplayName": "_3DGeom185.027",
+            "partId": "_3DGeom185.027",
+            "assignedIndex": 10,
+            "groupIndex": 1,
+            "stepNumber": 21,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 3.370000123977661,
+                "y": 2.774773120880127,
+                "z": -4.191789627075195
+            },
+            "worldRotation": {
+                "x": 2.9802322387695315e-8,
+                "y": 0.5000000596046448,
+                "z": -0.5000000596046448,
+                "w": -0.7071068286895752
+            },
+            "timestamp": 228.3077850341797,
+            "stateDescription": "Step #21: Disassembled '_3DGeom185.027' from Main Assembly => Assembly Index #10 (Group #1)"
+        },
+        {
+            "part": {
+                "instanceID": 568105584918841760
+            },
+            "partDisplayName": "_3DGeom185.004",
+            "partId": "_3DGeom185.004",
+            "assignedIndex": 10,
+            "groupIndex": 2,
+            "stepNumber": 22,
+            "isSubAssembly": false,
+            "subAssemblyName": "",
+            "worldPosition": {
+                "x": 2.570000171661377,
+                "y": 2.774773120880127,
+                "z": -4.191789627075195
+            },
+            "worldRotation": {
+                "x": 2.9802322387695315e-8,
+                "y": 0.5000000596046448,
+                "z": -0.5000000596046448,
+                "w": -0.7071068286895752
+            },
+            "timestamp": 238.4525909423828,
+            "stateDescription": "Step #22: Disassembled '_3DGeom185.004' from Main Assembly => Assembly Index #10 (Group #2)"
         }
     ]
 }
