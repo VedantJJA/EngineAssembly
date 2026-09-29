@@ -137,3 +137,10 @@ InitTestScene*.unity*
 ehthumbs.db
 [Tt]humbs.db
 [Dd]esktop.ini
+
+# Local collider dependencies and verification build products
+Tools/Colliders/python_deps/
+Tools/Verification/bin/
+Tools/Verification/*.rsp
+Tools/Verification/UnityProject/
+Tools/Colliders/settings.local.json
