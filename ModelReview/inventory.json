@@ -1,0 +1,9949 @@
+[
+  {
+    "id": 0,
+    "name": "07160-06x90",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 201,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6760001182556152,
+      -0.023359760642051697,
+      0.0925893634557724
+    ],
+    "dimensions": [
+      0.38400018215179443,
+      0.03970836475491524,
+      0.04000000283122063
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 1,
+    "name": "07160-06x90.001",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 201,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6760001182556152,
+      -0.02335967868566513,
+      -0.19945064187049866
+    ],
+    "dimensions": [
+      0.3840000033378601,
+      0.039708346128463745,
+      0.03999999538064003
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "07210-06",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 284,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6760001182556152,
+      -0.17895984649658203,
+      -0.19945064187049866
+    ],
+    "dimensions": [
+      0.020000005140900612,
+      0.04000000283122063,
+      0.04418262094259262
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "07210-06.001",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 284,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6760001182556152,
+      -0.17895984649658203,
+      0.0925893783569336
+    ],
+    "dimensions": [
+      0.020000005140900612,
+      0.03999999910593033,
+      0.04418261721730232
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "3 Cylinder Engine",
+    "type": "EMPTY",
+    "parent": null,
+    "vertices": 0,
+    "materials": [],
+    "center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "dimensions": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "GSwirl",
+    "type": "EMPTY",
+    "parent": "3 Cylinder Engine",
+    "vertices": 0,
+    "materials": [],
+    "center": [
+      -0.054983608424663544,
+      -0.3794400095939636,
+      0.031180351972579956
+    ],
+    "dimensions": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "GSwirl_Wires",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 36,
+    "materials": [],
+    "center": [
+      -0.22705531120300293,
+      -1.498744249343872,
+      0.22719146311283112
+    ],
+    "dimensions": [
+      0.24173961579799652,
+      0.6000000238418579,
+      0.15365348756313324
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "ISO 15 7 17 - 10 x 15 x 3",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 936,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.523501992225647,
+      -0.40875133872032166,
+      0.42615261673927307
+    ],
+    "dimensions": [
+      0.012000002898275852,
+      0.059562548995018005,
+      0.06000002846121788
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "ISO 15 7 17 - 10 x 15 x 3.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 936,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.523501992225647,
+      -0.5327513217926025,
+      0.42615261673927307
+    ],
+    "dimensions": [
+      0.012000002898275852,
+      0.059562548995018005,
+      0.06000002846121788
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "ISO 3030 11 C - 25 x 29 x 8",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.15275999903678894,
+      -1.2443708181381226,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.1520799845457077,
+      -1.2443708181381226,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.1520800143480301,
+      0.03086799941956997,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.15276001393795013,
+      0.03086799941956997,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.1520799845457077,
+      -0.08113200962543488,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.15275999903678894,
+      -0.08113200962543488,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.1520800143480301,
+      -1.1323707103729248,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "ISO 3030 11 C - 25 x 29 x 8.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2594,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.15276001393795013,
+      -1.1323707103729248,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.03200000151991844,
+      0.11595650762319565,
+      0.11599999666213989
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "ISO 3030 11 C - 45 x 50 x 10",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 3656,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.0,
+      0.019999999552965164,
+      0.0
+    ],
+    "dimensions": [
+      0.03999999910593033,
+      0.19950050115585327,
+      0.20000000298023224
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "ISO 3030 11 C - 60 x 66 x 12",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 4010,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.0,
+      -1.208592176437378,
+      0.0
+    ],
+    "dimensions": [
+      0.04800001159310341,
+      0.26396307349205017,
+      0.2640001177787781
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "ISO 4017 M10 x 20",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.07530956715345383,
+      -1.2505208253860474,
+      -0.04347999766469002
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "ISO 4017 M10 x 20.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.07530956715345383,
+      -1.2505208253860474,
+      0.043480001389980316
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "ISO 4017 M10 x 20.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -3.725290298461914e-09,
+      -1.2505208253860474,
+      -0.08696001023054123
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "ISO 4017 M10 x 20.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -3.725290298461914e-09,
+      -1.2505208253860474,
+      0.08696000277996063
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "ISO 4017 M10 x 20.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.07530956715345383,
+      -1.2505208253860474,
+      0.043480001389980316
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "ISO 4017 M10 x 20.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.07530956715345383,
+      -1.2505208253860474,
+      -0.04347999766469002
+    ],
+    "dimensions": [
+      0.10560040175914764,
+      0.06400000303983688,
+      0.07390083372592926
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "ISO 4035 M22",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 228,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -3.725290298461914e-09,
+      0.26444000005722046,
+      0.0
+    ],
+    "dimensions": [
+      0.04399999976158142,
+      0.13600000739097595,
+      0.15703926980495453
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "ISO 4162 M10 x 100",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.27000004053115845,
+      -1.1504119634628296,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "ISO 4162 M10 x 100.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.43000003695487976,
+      -1.1504119634628296,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "ISO 4162 M10 x 100.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.43000003695487976,
+      -1.0588120222091675,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "ISO 4162 M10 x 100.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.43000003695487976,
+      -0.7241320013999939,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "ISO 4162 M10 x 100.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.43000003695487976,
+      -0.3920919895172119,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "ISO 4162 M10 x 100.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.43000003695487976,
+      -0.011132001876831055,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "ISO 4162 M10 x 100.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.27000004053115845,
+      -0.011132001876831055,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 33,
+    "name": "ISO 4162 M10 x 100.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.27000001072883606,
+      -0.011132001876831055,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 34,
+    "name": "ISO 4162 M10 x 100.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.429999977350235,
+      -0.011132001876831055,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "ISO 4162 M10 x 100.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.429999977350235,
+      -0.3920919895172119,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "ISO 4162 M10 x 100.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.429999977350235,
+      -0.7241320013999939,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "ISO 4162 M10 x 100.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.429999977350235,
+      -1.0588120222091675,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "ISO 4162 M10 x 100.012",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.429999977350235,
+      -1.1504119634628296,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "ISO 4162 M10 x 100.013",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.27000001072883606,
+      -1.1504119634628296,
+      -0.21372069418430328
+    ],
+    "dimensions": [
+      0.5388000011444092,
+      0.08258524537086487,
+      0.08319178968667984
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "ISO 4162 M12 x 45",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.15275998413562775,
+      0.12414922565221786,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.22760000824928284,
+      0.09806982427835464,
+      0.09879011660814285
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 41,
+    "name": "ISO 4162 M12 x 45.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.1520800143480301,
+      0.12414922565221786,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.22760000824928284,
+      0.09806982427835464,
+      0.09879011660814285
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 42,
+    "name": "ISO 4162 M16 x 55",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 566,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.024330362677574158,
+      -0.8458356857299805,
+      -0.9705206155776978
+    ],
+    "dimensions": [
+      0.10040000081062317,
+      0.13023032248020172,
+      0.1311868280172348
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 43,
+    "name": "ISO 4162 M8 x 35",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.20379143953323364,
+      0.193349227309227,
+      1.3731086254119873
+    ],
+    "dimensions": [
+      0.17399999499320984,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 44,
+    "name": "ISO 4162 M8 x 35.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.2413322925567627,
+      0.193349227309227,
+      1.2716805934906006
+    ],
+    "dimensions": [
+      0.17399999499320984,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 45,
+    "name": "ISO 4162 M8 x 35.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.15646924078464508,
+      0.19334924221038818,
+      1.2046340703964233
+    ],
+    "dimensions": [
+      0.17400003969669342,
+      0.06749769300222397,
+      0.06799344718456268
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 46,
+    "name": "ISO 4162 M8 x 35.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.06648015230894089,
+      0.19334924221038818,
+      1.264625072479248
+    ],
+    "dimensions": [
+      0.17400000989437103,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 47,
+    "name": "ISO 4162 M8 x 35.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.09572689235210419,
+      0.193349227309227,
+      1.3687481880187988
+    ],
+    "dimensions": [
+      0.17399999499320984,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 48,
+    "name": "ISO 4162 M8 x 35.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.08530458062887192,
+      0.19334924221038818,
+      1.3598445653915405
+    ],
+    "dimensions": [
+      0.17400000989437103,
+      0.06749770045280457,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 49,
+    "name": "ISO 4162 M8 x 35.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.19163328409194946,
+      0.193349227309227,
+      1.3796228170394897
+    ],
+    "dimensions": [
+      0.17399999499320984,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 50,
+    "name": "ISO 4162 M8 x 35.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.24330070614814758,
+      0.19334924221038818,
+      1.2846099138259888
+    ],
+    "dimensions": [
+      0.17400005459785461,
+      0.06749770045280457,
+      0.06799343973398209
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 51,
+    "name": "ISO 4162 M8 x 35.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.16890421509742737,
+      0.193349227309227,
+      1.2061107158660889
+    ],
+    "dimensions": [
+      0.17399999499320984,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 52,
+    "name": "ISO 4162 M8 x 35.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.07125724852085114,
+      0.193349227309227,
+      1.2526084184646606
+    ],
+    "dimensions": [
+      0.17399998009204865,
+      0.06749768555164337,
+      0.06799342483282089
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "ISO 4162 M8 x 80",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.16500002145767212,
+      -0.08249199390411377,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 54,
+    "name": "ISO 4162 M8 x 80.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.16499999165534973,
+      -0.08249199390411377,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 55,
+    "name": "ISO 4162 M8 x 80.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.16500002145767212,
+      -0.3920919895172119,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "ISO 4162 M8 x 80.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.16499999165534973,
+      -0.3920919895172119,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "ISO 4162 M8 x 80.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.16500002145767212,
+      -0.7241319417953491,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "ISO 4162 M8 x 80.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.16499999165534973,
+      -0.7241319417953491,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "ISO 4162 M8 x 80.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.16499999165534973,
+      -1.0588120222091675,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "ISO 4162 M8 x 80.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.16500002145767212,
+      -1.0588120222091675,
+      -0.14132072031497955
+    ],
+    "dimensions": [
+      0.3540000021457672,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "ISO 4162 M8 x 80.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3319990634918213,
+      -1.1643295288085938,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "ISO 4162 M8 x 80.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3319990634918213,
+      -0.8855096101760864,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "ISO 4162 M8 x 80.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3319990634918213,
+      -0.34786954522132874,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "ISO 4162 M8 x 80.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3319990634918213,
+      -0.06904952228069305,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "ISO 4162 M8 x 80.012",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.3320009112358093,
+      -1.1643295288085938,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 66,
+    "name": "ISO 4162 M8 x 80.013",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.3320009112358093,
+      -0.34786954522132874,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "ISO 4162 M8 x 80.014",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.3320009112358093,
+      -0.06904952228069305,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "ISO 4162 M8 x 80.015",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.3320009112358093,
+      -0.7243707776069641,
+      1.0435593128204346
+    ],
+    "dimensions": [
+      0.5740000009536743,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 69,
+    "name": "ISO 4162 M8 x 80.016",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.4267702102661133,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 70,
+    "name": "ISO 4162 M8 x 80.017",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.6067702174186707,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "ISO 4162 M8 x 80.018",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.9443707466125488,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "ISO 4162 M8 x 80.019",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -1.084370732307434,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "ISO 4162 M8 x 80.020",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.7867701649665833,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "ISO 4162 M8 x 80.021",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.26913198828697205,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "ISO 4162 M8 x 80.022",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.3391600251197815,
+      -0.1291320025920868,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 76,
+    "name": "ISO 4162 M8 x 80.023",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.1291320025920868,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 77,
+    "name": "ISO 4162 M8 x 80.024",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.26913198828697205,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 78,
+    "name": "ISO 4162 M8 x 80.025",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.4267702102661133,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "ISO 4162 M8 x 80.026",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.6067702174186707,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 80,
+    "name": "ISO 4162 M8 x 80.027",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.7867701649665833,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 81,
+    "name": "ISO 4162 M8 x 80.028",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -0.9443707466125488,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 82,
+    "name": "ISO 4162 M8 x 80.029",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 585,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.33799999952316284,
+      -1.084370732307434,
+      1.3475594520568848
+    ],
+    "dimensions": [
+      0.1340000033378601,
+      0.06749769300222397,
+      0.06799343228340149
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 83,
+    "name": "ISO 4762 M4 x 12",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.5235019326210022,
+      -0.6255871057510376,
+      0.42615261673927307
+    ],
+    "dimensions": [
+      0.06400000303983688,
+      0.02779584936797619,
+      0.02800000086426735
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 84,
+    "name": "ISO 4762 M4 x 12.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.5235019326210022,
+      -0.3235156238079071,
+      0.4261525869369507
+    ],
+    "dimensions": [
+      0.06400001794099808,
+      0.027795856818556786,
+      0.028000013902783394
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 85,
+    "name": "ISO 4762 M6 x 10",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.15275999903678894,
+      -0.7243520021438599,
+      1.4569588899612427
+    ],
+    "dimensions": [
+      0.06400001049041748,
+      0.039708372205495834,
+      0.040000010281801224
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 86,
+    "name": "ISO 4762 M6 x 10.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.15275999903678894,
+      -0.3923119604587555,
+      1.4569588899612427
+    ],
+    "dimensions": [
+      0.06399999558925629,
+      0.03970835357904434,
+      0.03999999910593033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 87,
+    "name": "ISO 4762 M6 x 10.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.4079999625682831,
+      -0.47575223445892334,
+      0.8454833626747131
+    ],
+    "dimensions": [
+      0.06399999558925629,
+      0.03970835357904434,
+      0.03999999910593033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 88,
+    "name": "ISO 4762 M6 x 10.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.4079999625682831,
+      -0.7690126895904541,
+      0.8694834113121033
+    ],
+    "dimensions": [
+      0.06399999558925629,
+      0.03970835357904434,
+      0.03999999910593033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 89,
+    "name": "ISO 4762 M6 x 10.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.4083999991416931,
+      -0.7320913672447205,
+      0.9931684732437134
+    ],
+    "dimensions": [
+      0.06399999558925629,
+      0.03970835357904434,
+      0.03999999910593033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 90,
+    "name": "ISO 4762 M6 x 10.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.4079999625682831,
+      -0.5063441395759583,
+      0.9994978904724121
+    ],
+    "dimensions": [
+      0.06399999558925629,
+      0.03970835357904434,
+      0.03999999910593033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 91,
+    "name": "ISO 4762 M8 x 12",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.6970428228378296,
+      -0.8167513012886047,
+      0.4357192814350128
+    ],
+    "dimensions": [
+      0.08000002056360245,
+      0.051620885729789734,
+      0.0520000122487545
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 92,
+    "name": "ISO 4762 M8 x 20",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.07999999821186066,
+      0.039267994463443756,
+      1.0125592947006226
+    ],
+    "dimensions": [
+      0.1120000034570694,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 93,
+    "name": "ISO 4762 M8 x 20.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.07999999821186066,
+      0.039267994463443756,
+      1.0125592947006226
+    ],
+    "dimensions": [
+      0.11200003325939178,
+      0.05162087082862854,
+      0.052000027149915695
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 94,
+    "name": "ISO 4762 M8 x 20.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.07999999821186066,
+      0.039267994463443756,
+      0.8525592088699341
+    ],
+    "dimensions": [
+      0.1120000034570694,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 95,
+    "name": "ISO 4762 M8 x 20.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.07999999821186066,
+      0.039267994463443756,
+      0.8525592088699341
+    ],
+    "dimensions": [
+      0.1120000034570694,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 96,
+    "name": "ISO 4762 M8 x 20.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.20034000277519226,
+      -1.128370761871338,
+      1.536959171295166
+    ],
+    "dimensions": [
+      0.1120000034570694,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 97,
+    "name": "ISO 4762 M8 x 20.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.1996600329875946,
+      -1.128370761871338,
+      1.5369592905044556
+    ],
+    "dimensions": [
+      0.11200003325939178,
+      0.051620885729789734,
+      0.0520000122487545
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 98,
+    "name": "ISO 4762 M8 x 30",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.5239999890327454,
+      -1.2304120063781738,
+      -0.4963207244873047
+    ],
+    "dimensions": [
+      0.15199999511241913,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 99,
+    "name": "ISO 4762 M8 x 35",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.2879999876022339,
+      0.12286800146102905,
+      -0.5063207149505615
+    ],
+    "dimensions": [
+      0.1720000058412552,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 100,
+    "name": "ISO 4762 M8 x 35.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.575999915599823,
+      0.11086800694465637,
+      -0.5063207149505615
+    ],
+    "dimensions": [
+      0.1720000058412552,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 101,
+    "name": "ISO 4762 M8 x 35.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.5759999752044678,
+      0.11086800694465637,
+      -0.5063207149505615
+    ],
+    "dimensions": [
+      0.1720000058412552,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 102,
+    "name": "ISO 4762 M8 x 35.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.2879999876022339,
+      0.12286800146102905,
+      -0.5063207149505615
+    ],
+    "dimensions": [
+      0.1720000058412552,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 103,
+    "name": "ISO 4762 M8 x 40",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.6240000128746033,
+      -1.158511996269226,
+      -0.5163207054138184
+    ],
+    "dimensions": [
+      0.19200000166893005,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 104,
+    "name": "ISO 4762 M8 x 45",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.5640000104904175,
+      -0.8385120630264282,
+      -0.5263206958770752
+    ],
+    "dimensions": [
+      0.2120000123977661,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 105,
+    "name": "ISO 4762 M8 x 80",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.498689204454422,
+      -0.44913196563720703,
+      -0.5967206358909607
+    ],
+    "dimensions": [
+      0.35199999809265137,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 106,
+    "name": "ISO 4762 M8 x 80.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.48399996757507324,
+      -0.4491319954395294,
+      -0.5967206358909607
+    ],
+    "dimensions": [
+      0.35200008749961853,
+      0.051620885729789734,
+      0.0520000122487545
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 107,
+    "name": "ISO 4762 M8 x 80.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 573,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.484000027179718,
+      -0.8385120630264282,
+      -0.696320652961731
+    ],
+    "dimensions": [
+      0.5519999861717224,
+      0.051620859652757645,
+      0.052000001072883606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 108,
+    "name": "ISO 7045 Z M4 x 5 - 4.8 - Z",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 817,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.333107590675354,
+      -0.6376632452011108,
+      -0.5322338938713074
+    ],
+    "dimensions": [
+      0.03217363730072975,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 109,
+    "name": "ISO 7045 Z M4 x 5 - 4.8 - Z.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 817,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.20196136832237244,
+      -1.1498067378997803,
+      -0.5322338938713074
+    ],
+    "dimensions": [
+      0.03217364102602005,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 110,
+    "name": "ISO 7045 Z M4 x 5 - 4.8 - Z.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 817,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.251881867647171,
+      -1.1504120826721191,
+      -0.5322338938713074
+    ],
+    "dimensions": [
+      0.03217363730072975,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 111,
+    "name": "ISO 7045 Z M4 x 5 - 4.8 - Z.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 817,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.38068270683288574,
+      -0.6386152505874634,
+      -0.5322338938713074
+    ],
+    "dimensions": [
+      0.03217363730072975,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 112,
+    "name": "ISO 8734 12 x 55 - A",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 134,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -1.4901161193847656e-08,
+      -0.2260519564151764,
+      0.6609200239181519
+    ],
+    "dimensions": [
+      0.22000005841255188,
+      0.047650035470724106,
+      0.048000022768974304
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 113,
+    "name": "ISO 8734 12 x 55 - A.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 134,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -1.4901161193847656e-08,
+      -0.5580919981002808,
+      0.41907998919487
+    ],
+    "dimensions": [
+      0.2199999988079071,
+      0.04765002429485321,
+      0.04800000041723251
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 114,
+    "name": "ISO 8734 12 x 55 - A.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 134,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -1.4901161193847656e-08,
+      -0.8901318907737732,
+      0.6609200239181519
+    ],
+    "dimensions": [
+      0.2199999988079071,
+      0.04765002429485321,
+      0.04800000041723251
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 115,
+    "name": "JIS B 1170 Class 1 (High Type) M 8",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.8901320099830627,
+      0.002017645165324211
+    ],
+    "dimensions": [
+      0.03799999877810478,
+      0.05199999734759331,
+      0.06004442274570465
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 116,
+    "name": "JIS B 1170 Class 1 (High Type) M 8.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12800002098083496,
+      -0.8901320099830627,
+      0.002017643302679062
+    ],
+    "dimensions": [
+      0.037999995052814484,
+      0.052000001072883606,
+      0.06004442274570465
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 117,
+    "name": "JIS B 1170 Class 1 (High Type) M 8.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.22606000304222107,
+      0.002017645165324211
+    ],
+    "dimensions": [
+      0.03799999877810478,
+      0.052000001072883606,
+      0.06004442647099495
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 118,
+    "name": "JIS B 1170 Class 1 (High Type) M 8.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12800002098083496,
+      -0.22606000304222107,
+      0.002017645165324211
+    ],
+    "dimensions": [
+      0.03799999877810478,
+      0.052000001072883606,
+      0.06004442647099495
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 119,
+    "name": "JIS B 1170 Class 1 (High Type) M 8.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12800002098083496,
+      -0.5580959916114807,
+      -0.23982234299182892
+    ],
+    "dimensions": [
+      0.03799999877810478,
+      0.052000001072883606,
+      0.06004442647099495
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 120,
+    "name": "JIS B 1170 Class 1 (High Type) M 8.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 274,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.5580959916114807,
+      -0.23982234299182892
+    ],
+    "dimensions": [
+      0.03799999877810478,
+      0.052000001072883606,
+      0.06004442647099495
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 121,
+    "name": "JIS B 1173 - Metric M8x50",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.890131950378418,
+      0.09901764988899231
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 122,
+    "name": "JIS B 1173 - Metric M8x50.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12799996137619019,
+      -0.890131950378418,
+      0.09901764988899231
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 123,
+    "name": "JIS B 1173 - Metric M8x50.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12799996137619019,
+      -0.5580959916114807,
+      -0.14282235503196716
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 124,
+    "name": "JIS B 1173 - Metric M8x50.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.5580959916114807,
+      -0.14282235503196716
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 125,
+    "name": "JIS B 1173 - Metric M8x50.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.12799996137619019,
+      -0.22606001794338226,
+      0.09901764988899231
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 126,
+    "name": "JIS B 1173 - Metric M8x50.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.12799997627735138,
+      -0.22606001794338226,
+      0.09901764988899231
+    ],
+    "dimensions": [
+      0.24400000274181366,
+      0.031766682863235474,
+      0.03200000151991844
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 127,
+    "name": "JIS B 1521 6203 17x40x12",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.22999997437000275,
+      0.16794800758361816,
+      0.9872002601623535
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 128,
+    "name": "JIS B 1521 6203 17x40x12.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.22999997437000275,
+      0.11034799367189407,
+      0.9872002601623535
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 129,
+    "name": "JIS B 1521 6203 17x40x12.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.22999998927116394,
+      0.16794799268245697,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 130,
+    "name": "JIS B 1521 6203 17x40x12.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.22999997437000275,
+      0.11034799367189407,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 131,
+    "name": "JIS B 1521 6203 17x40x12.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.47200000286102295,
+      0.28794801235198975,
+      0.16696593165397644
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 132,
+    "name": "JIS B 1521 6203 17x40x12.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1643,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.47200000286102295,
+      0.23034802079200745,
+      0.16696593165397644
+    ],
+    "dimensions": [
+      0.04800000041723251,
+      0.15883341431617737,
+      0.1599999964237213
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 133,
+    "name": "JIS B 2804 10x1",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 262,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.5235019326210022,
+      -0.5327513813972473,
+      0.4301338493824005
+    ],
+    "dimensions": [
+      0.04930875077843666,
+      0.004000000189989805,
+      0.057562462985515594
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 134,
+    "name": "JIS B 2804 10x1.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 262,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.5235019326210022,
+      -0.4167513847351074,
+      0.4301338493824005
+    ],
+    "dimensions": [
+      0.04930875077843666,
+      0.004000000189989805,
+      0.057562462985515594
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 135,
+    "name": "JIS B 2804 12x1",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -0.7761319875717163,
+      0.6615725755691528
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 136,
+    "name": "JIS B 2804 12x1.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -0.6720920205116272,
+      0.4197325110435486
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 137,
+    "name": "JIS B 2804 12x1.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -1.0041320323944092,
+      0.6615725755691528
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 138,
+    "name": "JIS B 2804 12x1.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -0.4440919756889343,
+      0.4197325110435486
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 139,
+    "name": "JIS B 2804 12x1.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -0.3400520086288452,
+      0.6615725755691528
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 140,
+    "name": "JIS B 2804 12x1.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 250,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -4.656612873077393e-10,
+      -0.11205199360847473,
+      0.6615725755691528
+    ],
+    "dimensions": [
+      0.04999806359410286,
+      0.004000000189989805,
+      0.04832630977034569
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 141,
+    "name": "JIS B 2804 17x1",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.23000000417232513,
+      0.08434799313545227,
+      0.9850226044654846
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 142,
+    "name": "JIS B 2804 17x1.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.23000000417232513,
+      0.19394800066947937,
+      0.982822597026825
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 143,
+    "name": "JIS B 2804 17x1.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.23000001907348633,
+      0.19394800066947937,
+      0.982822597026825
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 144,
+    "name": "JIS B 2804 17x1.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.23000001907348633,
+      0.08434799313545227,
+      0.9850226044654846
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 145,
+    "name": "JIS B 2804 17x1.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.4719999432563782,
+      0.31394800543785095,
+      0.16258826851844788
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 146,
+    "name": "JIS B 2804 17x1.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 258,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.4719999432563782,
+      0.20434799790382385,
+      0.16478827595710754
+    ],
+    "dimensions": [
+      0.08079765737056732,
+      0.004000000189989805,
+      0.08995536714792252
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 147,
+    "name": "JIS B 2804 40x1.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.23221853375434875,
+      0.08274800330400467,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.16999346017837524,
+      0.007200003135949373,
+      0.16430950164794922
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 148,
+    "name": "JIS B 2804 40x1.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.23000000417232513,
+      0.08274799585342407,
+      0.9894189238548279
+    ],
+    "dimensions": [
+      0.16999341547489166,
+      0.007199999876320362,
+      0.16430945694446564
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 149,
+    "name": "JIS B 2804 40x1.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      0.23000000417232513,
+      0.19554799795150757,
+      0.984981894493103
+    ],
+    "dimensions": [
+      0.16999341547489166,
+      0.007199999876320362,
+      0.16430945694446564
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 150,
+    "name": "JIS B 2804 40x1.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.47421854734420776,
+      0.20274797081947327,
+      0.16696596145629883
+    ],
+    "dimensions": [
+      0.16999346017837524,
+      0.007200003135949373,
+      0.16430950164794922
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 151,
+    "name": "JIS B 2804 40x1.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.47421854734420776,
+      0.31554803252220154,
+      0.16696596145629883
+    ],
+    "dimensions": [
+      0.16999346017837524,
+      0.007200003135949373,
+      0.16430950164794922
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 152,
+    "name": "JIS B 2804 40x1.8",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_3"
+    ],
+    "center": [
+      -0.23221853375434875,
+      0.19554799795150757,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.16999346017837524,
+      0.007200003135949373,
+      0.16430950164794922
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 153,
+    "name": "Part1",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 5564,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -3.725290298461914e-09,
+      -0.48053598403930664,
+      0.0
+    ],
+    "dimensions": [
+      0.43502822518348694,
+      1.588912010192871,
+      0.5156800150871277
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 154,
+    "name": "Part10",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -1.058811902999878,
+      0.0602053701877594
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 155,
+    "name": "Part10.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.7249720096588135,
+      0.0602053701877594
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 156,
+    "name": "Part10.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.3929319977760315,
+      0.0602053701877594
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 157,
+    "name": "Part10.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.060892000794410706,
+      0.0602053701877594
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 158,
+    "name": "Part10.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -1.058811902999878,
+      -0.06884679198265076
+    ],
+    "dimensions": [
+      0.12905217707157135,
+      0.10016004741191864,
+      0.2600000500679016
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 159,
+    "name": "Part10.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.7249720096588135,
+      -0.06884679198265076
+    ],
+    "dimensions": [
+      0.12905217707157135,
+      0.10016004741191864,
+      0.2600000500679016
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 160,
+    "name": "Part10.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.3929319977760315,
+      -0.06884677708148956
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 161,
+    "name": "Part10.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 88,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      -0.060892000794410706,
+      -0.06884677708148956
+    ],
+    "dimensions": [
+      0.12905214726924896,
+      0.10016000270843506,
+      0.25999999046325684
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 162,
+    "name": "Part11",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 64,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.0,
+      0.1473200023174286,
+      -0.06975999474525452
+    ],
+    "dimensions": [
+      0.1279599964618683,
+      0.03999999910593033,
+      0.024480000138282776
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 163,
+    "name": "Part12",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1021,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.0,
+      0.19430001080036163,
+      0.0
+    ],
+    "dimensions": [
+      0.7400000095367432,
+      0.295879989862442,
+      0.73460453748703
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 164,
+    "name": "Part13",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -3.725290298461914e-09,
+      0.24643999338150024,
+      0.0
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.00800000037997961,
+      0.277958482503891
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 165,
+    "name": "Part14",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 8436,
+    "materials": [
+      "mat_7"
+    ],
+    "center": [
+      -0.0004786550998687744,
+      -0.5727720260620117,
+      -0.7023206949234009
+    ],
+    "dimensions": [
+      1.4472800493240356,
+      0.515999972820282,
+      1.3590426445007324
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 166,
+    "name": "Part15",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 470,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.02407112345099449,
+      -0.8405678272247314,
+      -0.5283206701278687
+    ],
+    "dimensions": [
+      0.7434800267219543,
+      0.01599999889731407,
+      0.8846947550773621
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 167,
+    "name": "Part16",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 26866,
+    "materials": [
+      "mat_7",
+      "mat_0"
+    ],
+    "center": [
+      -0.010000020265579224,
+      -0.6067515015602112,
+      1.0365593433380127
+    ],
+    "dimensions": [
+      1.3072388172149658,
+      0.5199999809265137,
+      0.828000009059906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 168,
+    "name": "Part17",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.6123190522193909,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 169,
+    "name": "Part17.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.9443590641021729,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 170,
+    "name": "Part17.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.8363591432571411,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 171,
+    "name": "Part17.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.5043190121650696,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 172,
+    "name": "Part17.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.2802790403366089,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 173,
+    "name": "Part17.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 539,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1001146212220192,
+      -0.17227904498577118,
+      0.986493706703186
+    ],
+    "dimensions": [
+      0.10799998044967651,
+      0.10721255838871002,
+      0.3999999463558197
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 174,
+    "name": "Part18",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.6193722486495972,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 175,
+    "name": "Part18.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.9514122009277344,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 176,
+    "name": "Part18.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.8314121961593628,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 177,
+    "name": "Part18.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.2873322069644928,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 178,
+    "name": "Part18.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.1673322319984436,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 179,
+    "name": "Part18.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 540,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.09057815372943878,
+      -0.4993722438812256,
+      0.9867801666259766
+    ],
+    "dimensions": [
+      0.11999999731779099,
+      0.11912506818771362,
+      0.4000000059604645
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 180,
+    "name": "Part19",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.1673322319984436,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 181,
+    "name": "Part19.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.2873322367668152,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 182,
+    "name": "Part19.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.4993722438812256,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 183,
+    "name": "Part19.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.6193721890449524,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 184,
+    "name": "Part19.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.8314121961593628,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 185,
+    "name": "Part19.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.08280585706233978,
+      -0.9514123201370239,
+      0.9479186534881592
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 186,
+    "name": "Part19.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.2802790403366089,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 187,
+    "name": "Part19.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.5043190717697144,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 188,
+    "name": "Part19.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.6123190522193909,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 189,
+    "name": "Part19.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.8363591432571411,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 190,
+    "name": "Part19.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.9443590641021729,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 191,
+    "name": "Part19.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.09327477216720581,
+      -0.17227905988693237,
+      0.9475477337837219
+    ],
+    "dimensions": [
+      0.03199999779462814,
+      0.020000005140900612,
+      0.03176669031381607
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 192,
+    "name": "Part2",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11166,
+    "materials": [
+      "mat_2",
+      "mat_1"
+    ],
+    "center": [
+      -1.4901161193847656e-08,
+      -1.3180763721466064,
+      7.450580596923828e-09
+    ],
+    "dimensions": [
+      1.1498374938964844,
+      1.1498374938964844,
+      0.13760867714881897
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 193,
+    "name": "Part20",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.16051635146141052,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 194,
+    "name": "Part20.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.9445964694023132,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 195,
+    "name": "Part20.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.8382280468940735,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987899258732796,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 196,
+    "name": "Part20.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.6125563383102417,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 197,
+    "name": "Part20.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.4925563335418701,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 198,
+    "name": "Part20.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.2805163562297821,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 199,
+    "name": "Part20.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.17414811253547668,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987882494926453,
+      0.020000001415610313,
+      0.013901706784963608
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 200,
+    "name": "Part20.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.9582282304763794,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987882494926453,
+      0.020000001415610313,
+      0.013901706784963608
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 201,
+    "name": "Part20.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.1268235296010971,
+      -0.8245964050292969,
+      1.1610562801361084
+    ],
+    "dimensions": [
+      0.027987884357571602,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 202,
+    "name": "Part20.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.6261880993843079,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987882494926453,
+      0.020000001415610313,
+      0.013901706784963608
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 203,
+    "name": "Part20.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.506188154220581,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987899258732796,
+      0.020000005140900612,
+      0.013901710510253906
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 204,
+    "name": "Part20.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12415012717247009,
+      -0.2941480875015259,
+      1.1615909337997437
+    ],
+    "dimensions": [
+      0.027987882494926453,
+      0.020000001415610313,
+      0.013901706784963608
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 205,
+    "name": "Part20.012",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.16542361676692963,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 206,
+    "name": "Part20.013",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.9375036954879761,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 207,
+    "name": "Part20.014",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.8295035362243652,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 208,
+    "name": "Part20.015",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.6054635643959045,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 209,
+    "name": "Part20.016",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.4974636435508728,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 210,
+    "name": "Part20.017",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1306384801864624,
+      -0.27342358231544495,
+      1.161860704421997
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 211,
+    "name": "Part20.018",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.17913450300693512,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 212,
+    "name": "Part20.019",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.9512144923210144,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 213,
+    "name": "Part20.020",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.8432145118713379,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 214,
+    "name": "Part20.021",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.6191744804382324,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 215,
+    "name": "Part20.022",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.5111744999885559,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 216,
+    "name": "Part20.023",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 112,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12837451696395874,
+      -0.28713446855545044,
+      1.162239670753479
+    ],
+    "dimensions": [
+      0.02798788622021675,
+      0.019999997690320015,
+      0.013901705853641033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 217,
+    "name": "Part21",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529072165489197,
+      -0.1673322468996048,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 218,
+    "name": "Part21.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529070675373077,
+      -0.2873322367668152,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 219,
+    "name": "Part21.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529070675373077,
+      -0.6193722486495972,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 220,
+    "name": "Part21.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529070675373077,
+      -0.9514122605323792,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 221,
+    "name": "Part21.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529070675373077,
+      -0.8314122557640076,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 222,
+    "name": "Part21.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.12529070675373077,
+      -0.4993721842765808,
+      1.160343050956726
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.02199999988079071
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 223,
+    "name": "Part21.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934137880802155,
+      -0.17227905988693237,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.1040000170469284,
+      0.10324174165725708,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 224,
+    "name": "Part21.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934136390686035,
+      -0.2802790403366089,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.10399998724460602,
+      0.10324171930551529,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 225,
+    "name": "Part21.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934136390686035,
+      -0.5043190717697144,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.10399998724460602,
+      0.10324171930551529,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 226,
+    "name": "Part21.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934136390686035,
+      -0.6123190522193909,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.10399998724460602,
+      0.10324171930551529,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 227,
+    "name": "Part21.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934136390686035,
+      -0.8363590240478516,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.10399998724460602,
+      0.10324171930551529,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 228,
+    "name": "Part21.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 260,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.12934136390686035,
+      -0.9443590641021729,
+      1.1610640287399292
+    ],
+    "dimensions": [
+      0.10399998724460602,
+      0.10324171930551529,
+      0.021999996155500412
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 229,
+    "name": "Part22",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.1673322170972824,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 230,
+    "name": "Part22.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.6193722486495972,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 231,
+    "name": "Part22.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.8314122557640076,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 232,
+    "name": "Part22.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.17227904498577118,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 233,
+    "name": "Part22.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.8363590240478516,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 234,
+    "name": "Part22.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.9443590641021729,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 235,
+    "name": "Part22.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.2873322367668152,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 236,
+    "name": "Part22.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.4993721842765808,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 237,
+    "name": "Part22.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.09065049886703491,
+      -0.9514122605323792,
+      0.9871417880058289
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 238,
+    "name": "Part22.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.2802790403366089,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 239,
+    "name": "Part22.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.5043190717697144,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 240,
+    "name": "Part22.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.09926474839448929,
+      -0.6123190522193909,
+      0.9871419072151184
+    ],
+    "dimensions": [
+      0.10400000214576721,
+      0.10324171930551529,
+      0.05999999865889549
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 241,
+    "name": "Part23",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.17228074371814728,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 242,
+    "name": "Part23.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.280280739068985,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 243,
+    "name": "Part23.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.5043207406997681,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 244,
+    "name": "Part23.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.6123207807540894,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 245,
+    "name": "Part23.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.8363608121871948,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 246,
+    "name": "Part23.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1141684502363205,
+      -0.9443607330322266,
+      1.0616663694381714
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 247,
+    "name": "Part23.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.1673339158296585,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 248,
+    "name": "Part23.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.2873339056968689,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 249,
+    "name": "Part23.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.4993739128112793,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 250,
+    "name": "Part23.009",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.6193739175796509,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 251,
+    "name": "Part23.010",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.831413984298706,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 252,
+    "name": "Part23.011",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 6452,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.10555645078420639,
+      -0.9514139890670776,
+      1.0616657733917236
+    ],
+    "dimensions": [
+      0.09999945759773254,
+      0.10000339150428772,
+      0.21599999070167542
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 253,
+    "name": "Part24",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 933,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      0.15275999903678894,
+      -0.5370107293128967,
+      1.2745237350463867
+    ],
+    "dimensions": [
+      0.2123849093914032,
+      1.446720004081726,
+      0.191928893327713
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 254,
+    "name": "Part25",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 933,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -0.15208090841770172,
+      -0.5370107293128967,
+      1.3185944557189941
+    ],
+    "dimensions": [
+      0.21238666772842407,
+      1.446720004081726,
+      0.1919299215078354
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 255,
+    "name": "Part26",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 64,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.15275999903678894,
+      0.12634924054145813,
+      1.2505593299865723
+    ],
+    "dimensions": [
+      0.024000000208616257,
+      0.019999999552965164,
+      0.07999999821186066
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 256,
+    "name": "Part26.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 64,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1520799845457077,
+      0.12634924054145813,
+      1.2505593299865723
+    ],
+    "dimensions": [
+      0.024000000208616257,
+      0.019999999552965164,
+      0.07999999821186066
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 257,
+    "name": "Part27",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 772,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.15275998413562775,
+      0.12234924733638763,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.28000009059906006,
+      0.12799999117851257,
+      0.27795857191085815
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 258,
+    "name": "Part27.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 772,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.1520799994468689,
+      0.12234924733638763,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.12799999117851257,
+      0.277958482503891
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 259,
+    "name": "Part28",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      -0.1520800143480301,
+      0.18834923207759857,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.14399999380111694,
+      0.004000000189989805,
+      0.14295007288455963
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 260,
+    "name": "Part28.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 104,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.15275999903678894,
+      0.18834924697875977,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.14399999380111694,
+      0.004000000189989805,
+      0.14295007288455963
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 261,
+    "name": "Part29",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2322,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.15275999903678894,
+      0.16234925389289856,
+      1.29655921459198
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.19200000166893005,
+      0.277958482503891
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 262,
+    "name": "Part29.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2322,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      -0.1520799994468689,
+      0.16234928369522095,
+      1.2965593338012695
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.19200009107589722,
+      0.27795857191085815
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 263,
+    "name": "Part3",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11287,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -4.202127456665039e-05,
+      -0.890131950378418,
+      0.4249688982963562
+    ],
+    "dimensions": [
+      0.607902467250824,
+      0.07876003533601761,
+      0.3196174204349518
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 264,
+    "name": "Part3.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11287,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      4.209578037261963e-05,
+      -0.5580960512161255,
+      0.18312880396842957
+    ],
+    "dimensions": [
+      0.6079023480415344,
+      0.07875999808311462,
+      0.3196173310279846
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 265,
+    "name": "Part3.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11287,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -4.202127456665039e-05,
+      -0.22605998814105988,
+      0.4249688982963562
+    ],
+    "dimensions": [
+      0.607902467250824,
+      0.07876003533601761,
+      0.3196174204349518
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 266,
+    "name": "Part30",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11767,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      0.0,
+      -0.6067100763320923,
+      1.4681146144866943
+    ],
+    "dimensions": [
+      1.3071564435958862,
+      0.3431105613708496,
+      0.7599999904632568
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 267,
+    "name": "Part31",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 464,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -7.450580596923828e-09,
+      0.042868003249168396,
+      0.947200357913971
+    ],
+    "dimensions": [
+      0.608193576335907,
+      0.03999999910593033,
+      0.22928203642368317
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 268,
+    "name": "Part32",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 416,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      -0.22999998927116394,
+      0.13914799690246582,
+      0.9872003793716431
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.17868760228157043,
+      0.12800000607967377
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 269,
+    "name": "Part32.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 416,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      0.22999998927116394,
+      0.13914799690246582,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.17868760228157043,
+      0.12800000607967377
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 270,
+    "name": "Part32_CPY",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 416,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      -0.47200000286102295,
+      0.2591480016708374,
+      0.16696596145629883
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.17868760228157043,
+      0.12800000607967377
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 271,
+    "name": "Part33",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 338,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -0.23000001907348633,
+      0.11700800806283951,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.07999999821186066,
+      0.07941670715808868,
+      0.17227999866008759
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 272,
+    "name": "Part33.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 338,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      0.22999998927116394,
+      0.11700800806283951,
+      0.9872003197669983
+    ],
+    "dimensions": [
+      0.07999999821186066,
+      0.07941670715808868,
+      0.17227999866008759
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 273,
+    "name": "Part34",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 168,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      0.0,
+      0.146349236369133,
+      0.6416730880737305
+    ],
+    "dimensions": [
+      0.5832370519638062,
+      0.11999999731779099,
+      1.58977210521698
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 274,
+    "name": "Part35",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2107,
+    "materials": [
+      "mat_10",
+      "mat_11"
+    ],
+    "center": [
+      -0.01758231222629547,
+      -0.5580901503562927,
+      1.1334192752838135
+    ],
+    "dimensions": [
+      0.09516125917434692,
+      0.6702799797058105,
+      0.06400000303983688
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 275,
+    "name": "Part35.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2107,
+    "materials": [
+      "mat_10",
+      "mat_11"
+    ],
+    "center": [
+      -0.01758231222629547,
+      -0.8901301026344299,
+      1.1334192752838135
+    ],
+    "dimensions": [
+      0.09516125917434692,
+      0.6702799797058105,
+      0.06400000303983688
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 276,
+    "name": "Part35.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2107,
+    "materials": [
+      "mat_10",
+      "mat_11"
+    ],
+    "center": [
+      -0.01758231222629547,
+      -0.22605009377002716,
+      1.1334192752838135
+    ],
+    "dimensions": [
+      0.09516125917434692,
+      0.6702799797058105,
+      0.06400000303983688
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 277,
+    "name": "Part36",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1229,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      0.0003400016576051712,
+      -1.0685166120529175,
+      1.650559425354004
+    ],
+    "dimensions": [
+      0.37970834970474243,
+      0.2199999988079071,
+      0.4953000545501709
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 278,
+    "name": "Part37",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 748,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      0.09803289920091629,
+      -0.5583320260047913,
+      1.4625587463378906
+    ],
+    "dimensions": [
+      0.8920400142669678,
+      0.07999999821186066,
+      0.14916253089904785
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 279,
+    "name": "Part38",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2076,
+    "materials": [
+      "mat_12"
+    ],
+    "center": [
+      0.1357399821281433,
+      -1.1654472351074219,
+      1.566545009613037
+    ],
+    "dimensions": [
+      0.32219043374061584,
+      0.24797266721725464,
+      0.31084001064300537
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 280,
+    "name": "Part39",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 7124,
+    "materials": [
+      "mat_12"
+    ],
+    "center": [
+      0.011939998716115952,
+      -0.46811017394065857,
+      1.4852392673492432
+    ],
+    "dimensions": [
+      0.8800399899482727,
+      0.09999999403953552,
+      0.16172000765800476
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 281,
+    "name": "Part4",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 416,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.0,
+      -1.2737207412719727,
+      0.0
+    ],
+    "dimensions": [
+      0.3199999928474426,
+      0.00800000037997961,
+      0.31766682863235474
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 282,
+    "name": "Part40",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 7925,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      0.6068665981292725,
+      -0.519750714302063,
+      0.5701388120651245
+    ],
+    "dimensions": [
+      0.6540013551712036,
+      0.9067175388336182,
+      0.4367460012435913
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 283,
+    "name": "Part41",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11174,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.5235038995742798,
+      -0.3437284231185913,
+      0.42616015672683716
+    ],
+    "dimensions": [
+      0.16799622774124146,
+      0.0880458727478981,
+      0.16798454523086548
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 284,
+    "name": "Part42",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 10935,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.523501992225647,
+      -0.6057742834091187,
+      0.42615264654159546
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.0880458727478981,
+      0.17868760228157043
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 285,
+    "name": "Part43",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 430,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      0.5235019326210022,
+      -0.47475138306617737,
+      0.42615261673927307
+    ],
+    "dimensions": [
+      0.03999999910593033,
+      0.2540000081062317,
+      0.03970835357904434
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 286,
+    "name": "Part44",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 15288,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      0.5552766919136047,
+      -0.8167513012886047,
+      0.42615261673927307
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.05999999865889549,
+      0.3435320556163788
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 287,
+    "name": "Part45",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 7500,
+    "materials": [
+      "mat_6"
+    ],
+    "center": [
+      0.8205035328865051,
+      -1.0931713581085205,
+      0.3056352436542511
+    ],
+    "dimensions": [
+      0.8406192660331726,
+      0.5328400135040283,
+      0.31234240531921387
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 288,
+    "name": "Part46",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 27340,
+    "materials": [
+      "mat_15",
+      "mat_16",
+      "mat_14",
+      "mat_11"
+    ],
+    "center": [
+      -0.6520000100135803,
+      0.002611994743347168,
+      0.6486149430274963
+    ],
+    "dimensions": [
+      0.4339999854564667,
+      0.5384399890899658,
+      0.5989550352096558
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 289,
+    "name": "Part47",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1832,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      -0.5394928455352783,
+      -1.0484119653701782,
+      0.3905183970928192
+    ],
+    "dimensions": [
+      0.15270495414733887,
+      0.5920000076293945,
+      0.27809181809425354
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 290,
+    "name": "Part48",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 280,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.5800000429153442,
+      -0.11534447222948074,
+      0.1041974425315857
+    ],
+    "dimensions": [
+      0.4992530643939972,
+      0.1599999964237213,
+      0.663320004940033
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 291,
+    "name": "Part49",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 220,
+    "materials": [
+      "mat_5"
+    ],
+    "center": [
+      -0.6418979167938232,
+      -0.012160003185272217,
+      -0.0537906251847744
+    ],
+    "dimensions": [
+      0.34731999039649963,
+      0.23240000009536743,
+      0.12379585206508636
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 292,
+    "name": "Part5",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 4803,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      1.4901161193847656e-08,
+      -0.890131950378418,
+      0.031017642468214035
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.07875999808311462,
+      0.31927916407585144
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 293,
+    "name": "Part5.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 4803,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      1.4901161193847656e-08,
+      -0.5580959916114807,
+      -0.21082235872745514
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.07875999808311462,
+      0.31927916407585144
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 294,
+    "name": "Part5.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 4803,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      1.4901161193847656e-08,
+      -0.22605998814105988,
+      0.031017642468214035
+    ],
+    "dimensions": [
+      0.18000000715255737,
+      0.07875999808311462,
+      0.31927916407585144
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 295,
+    "name": "Part50",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 3245,
+    "materials": [
+      "mat_5",
+      "mat_11",
+      "mat_13"
+    ],
+    "center": [
+      -0.6512216329574585,
+      0.2781773507595062,
+      0.650192379951477
+    ],
+    "dimensions": [
+      0.28068166971206665,
+      0.1361250877380371,
+      0.2806837856769562
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 296,
+    "name": "Part51",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 770,
+    "materials": [
+      "mat_17"
+    ],
+    "center": [
+      0.15795084834098816,
+      0.07686799764633179,
+      0.3049200475215912
+    ],
+    "dimensions": [
+      0.09200000017881393,
+      0.6184815168380737,
+      0.8040983080863953
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 297,
+    "name": "Part52",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 195,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      0.21907109022140503,
+      0.102867990732193,
+      0.3956792950630188
+    ],
+    "dimensions": [
+      0.9599999785423279,
+      0.11999999731779099,
+      0.0941421389579773
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 298,
+    "name": "Part53",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 236,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      -0.3420000374317169,
+      0.102867990732193,
+      0.3956792950630188
+    ],
+    "dimensions": [
+      0.9599999785423279,
+      0.11999999731779099,
+      0.3400000035762787
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 299,
+    "name": "Part54",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 338,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -0.47199997305870056,
+      0.1770079880952835,
+      0.16696590185165405
+    ],
+    "dimensions": [
+      0.07999999821186066,
+      0.07941670715808868,
+      0.292279988527298
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 300,
+    "name": "Part55",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 208,
+    "materials": [
+      "mat_8"
+    ],
+    "center": [
+      -0.30204564332962036,
+      0.25258001685142517,
+      0.21520987153053284
+    ],
+    "dimensions": [
+      1.3423304557800293,
+      0.06868000328540802,
+      1.169978141784668
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 301,
+    "name": "Part56",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 7412,
+    "materials": [
+      "mat_9"
+    ],
+    "center": [
+      -0.6072160005569458,
+      -0.5620920062065125,
+      0.7360628843307495
+    ],
+    "dimensions": [
+      0.8760799765586853,
+      0.4064319133758545,
+      0.5369928479194641
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 302,
+    "name": "Part57",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 263,
+    "materials": [
+      "mat_12"
+    ],
+    "center": [
+      -0.7354995608329773,
+      -0.46021950244903564,
+      0.6474210619926453
+    ],
+    "dimensions": [
+      0.12000001221895218,
+      0.0838250070810318,
+      0.04800000786781311
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 303,
+    "name": "Part58",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 1560,
+    "materials": [
+      "mat_0"
+    ],
+    "center": [
+      -0.7268339991569519,
+      -0.22106635570526123,
+      0.07824339717626572
+    ],
+    "dimensions": [
+      0.21187999844551086,
+      0.4778687655925751,
+      1.001267671585083
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 304,
+    "name": "Part59",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 224,
+    "materials": [
+      "mat_12"
+    ],
+    "center": [
+      -0.7660757303237915,
+      -0.44213202595710754,
+      0.5822358727455139
+    ],
+    "dimensions": [
+      0.0560000017285347,
+      0.04800000786781311,
+      0.055591706186532974
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 305,
+    "name": "Part6",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2247,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.0,
+      -0.22605200111865997,
+      0.6759200096130371
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.2796824872493744,
+      0.2099599987268448
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 306,
+    "name": "Part6.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2247,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.0,
+      -0.5580919981002808,
+      0.43408000469207764
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.2796824872493744,
+      0.2099599987268448
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 307,
+    "name": "Part6.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 2247,
+    "materials": [
+      "mat_1"
+    ],
+    "center": [
+      0.0,
+      -0.8901320695877075,
+      0.6759200096130371
+    ],
+    "dimensions": [
+      0.2800000011920929,
+      0.2796824872493744,
+      0.2099599987268448
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 308,
+    "name": "Part7",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.22605201601982117,
+      0.7509000301361084
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 309,
+    "name": "Part7.001",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.22605200111865997,
+      0.73089998960495
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 310,
+    "name": "Part7.002",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.22605200111865997,
+      0.7109000086784363
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 311,
+    "name": "Part7.003",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.5580919981002808,
+      0.5090599656105042
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 312,
+    "name": "Part7.004",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.5580919981002808,
+      0.4890599846839905
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 313,
+    "name": "Part7.005",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.5580919981002808,
+      0.4690600037574768
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 314,
+    "name": "Part7.006",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.8901320099830627,
+      0.7508999705314636
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 315,
+    "name": "Part7.007",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.8901320099830627,
+      0.73089998960495
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 316,
+    "name": "Part7.008",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 108,
+    "materials": [
+      "mat_4"
+    ],
+    "center": [
+      -7.078051567077637e-08,
+      -0.8901320099830627,
+      0.7109000086784363
+    ],
+    "dimensions": [
+      0.27999985218048096,
+      0.00800000037997961,
+      0.2779843509197235
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 317,
+    "name": "Part8",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 50067,
+    "materials": [
+      "mat_5",
+      "mat_0"
+    ],
+    "center": [
+      -0.019783571362495422,
+      -0.6282119750976562,
+      0.3861193060874939
+    ],
+    "dimensions": [
+      1.3363999128341675,
+      0.7808799743652344,
+      1.240432858467102
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 318,
+    "name": "Part9",
+    "type": "MESH",
+    "parent": "3 Cylinder Engine",
+    "vertices": 11772,
+    "materials": [
+      "mat_5",
+      "mat_0"
+    ],
+    "center": [
+      -0.001999974250793457,
+      -0.5727720260620117,
+      -0.22432070970535278
+    ],
+    "dimensions": [
+      1.4472800493240356,
+      0.4399999976158142,
+      1.3240000009536743
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 319,
+    "name": "asdasdasdasdasdasd-1_1",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7388332486152649,
+      -0.053181711584329605,
+      -0.11976995319128036
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 320,
+    "name": "asdasdasdasdasdasd-1_10",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.9774171710014343,
+      0.14744029939174652,
+      -0.1360306292772293
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.07280003279447556,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 321,
+    "name": "asdasdasdasdasdasd-1_100",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7970224618911743,
+      0.16004031896591187,
+      -0.07843676209449768
+    ],
+    "dimensions": [
+      0.01666051708161831,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 322,
+    "name": "asdasdasdasdasdasd-1_101",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8681853413581848,
+      -0.11515472084283829,
+      0.04243243485689163
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 323,
+    "name": "asdasdasdasdasdasd-1_102",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 465,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8058215379714966,
+      -0.04855976998806,
+      -0.034125663340091705
+    ],
+    "dimensions": [
+      0.005599335301667452,
+      0.03164001554250717,
+      0.005568019580096006
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 324,
+    "name": "asdasdasdasdasdasd-1_103",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 403,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      0.01864025928080082,
+      -0.22465060651302338
+    ],
+    "dimensions": [
+      0.05400624871253967,
+      0.05187813192605972,
+      0.039199989289045334
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 325,
+    "name": "asdasdasdasdasdasd-1_104",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6666171550750732,
+      0.1474403291940689,
+      -0.1360306292772293
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.07280003279447556,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 326,
+    "name": "asdasdasdasdasdasd-1_105",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 459,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8382180333137512,
+      -0.048559777438640594,
+      -0.0727342963218689
+    ],
+    "dimensions": [
+      0.005599334370344877,
+      0.03164001554250717,
+      0.005568019580096006
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 327,
+    "name": "asdasdasdasdasdasd-1_106",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1629,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      0.16004031896591187,
+      -0.05334695801138878
+    ],
+    "dimensions": [
+      0.09800001233816147,
+      0.03080001473426819,
+      0.09783262759447098
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 328,
+    "name": "asdasdasdasdasdasd-1_107",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.822028636932373,
+      0.16004031896591187,
+      -0.018066637217998505
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 329,
+    "name": "asdasdasdasdasdasd-1_108",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7970224618911743,
+      0.16004031896591187,
+      -0.02842451073229313
+    ],
+    "dimensions": [
+      0.01666051708161831,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 330,
+    "name": "asdasdasdasdasdasd-1_109",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8122034072875977,
+      0.07548138499259949,
+      -0.11996340751647949
+    ],
+    "dimensions": [
+      0.011110401712357998,
+      0.011084502562880516,
+      0.011018148623406887
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 331,
+    "name": "asdasdasdasdasdasd-1_11",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8747128248214722,
+      0.029313918203115463,
+      -0.008505359292030334
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 332,
+    "name": "asdasdasdasdasdasd-1_110",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7631171941757202,
+      0.06405860185623169,
+      -0.09238636493682861
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084510013461113,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 333,
+    "name": "asdasdasdasdasdasd-1_111",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 408,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.738863468170166,
+      0.004872769117355347,
+      -0.11724504828453064
+    ],
+    "dimensions": [
+      0.027930591255426407,
+      0.16790896654129028,
+      0.03284185752272606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 334,
+    "name": "asdasdasdasdasdasd-1_112",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 14042,
+    "materials": [
+      "mat_14",
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      -0.012159764766693115,
+      -0.04111063480377197
+    ],
+    "dimensions": [
+      0.34804004430770874,
+      0.3136001527309418,
+      0.3726799786090851
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 335,
+    "name": "asdasdasdasdasdasd-1_113",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 3251,
+    "materials": [
+      "mat_5",
+      "mat_11",
+      "mat_13"
+    ],
+    "center": [
+      -0.8228641748428345,
+      0.27817782759666443,
+      -0.05202905461192131
+    ],
+    "dimensions": [
+      0.2806282937526703,
+      0.13612517714500427,
+      0.2806837856769562
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 336,
+    "name": "asdasdasdasdasdasd-1_12",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 459,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8382180333137512,
+      -0.048559777438640594,
+      -0.034126970916986465
+    ],
+    "dimensions": [
+      0.005599334370344877,
+      0.03164001554250717,
+      0.005568019580096006
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 337,
+    "name": "asdasdasdasdasdasd-1_13",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 408,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9052373170852661,
+      0.004872746765613556,
+      -0.11724504828453064
+    ],
+    "dimensions": [
+      0.027930598706007004,
+      0.16790896654129028,
+      0.03284185752272606
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 338,
+    "name": "asdasdasdasdasdasd-1_14",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8470346331596375,
+      -0.20115986466407776,
+      -0.07843676209449768
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 339,
+    "name": "asdasdasdasdasdasd-1_15",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 546,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8468362092971802,
+      -0.048559777438640594,
+      -0.04905611649155617
+    ],
+    "dimensions": [
+      0.005598111543804407,
+      0.03164001554250717,
+      0.005581515375524759
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 340,
+    "name": "asdasdasdasdasdasd-1_16",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 597,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8438432216644287,
+      -0.048559777438640594,
+      -0.06602703034877777
+    ],
+    "dimensions": [
+      0.005598295945674181,
+      0.03164001554250717,
+      0.005583318416029215
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 341,
+    "name": "asdasdasdasdasdasd-1_17",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 494,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201134681702,
+      -0.048559773713350296,
+      -0.07862987369298935
+    ],
+    "dimensions": [
+      0.005600000265985727,
+      0.03164001554250717,
+      0.005562450271099806
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 342,
+    "name": "asdasdasdasdasdasd-1_18",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1178,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.20115986466407776,
+      -0.05343693867325783
+    ],
+    "dimensions": [
+      0.0607600063085556,
+      0.03080001473426819,
+      0.06074738875031471
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 343,
+    "name": "asdasdasdasdasdasd-1_19",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 513,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8001936078071594,
+      -0.04855976998806,
+      -0.040827032178640366
+    ],
+    "dimensions": [
+      0.00559468986466527,
+      0.03164001554250717,
+      0.005583318416029215
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 344,
+    "name": "asdasdasdasdasdasd-1_2",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.892017126083374,
+      0.14744029939174652,
+      0.12632934749126434
+    ],
+    "dimensions": [
+      0.02643273025751114,
+      0.07280003279447556,
+      0.026599986478686333
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 345,
+    "name": "asdasdasdasdasdasd-1_20",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1040,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.14655981957912445,
+      -0.05343063920736313
+    ],
+    "dimensions": [
+      0.26040002703666687,
+      0.151200070977211,
+      0.2585013508796692
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 346,
+    "name": "asdasdasdasdasdasd-1_21",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8681853413581848,
+      -0.14175474643707275,
+      0.04243243485689163
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 347,
+    "name": "asdasdasdasdasdasd-1_22",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6666171550750732,
+      0.1474403291940689,
+      0.02916935831308365
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.07280003279447556,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 348,
+    "name": "asdasdasdasdasdasd-1_23",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8926119208335876,
+      0.04253283515572548,
+      -0.04041862487792969
+    ],
+    "dimensions": [
+      0.011110403575003147,
+      0.011084502562880516,
+      0.011018154211342335
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 349,
+    "name": "asdasdasdasdasdasd-1_24",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.6848791241645813,
+      -0.1955598145723343,
+      -0.10065103322267532
+    ],
+    "dimensions": [
+      0.02643272653222084,
+      0.1708000749349594,
+      0.026600001379847527
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 350,
+    "name": "asdasdasdasdasdasd-1_25",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7580031752586365,
+      0.03545328229665756,
+      -0.023327048867940903
+    ],
+    "dimensions": [
+      0.01111039612442255,
+      0.011084506288170815,
+      0.011018154211342335
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 351,
+    "name": "asdasdasdasdasdasd-1_26",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.850745677947998,
+      0.07345393300056458,
+      -0.11506868153810501
+    ],
+    "dimensions": [
+      0.011110401712357998,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 352,
+    "name": "asdasdasdasdasdasd-1_27",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 510,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7182856798171997,
+      -0.02961445227265358,
+      -0.03065553307533264
+    ],
+    "dimensions": [
+      0.027995098382234573,
+      0.16798847913742065,
+      0.029801415279507637
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 353,
+    "name": "asdasdasdasdasdasd-1_28",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7388332486152649,
+      -0.07978172600269318,
+      -0.11976995319128036
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 354,
+    "name": "asdasdasdasdasdasd-1_29",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8899574279785156,
+      0.057386331260204315,
+      -0.07627811282873154
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084510013461113,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 355,
+    "name": "asdasdasdasdasdasd-1_3",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9052070379257202,
+      -0.07978174090385437,
+      -0.11976995319128036
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 356,
+    "name": "asdasdasdasdasdasd-1_30",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.9774171710014343,
+      0.14744029939174652,
+      0.0291693564504385
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.07280003279447556,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 357,
+    "name": "asdasdasdasdasdasd-1_31",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7514280080795288,
+      0.042533546686172485,
+      -0.0404202900826931
+    ],
+    "dimensions": [
+      0.01111039612442255,
+      0.011084510013461113,
+      0.01101815328001976
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 358,
+    "name": "asdasdasdasdasdasd-1_32",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.7492780685424805,
+      -0.19555982947349548,
+      -0.1789121925830841
+    ],
+    "dimensions": [
+      0.02643273025751114,
+      0.1708000749349594,
+      0.026600001379847527
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 359,
+    "name": "asdasdasdasdasdasd-1_33",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8470346331596375,
+      -0.20115986466407776,
+      -0.02842451073229313
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 360,
+    "name": "asdasdasdasdasdasd-1_34",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 621,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8133974075317383,
+      -0.048559773713350296,
+      -0.07710867375135422
+    ],
+    "dimensions": [
+      0.005592599976807833,
+      0.03164001554250717,
+      0.005594966467469931
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 361,
+    "name": "asdasdasdasdasdasd-1_35",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 536,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8133942484855652,
+      -0.048559773713350296,
+      -0.029748838394880295
+    ],
+    "dimensions": [
+      0.005586086772382259,
+      0.03164001554250717,
+      0.005587433930486441
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 362,
+    "name": "asdasdasdasdasdasd-1_36",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.0643077939748764,
+      -0.15983061492443085
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000006269663572,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 363,
+    "name": "asdasdasdasdasdasd-1_37",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7866561412811279,
+      0.16004031896591187,
+      -0.05343913659453392
+    ],
+    "dimensions": [
+      0.01680000126361847,
+      0.016760848462581635,
+      0.01666051521897316
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 364,
+    "name": "asdasdasdasdasdasd-1_38",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8058215379714966,
+      -0.04855976998806,
+      -0.07273560762405396
+    ],
+    "dimensions": [
+      0.005599335301667452,
+      0.03164001554250717,
+      0.005568019580096006
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 365,
+    "name": "asdasdasdasdasdasd-1_39",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7182878255844116,
+      -0.08770868182182312,
+      -0.029754409566521645
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.006999998819082975,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 366,
+    "name": "asdasdasdasdasdasd-1_4",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220191597938538,
+      0.02055535279214382,
+      0.012639699503779411
+    ],
+    "dimensions": [
+      0.011110401712357998,
+      0.011084506288170815,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 367,
+    "name": "asdasdasdasdasdasd-1_40",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7932962775230408,
+      0.07345420122146606,
+      -0.11506934463977814
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084502562880516,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 368,
+    "name": "asdasdasdasdasdasd-1_41",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8470346927642822,
+      0.16004031896591187,
+      -0.07843676209449768
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 369,
+    "name": "asdasdasdasdasdasd-1_42",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.7520171999931335,
+      0.1474403291940689,
+      0.12632936239242554
+    ],
+    "dimensions": [
+      0.02643273025751114,
+      0.07280003279447556,
+      0.026599986478686333
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 370,
+    "name": "asdasdasdasdasdasd-1_43",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9257524609565735,
+      -0.08770869672298431,
+      -0.029754409566521645
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.006999998819082975,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 371,
+    "name": "asdasdasdasdasdasd-1_44",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.9387589693069458,
+      -0.19555982947349548,
+      0.03263883292675018
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.1708000749349594,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 372,
+    "name": "asdasdasdasdasdasd-1_45",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1178,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      0.16004031896591187,
+      -0.05343693867325783
+    ],
+    "dimensions": [
+      0.0607600063085556,
+      0.03080001473426819,
+      0.06074738875031471
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 373,
+    "name": "asdasdasdasdasdasd-1_46",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1054,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      0.19644035398960114,
+      -0.05343063548207283
+    ],
+    "dimensions": [
+      0.08960000425577164,
+      0.01960001327097416,
+      0.08894670754671097
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 374,
+    "name": "asdasdasdasdasdasd-1_47",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 510,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9257503747940063,
+      -0.029614482074975967,
+      -0.03065553866326809
+    ],
+    "dimensions": [
+      0.027995098382234573,
+      0.16798847913742065,
+      0.029801415279507637
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 375,
+    "name": "asdasdasdasdasdasd-1_48",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7758548855781555,
+      -0.11515471339225769,
+      0.04243243858218193
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 376,
+    "name": "asdasdasdasdasdasd-1_49",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8318386077880859,
+      0.07548128813505173,
+      -0.11996316909790039
+    ],
+    "dimensions": [
+      0.011110400781035423,
+      0.011084502562880516,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 377,
+    "name": "asdasdasdasdasdasd-1_5",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.03770778328180313,
+      -0.15983061492443085
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.0070000034756958485,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 378,
+    "name": "asdasdasdasdasdasd-1_50",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8675222396850586,
+      0.06954964250326157,
+      -0.10564292222261429
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084510013461113,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 379,
+    "name": "asdasdasdasdasdasd-1_51",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.7394171953201294,
+      0.1474403291940689,
+      -0.20883062481880188
+    ],
+    "dimensions": [
+      0.026432733982801437,
+      0.07280003279447556,
+      0.026599986478686333
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 380,
+    "name": "asdasdasdasdasdasd-1_52",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8939521312713623,
+      0.05002939701080322,
+      -0.058516912162303925
+    ],
+    "dimensions": [
+      0.01111039612442255,
+      0.011084510013461113,
+      0.011018154211342335
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 381,
+    "name": "asdasdasdasdasdasd-1_53",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 2792,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.822019636631012,
+      0.06884175539016724,
+      -0.04539428651332855
+    ],
+    "dimensions": [
+      0.2128000259399414,
+      0.08713270723819733,
+      0.19777432084083557
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 382,
+    "name": "asdasdasdasdasdasd-1_54",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.705275297164917,
+      -0.1955598145723343,
+      0.03263883292675018
+    ],
+    "dimensions": [
+      0.02643272653222084,
+      0.1708000749349594,
+      0.02659999392926693
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 383,
+    "name": "asdasdasdasdasdasd-1_55",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 182,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      0.057840269058942795,
+      0.09209408611059189
+    ],
+    "dimensions": [
+      0.04480000212788582,
+      0.22400009632110596,
+      0.044623907655477524
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 384,
+    "name": "asdasdasdasdasdasd-1_56",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 578,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8306320309638977,
+      -0.048559773713350296,
+      -0.07710933685302734
+    ],
+    "dimensions": [
+      0.005586086772382259,
+      0.03164001554250717,
+      0.005587433930486441
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 385,
+    "name": "asdasdasdasdasdasd-1_57",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7500882148742676,
+      0.05003011226654053,
+      -0.05851859599351883
+    ],
+    "dimensions": [
+      0.011110403575003147,
+      0.011084510013461113,
+      0.01101815328001976
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 386,
+    "name": "asdasdasdasdasdasd-1_58",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 540,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8468362092971802,
+      -0.048559777438640594,
+      -0.05780515819787979
+    ],
+    "dimensions": [
+      0.005598111543804407,
+      0.03164001554250717,
+      0.005581515375524759
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 387,
+    "name": "asdasdasdasdasdasd-1_59",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8414716124534607,
+      0.02157841995358467,
+      0.010169781744480133
+    ],
+    "dimensions": [
+      0.011110401712357998,
+      0.011084502562880516,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 388,
+    "name": "asdasdasdasdasdasd-1_6",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8860362768173218,
+      0.03545263782143593,
+      -0.023325540125370026
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 389,
+    "name": "asdasdasdasdasdasd-1_60",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 403,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8644580245018005,
+      0.030073199421167374,
+      -0.036808814853429794
+    ],
+    "dimensions": [
+      0.023650337010622025,
+      0.04496360942721367,
+      0.032461363822221756
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 390,
+    "name": "asdasdasdasdasdasd-1_61",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 597,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8438432216644287,
+      -0.048559777438640594,
+      -0.04083423689007759
+    ],
+    "dimensions": [
+      0.005598295945674181,
+      0.03164001554250717,
+      0.005583318416029215
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 391,
+    "name": "asdasdasdasdasdasd-1_62",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 408,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220427632331848,
+      0.020275015383958817,
+      -0.15578103065490723
+    ],
+    "dimensions": [
+      0.027946023270487785,
+      0.16776560246944427,
+      0.03592182323336601
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 392,
+    "name": "asdasdasdasdasdasd-1_63",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8470346927642822,
+      0.16004031896591187,
+      -0.02842451073229313
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 393,
+    "name": "asdasdasdasdasdasd-1_64",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.822028636932373,
+      -0.20115986466407776,
+      -0.08879464119672775
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 394,
+    "name": "asdasdasdasdasdasd-1_65",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.8947563171386719,
+      -0.19555982947349548,
+      -0.1789121925830841
+    ],
+    "dimensions": [
+      0.02643272653222084,
+      0.1708000749349594,
+      0.026600001379847527
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 395,
+    "name": "asdasdasdasdasdasd-1_66",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8573925495147705,
+      0.16004031896591187,
+      -0.05343063548207283
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083356142044
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 396,
+    "name": "asdasdasdasdasdasd-1_67",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 630,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.048559777438640594,
+      -0.05337803438305855
+    ],
+    "dimensions": [
+      0.061600007116794586,
+      0.04480002075433731,
+      0.06149480119347572
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 397,
+    "name": "asdasdasdasdasdasd-1_68",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 983,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      0.04814634099602699,
+      -0.05373453348875046
+    ],
+    "dimensions": [
+      0.1374800205230713,
+      0.07054590433835983,
+      0.13387933373451233
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 398,
+    "name": "asdasdasdasdasdasd-1_69",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 370,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220200538635254,
+      0.03650595247745514,
+      -0.058788202702999115
+    ],
+    "dimensions": [
+      0.13342028856277466,
+      0.05660640448331833,
+      0.12631241977214813
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 399,
+    "name": "asdasdasdasdasdasd-1_7",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 494,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201134681702,
+      -0.048559773713350296,
+      -0.028228847309947014
+    ],
+    "dimensions": [
+      0.005600000265985727,
+      0.03164001554250717,
+      0.005562750156968832
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 400,
+    "name": "asdasdasdasdasdasd-1_70",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8809242248535156,
+      0.06405801326036453,
+      -0.09238498657941818
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084510013461113,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 401,
+    "name": "asdasdasdasdasdasd-1_71",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 403,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220227956771851,
+      0.05820045247673988,
+      -0.10471394658088684
+    ],
+    "dimensions": [
+      0.023650340735912323,
+      0.04496360570192337,
+      0.032461363822221756
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 402,
+    "name": "asdasdasdasdasdasd-1_72",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 2378,
+    "materials": [
+      "mat_14",
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      0.1684403121471405,
+      -0.04122330993413925
+    ],
+    "dimensions": [
+      0.34786176681518555,
+      0.0756000354886055,
+      0.37224939465522766
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 403,
+    "name": "asdasdasdasdasdasd-1_73",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7182878255844116,
+      -0.11430869251489639,
+      -0.029754409566521645
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 404,
+    "name": "asdasdasdasdasdasd-1_74",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7970224618911743,
+      -0.20115986466407776,
+      -0.07843676209449768
+    ],
+    "dimensions": [
+      0.01666051708161831,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 405,
+    "name": "asdasdasdasdasdasd-1_75",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.8220171928405762,
+      -0.19555982947349548,
+      0.09160935878753662
+    ],
+    "dimensions": [
+      0.02643273025751114,
+      0.1708000749349594,
+      0.026600001379847527
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 406,
+    "name": "asdasdasdasdasdasd-1_76",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9257524609565735,
+      -0.11430871486663818,
+      -0.029754409566521645
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144183456897736
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 407,
+    "name": "asdasdasdasdasdasd-1_77",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 408,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7758795022964478,
+      -0.05714983493089676,
+      0.03878387063741684
+    ],
+    "dimensions": [
+      0.027942150831222534,
+      0.16780976951122284,
+      0.03511210158467293
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 408,
+    "name": "asdasdasdasdasdasd-1_78",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 403,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7795875072479248,
+      0.03007320687174797,
+      -0.036808814853429794
+    ],
+    "dimensions": [
+      0.023650340735912323,
+      0.04496360942721367,
+      0.032461363822221756
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 409,
+    "name": "asdasdasdasdasdasd-1_79",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.822028636932373,
+      -0.20115986466407776,
+      -0.018066637217998505
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 410,
+    "name": "asdasdasdasdasdasd-1_8",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8573924899101257,
+      -0.20115986466407776,
+      -0.05343063548207283
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083356142044
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 411,
+    "name": "asdasdasdasdasdasd-1_80",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7970224618911743,
+      -0.20115986466407776,
+      -0.02842451073229313
+    ],
+    "dimensions": [
+      0.01666051708161831,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 412,
+    "name": "asdasdasdasdasdasd-1_81",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7758548855781555,
+      -0.14175473153591156,
+      0.04243243858218193
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 413,
+    "name": "asdasdasdasdasdasd-1_82",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7693262100219727,
+      0.029314447194337845,
+      -0.008506599813699722
+    ],
+    "dimensions": [
+      0.011110403575003147,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 414,
+    "name": "asdasdasdasdasdasd-1_83",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 480,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7972020506858826,
+      -0.04855976998806,
+      -0.04905147850513458
+    ],
+    "dimensions": [
+      0.005598109681159258,
+      0.03164001554250717,
+      0.005577888339757919
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 415,
+    "name": "asdasdasdasdasdasd-1_84",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7540834546089172,
+      0.05738700181245804,
+      -0.07627970725297928
+    ],
+    "dimensions": [
+      0.01111039612442255,
+      0.011084502562880516,
+      0.011018154211342335
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 416,
+    "name": "asdasdasdasdasdasd-1_85",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 542,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8306320309638977,
+      -0.048559773713350296,
+      -0.029751930385828018
+    ],
+    "dimensions": [
+      0.005586086772382259,
+      0.03164001554250717,
+      0.005587433930486441
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 417,
+    "name": "asdasdasdasdasdasd-1_86",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 59,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220202922821045,
+      -0.003783539868891239,
+      0.08326732367277145
+    ],
+    "dimensions": [
+      0.03360000252723694,
+      0.050513505935668945,
+      0.061640892177820206
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 418,
+    "name": "asdasdasdasdasdasd-1_87",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 104,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.9052070379257202,
+      -0.0531817227602005,
+      -0.11976995319128036
+    ],
+    "dimensions": [
+      0.08204000443220139,
+      0.007000002544373274,
+      0.08144182711839676
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 419,
+    "name": "asdasdasdasdasdasd-1_88",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 453,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.9591552019119263,
+      -0.19555985927581787,
+      -0.10065103322267532
+    ],
+    "dimensions": [
+      0.026432741433382034,
+      0.1708000749349594,
+      0.026600001379847527
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 420,
+    "name": "asdasdasdasdasdasd-1_89",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1001,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201134681702,
+      0.04811486601829529,
+      -0.05396575108170509
+    ],
+    "dimensions": [
+      0.162400022149086,
+      0.07967600226402283,
+      0.15592871606349945
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 421,
+    "name": "asdasdasdasdasdasd-1_9",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 504,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7972020506858826,
+      -0.04855976998806,
+      -0.05780978873372078
+    ],
+    "dimensions": [
+      0.005598109681159258,
+      0.03164001554250717,
+      0.005577888339757919
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 422,
+    "name": "asdasdasdasdasdasd-1_90",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 1629,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8220201730728149,
+      -0.20115986466407776,
+      -0.05334695801138878
+    ],
+    "dimensions": [
+      0.09800001233816147,
+      0.03080001473426819,
+      0.09783262759447098
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 423,
+    "name": "asdasdasdasdasdasd-1_91",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7845573425292969,
+      0.024572324007749557,
+      0.0029418859630823135
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084506288170815,
+      0.011018152348697186
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 424,
+    "name": "asdasdasdasdasdasd-1_92",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7765193581581116,
+      0.06955009698867798,
+      -0.10564399510622025
+    ],
+    "dimensions": [
+      0.011110399849712849,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 425,
+    "name": "asdasdasdasdasdasd-1_93",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.822028636932373,
+      0.16004031896591187,
+      -0.08879464119672775
+    ],
+    "dimensions": [
+      0.016660518944263458,
+      0.016800008714199066,
+      0.01676083542406559
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 426,
+    "name": "asdasdasdasdasdasd-1_94",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 531,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8001936078071594,
+      -0.04855976998806,
+      -0.0660342425107956
+    ],
+    "dimensions": [
+      0.00559468986466527,
+      0.03164001554250717,
+      0.005583318416029215
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 427,
+    "name": "asdasdasdasdasdasd-1_95",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 408,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8682100176811218,
+      -0.05714984983205795,
+      0.03878387063741684
+    ],
+    "dimensions": [
+      0.027942150831222534,
+      0.16780976951122284,
+      0.03511210158467293
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 428,
+    "name": "asdasdasdasdasdasd-1_96",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 439,
+    "materials": [
+      "mat_11"
+    ],
+    "center": [
+      -0.9046170711517334,
+      0.14744029939174652,
+      -0.20883062481880188
+    ],
+    "dimensions": [
+      0.026432733982801437,
+      0.07280003279447556,
+      0.026599986478686333
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 429,
+    "name": "asdasdasdasdasdasd-1_97",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.7866561412811279,
+      -0.20115983486175537,
+      -0.05343913659453392
+    ],
+    "dimensions": [
+      0.01680000126361847,
+      0.016760848462581635,
+      0.01666051521897316
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 430,
+    "name": "asdasdasdasdasdasd-1_98",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 259,
+    "materials": [
+      "mat_13"
+    ],
+    "center": [
+      -0.8025668859481812,
+      0.02157861553132534,
+      0.010169325396418571
+    ],
+    "dimensions": [
+      0.011110401712357998,
+      0.011084502562880516,
+      0.011018156073987484
+    ],
+    "collections": [
+      "Collection"
+    ]
+  },
+  {
+    "id": 431,
+    "name": "asdasdasdasdasdasd-1_99",
+    "type": "MESH",
+    "parent": "GSwirl",
+    "vertices": 6796,
+    "materials": [
+      "mat_13",
+      "mat_14"
+    ],
+    "center": [
+      -0.8220200538635254,
+      -0.2333599030971527,
+      -0.05308857187628746
+    ],
+    "dimensions": [
+      0.3348800241947174,
+      0.12880009412765503,
+      0.3336837589740753
+    ],
+    "collections": [
+      "Collection"
+    ]
+  }
+]
