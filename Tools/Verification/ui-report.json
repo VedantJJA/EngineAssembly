@@ -1,0 +1,21 @@
+{
+    "passed": true,
+    "checks": [
+        "Chapter screen pauses workshop on start",
+        "One EventSystem handles custom card input",
+        "Runtime UI uses custom cards without stock buttons",
+        "Nine chapter cards are rendered",
+        "All text has a font",
+        "Chapter card click enters gameplay and restores time",
+        "Task card starts the selected section assembled for disassembly",
+        "Task card switches back to a loose assembly section",
+        "Escape pause state stops simulation",
+        "Difficulty card changes snap behavior",
+        "Editor chapter jump prepares every earlier chapter",
+        "New draft appears immediately as a chapter card",
+        "Play chapter menu has no authoring controls",
+        "Empty draft cannot be launched in play mode",
+        "Leaving menus restores simulation after multiple pages"
+    ],
+    "error": ""
+}

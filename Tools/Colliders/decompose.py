@@ -25,7 +25,10 @@ def run(request):
         import coacd
         coacd.set_log_level('warn')
         hulls = coacd.run_coacd(coacd.Mesh(vertices, faces), threshold=float(request.get('threshold', 0.05)),
-                               max_convex_hull=hull_count, decimate=True, max_ch_vertex=64, seed=0)
+                               max_convex_hull=hull_count, decimate=True, max_ch_vertex=64, seed=0,
+                               mcts_iterations=int(request.get('searchIterations', 60)),
+                               mcts_nodes=int(request.get('searchNodes', 20)),
+                               mcts_max_depth=int(request.get('searchDepth', 3)))
     elif request['backend'] == 'VHACD':
         import vhacdx
         hulls = vhacdx.compute_vhacd(vertices, faces.astype(np.uint32).reshape(-1), maxConvexHulls=hull_count,
@@ -43,7 +46,7 @@ def run(request):
                        'triangles': triangles.astype(int).tolist()})
     if not result:
         raise ValueError('Backend produced no hulls.')
-    return {'hulls': result}
+    return {'hulls': result, 'settings': {k: request[k] for k in ('backend', 'threshold', 'maxHulls', 'searchIterations', 'searchNodes', 'searchDepth') if k in request}}
 
 
 if __name__ == '__main__':
@@ -54,7 +57,7 @@ if __name__ == '__main__':
     try:
         with open(args.input, encoding='utf-8-sig') as stream:
             result = run(json.load(stream))
-        temporary = args.output + '.tmp'
+        temporary = args.output + '.' + str(os.getpid()) + '.tmp'
         with open(temporary, 'w', encoding='utf-8') as stream:
             json.dump(result, stream, allow_nan=False)
         os.replace(temporary, args.output)

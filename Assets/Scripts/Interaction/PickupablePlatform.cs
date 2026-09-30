@@ -16,23 +16,39 @@ namespace EngineAssembly
         Rigidbody body;
         readonly HashSet<Rigidbody> resting=new HashSet<Rigidbody>();
         readonly List<Passenger> passengers=new List<Passenger>();
-        struct Passenger { public Rigidbody body; public Transform parent; public bool kinematic, gravity; }
+        struct Passenger { public Rigidbody body; public Transform parent; public bool kinematic, gravity; public RigidbodyInterpolation interpolation; }
         Quaternion flipStart,flipEnd;
         float flipTime;
         void Awake() { body=GetComponent<Rigidbody>(); body.isKinematic=lockWhenReleased; }
         public bool BeginGrab()
         {
             if(IsHeld || IsFlipping) return false;
+            if(carryRestingObjects)FindStagedPassengers();
             IsHeld=true;body.isKinematic=true;
             if(carryRestingObjects)
                 foreach(var other in resting)
                 {
                     if(!other || other==body || other.transform.IsChildOf(transform) || transform.IsChildOf(other.transform)) continue;
                     var part=other.GetComponent<AssemblyPart>(); if(part && (part.IsSnapped || part.IsSelected || part.IsBusy)) continue;
-                    passengers.Add(new Passenger { body=other,parent=other.transform.parent,kinematic=other.isKinematic,gravity=other.useGravity });
-                    other.isKinematic=true;other.transform.SetParent(transform,true);
+                    passengers.Add(new Passenger { body=other,parent=other.transform.parent,kinematic=other.isKinematic,gravity=other.useGravity,interpolation=other.interpolation });
+                    other.isKinematic=true;other.interpolation=RigidbodyInterpolation.None;other.transform.SetParent(transform,true);
                 }
             onPickedUp.Invoke();return true;
+        }
+        void FindStagedPassengers()
+        {
+            // Staged kinematic parts do not produce collision-stay callbacks against a kinematic bench.
+            Physics.SyncTransforms();
+            foreach(var surface in GetComponentsInChildren<Collider>())
+            {
+                if(surface.isTrigger || surface.attachedRigidbody!=body)continue;
+                var bounds=surface.bounds;var center=new Vector3(bounds.center.x,bounds.max.y+.025f,bounds.center.z);
+                foreach(var hit in Physics.OverlapBox(center,new Vector3(bounds.extents.x,.06f,bounds.extents.z),Quaternion.identity,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                {
+                    var other=hit.attachedRigidbody;
+                    if(other && other!=body && Mathf.Abs(hit.bounds.min.y-bounds.max.y)<.075f)resting.Add(other);
+                }
+            }
         }
         public void MoveHeld(Vector3 position,Quaternion rotation)
         {
@@ -46,7 +62,7 @@ namespace EngineAssembly
             foreach(var passenger in passengers)
             {
                 if(!passenger.body)continue;
-                passenger.body.transform.SetParent(passenger.parent,true);passenger.body.isKinematic=passenger.kinematic;passenger.body.useGravity=passenger.gravity;
+                passenger.body.transform.SetParent(passenger.parent,true);passenger.body.isKinematic=passenger.kinematic;passenger.body.useGravity=passenger.gravity;passenger.body.interpolation=passenger.interpolation;
             }
             passengers.Clear();body.isKinematic=lockWhenReleased;body.useGravity=!lockWhenReleased;onReleased.Invoke();
         }

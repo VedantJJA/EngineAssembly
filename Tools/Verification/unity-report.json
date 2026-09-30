@@ -1,0 +1,33 @@
+{
+    "passed": true,
+    "utc": "2026-09-29T21:04:29.0939493Z",
+    "checks": [
+        "Valid recipe accepted",
+        "JSON round trip",
+        "Duplicate IDs rejected",
+        "Dependency cycles rejected",
+        "Non-finite snap settings rejected",
+        "Incomplete chapter cannot continue",
+        "Unrelated part rejected by socket",
+        "Earlier assembly step enforced",
+        "Base installs",
+        "Upside-down requirement enforced",
+        "Equal-priority peers eligible after flip",
+        "Socket tracks moving/flipped workpiece",
+        "Socket reservation prevents double occupancy",
+        "Explicitly interchangeable parts can exchange sockets",
+        "Completion counts occupied target slots",
+        "Completed chapter continues",
+        "Prior chapter prepared for standalone chapter selection",
+        "Edit mode previews assembled chapter",
+        "Returning to Assembly stages loose chapter parts",
+        "Rotational symmetry accepted",
+        "Axial rotation ignores spin",
+        "Axial rotation rejects reversed axis",
+        "URP preview shader imports without errors",
+        "Preview material available to player builds",
+        "Recipe disk save/load",
+        "Three-cylinder recipe contains 318 parts"
+    ],
+    "error": ""
+}

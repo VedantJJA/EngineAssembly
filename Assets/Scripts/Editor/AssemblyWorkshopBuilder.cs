@@ -62,7 +62,11 @@ namespace EngineAssembly.Editor
                 manager.Configure(workpiece,parts,AssetDatabase.LoadAssetAtPath<TextAsset>(RecipePath));
                 AddBox("Floor",new Vector3(0,-.15f,3),new Vector3(18,.3f,18),new Color(.12f,.15f,.2f));
                 float far=packing.Values.Max(v=>v.y+v.z)+.4f;
-                AddBox("Parts Table",new Vector3(0,.9f,(2+far)/2),new Vector3(9,.2f,far-2+.4f),new Color(.18f,.24f,.3f));
+                var table=AddBox("Parts Table",new Vector3(0,.9f,(2+far)/2),new Vector3(9,.2f,far-2+.4f),new Color(.18f,.24f,.3f));
+                table.AddComponent<PickupablePlatform>();
+                var managerSettings=new SerializedObject(manager);managerSettings.FindProperty("trayFrame").objectReferenceValue=table.transform;managerSettings.ApplyModifiedPropertiesWithoutUndo();
+                foreach(var d in recipe.parts) { d.trayPosition=table.transform.InverseTransformPoint(d.trayPosition);d.trayRotation=Quaternion.Inverse(table.transform.rotation)*d.trayRotation; }
+                AssemblyRecipeStore.Save(recipe,"three-cylinder");AssetDatabase.ImportAsset(RecipePath);
                 AddBox("Engine Stand",new Vector3(0,.45f,0),new Vector3(2,.9f,1.8f),new Color(.22f,.28f,.34f));
                 AddBox("Portable Work Platform",new Vector3(-3,1,0),new Vector3(1.2f,.15f,.9f),new Color(.12f,.3f,.36f)).AddComponent<PickupablePlatform>();
                 var player=new GameObject("Player");player.transform.position=new Vector3(0,0,-4);var controller=player.AddComponent<CharacterController>();controller.height=1.8f;controller.center=new Vector3(0,.9f,0);controller.radius=.25f;

@@ -9,6 +9,7 @@ Shader "EngineAssembly/GhostHologramURP"
         _PulseIntensity("Pulse intensity",Range(0,1))=0.08
         _AlphaMultiplier("Opacity",Range(0,1))=1
         _SurfaceOffset("Surface offset",Float)=0
+        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("Depth test",Float)=4
     }
     SubShader
     {
@@ -19,7 +20,7 @@ Shader "EngineAssembly/GhostHologramURP"
             Tags { "LightMode"="SRPDefaultUnlit" }
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
-            ZTest LEqual
+            ZTest [_ZTest]
             Cull Back
             HLSLPROGRAM
             #pragma vertex Vert

@@ -1,0 +1,22 @@
+{
+    "passed": true,
+    "checks": [
+        "Mobile uses Easy placement",
+        "No walking controller or desktop interface",
+        "One touch EventSystem",
+        "Custom cards without stock buttons",
+        "Cards cover every uninstalled current chapter part",
+        "Cards sorted by assembly priority",
+        "Every component has thumbnail artwork",
+        "Target tap requires card selection",
+        "Later priority card cannot bypass assembly order",
+        "Selecting a card picks up its actual component",
+        "Engine rotates with selected ghost",
+        "Tapping visible imported CAD ghost starts installation after rotation",
+        "Installation removes its card",
+        "Installed component matches rotated socket",
+        "Chapter selection assembles all earlier sections",
+        "Changing chapters clears selection and replaces card strip"
+    ],
+    "error": ""
+}

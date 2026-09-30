@@ -40,7 +40,7 @@ namespace EngineAssembly.Editor
         [Serializable] class Result { public Hull[] hulls; }
         [Serializable] class LocalSettings { public string python; }
         [MenuItem("Tools/Engine Assembly/Batch Setup Parts")]
-        public static void ShowWindow()=>GetWindow<AssemblyBatchSetup>("Assembly batch");
+        public static void ShowWindow() { var window=GetWindow<AssemblyBatchSetup>("Assembly batch");window.minSize=new Vector2(470,600); }
         void OnEnable()
         {
             python=EditorPrefs.GetString("EngineAssembly.ColliderPython","");
@@ -56,6 +56,19 @@ namespace EngineAssembly.Editor
             using(new EditorGUI.DisabledScope(running))
             {
                 if(GUILayout.Button("Use Hierarchy selection")) { selected.Clear();foreach(var go in Selection.gameObjects)if(go.scene.IsValid())selected.Add(go); }
+                EditorGUILayout.BeginHorizontal();
+                if(GUILayout.Button("Select all"))
+                {
+                    selected.Clear();
+                    for(int s=0;s<SceneManager.sceneCount;s++)
+                    {
+                        var scene=SceneManager.GetSceneAt(s);if(!scene.isLoaded)continue;
+                        foreach(var root in scene.GetRootGameObjects())
+                            if(root.GetComponentsInChildren<MeshFilter>(true).Any(m=>m.sharedMesh && !m.GetComponentInParent<GeneratedColliderGroup>()))selected.Add(root);
+                    }
+                }
+                if(GUILayout.Button("Clear selection"))selected.Clear();
+                EditorGUILayout.EndHorizontal();
                 scroll=EditorGUILayout.BeginScrollView(scroll,GUILayout.Height(230));
                 for(int s=0;s<SceneManager.sceneCount;s++)
                 {

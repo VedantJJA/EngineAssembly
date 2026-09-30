@@ -8,6 +8,7 @@ Deliverables:
 - `Assets/Model/Edit/3cyl_Labeled.fbx`: export containing the same mesh/empty hierarchy for Unity.
 - `ModelReview/parts_manifest.csv`: every original CAD object mapped to its new name, chapter, priority, parent, and identification notes. Motor source rows map to one joined object.
 - `ModelReview/validation.json`: geometry and FBX round-trip checks.
+- `ModelReview/geometry_audit.json`: exhaustive source-to-labeled-to-FBX geometry audit, including each source object's vertex coverage and bearing connected components.
 - `ModelReview/parts_contact_sheet.png`: isolated visual reference for original Part1 through Part59.
 - `ModelReview/labeled_overview.png`: assembled model after reorganization.
 
@@ -28,6 +29,12 @@ The root is `000_Three_Cylinder_Engine`. Chapter containers and subgroup contain
 | 9 | 900 | Accessory brackets, alternator, starter, idler, combined GSwirl motor, wiring, drive belt |
 
 The three-digit prefix on a mesh is its assembly priority, ascending within its chapter. Equal prefixes are intentionally unordered peers. The suffix identifies the instance and does not impose assembly order. Example: `201_Piston_Cyl01_01` and `201_Piston_Cyl02_01` have the same priority.
+
+## Bearing and omitted-part audit
+
+The exhaustive audit accounts for all 430 source mesh objects, 577,274 vertices and 1,154,334 faces. The 318 labeled parts contain every original vertex at its original world location within 0.00001 source units; the FBX also passes this check. Only the 113-object GSwirl motor was joined. Rod caps, upper/lower bearing shells and other independently installed source objects remain separate.
+
+Each of the six source JIS 6203 bearings already consists of a single mesh with three connected components: two races (692 vertices each) and **one ball (259 vertices)**. The labeled Blender file and Unity-imported FBX preserve these components as one selectable bearing part. The supplied converted Blender source does not contain a complete circle of balls; this is not a loss caused by labeling or merging. No extra rolling elements were invented or duplicated. Other source bearing geometry is likewise included in the full vertex audit.
 
 All bolts, screws, studs and nuts within a chapter share its `x90` priority. There is no artificial bolt-by-bolt ordering. Retaining clips and keys remain at the step where they belong. Chapter and subgroup containers are organizational nodes, not installable parts.
 
@@ -56,3 +63,7 @@ FBX was reimported into Blender to check all names, parents and vertex counts. A
 ## Reproduction
 
 Model-preparation scripts are under `Tools/EngineModel`. Run `organize_engine.py` using Blender against the original source, not against the labeled output. `verify_export.py` reopens both source and output, checks the merged motor positions, renders the result, and reimports the FBX to check its hierarchy.
+
+## Revised runtime assembly process
+The version-2 runtime recipe now supersedes the original filename-derived teaching sequence and chapter-wide fastener priority rule. The original 318 CAD mesh IDs remain unchanged. See ../Docs/Subassemblies.md and assembly-order-review.json for the seven complete-unit installation steps, explicit mechanical dependencies and original-pose verification.
+

@@ -76,13 +76,14 @@ namespace EngineAssembly
         }
         void Update()
         {
-            if (!IsSelected) return;
+            if (!IsSelected || (Manager && Manager.Interaction == WorkshopInteraction.Move)) { if (visual && IsSelected) visual.Clear(); return; }
+            if(Manager && Manager.Mode==WorkshopMode.Assembly && (Manager.Difficulty==SnapDifficulty.Easy || Manager.Task==AssemblyTask.Disassemble)) { if(visual)visual.Clear();return; }
             Candidate = FindBestSocket();
             bool ready = Candidate && Evaluate(Candidate, true, out _);
             if (Candidate)
             {
                 Evaluate(Candidate, true, out string reason); RejectionReason = reason;
-                GetVisual().ShowGhost(this, Candidate, ready ? AssemblyVisual.Ready : AssemblyVisual.Waiting);
+                GetVisual().ShowGhost(this, Candidate, ready ? AssemblyVisual.Ready : AssemblyVisual.Waiting,true);
             }
             else { RejectionReason = "Move toward a compatible socket."; if (visual) visual.Clear(); }
             if (ready && !snapOnRelease) TrySnap();
@@ -99,10 +100,10 @@ namespace EngineAssembly
         }
         public void Select() => BeginGrab();
         public void Deselect() => Release();
-        public bool Release()
+        public bool Release(bool attemptSnap = true)
         {
             if (!IsSelected) return false;
-            bool snapped = TrySnap();
+            bool snapped = attemptSnap && (!Manager || (Manager.Interaction == WorkshopInteraction.Build && Manager.Difficulty != SnapDifficulty.Easy)) && TrySnap();
             if (!snapped) { State = AssemblyPartState.Loose; SetPhysics(false); if (visual) visual.Clear(); }
             onDeselected.Invoke(); return snapped;
         }
@@ -145,20 +146,35 @@ namespace EngineAssembly
             if (!socket || !socket.CanAcceptPart(this)) { reason = "Socket occupied or incompatible."; return false; }
             if (Manager && !Manager.CanInstall(this, socket, out reason)) return false;
             if (proximity && Vector3.Distance(AnchorWorldPosition, socket.SnapPosition) > snapDistanceThreshold) { reason = "Move closer to the target."; return false; }
-            if (proximity && RotationError(AnchorWorldRotation, socket.SnapRotation, rotationMode, rotationalSymmetry) > snapAngleThreshold) { reason = "Rotate the part to match the target."; return false; }
+            if (proximity && (!Manager || Manager.Difficulty == SnapDifficulty.Hard) && RotationError(AnchorWorldRotation, socket.SnapRotation, rotationMode, rotationalSymmetry) > snapAngleThreshold) { reason = "Rotate the part to match the target."; return false; }
             return true;
         }
         public bool TrySnap() => SnapToSocket(FindBestSocket());
-        public bool SnapToSocket(AssemblySocket socket)
+        public bool SnapToSocket(AssemblySocket socket) => StartSnap(socket, true);
+        // Only the line-of-sight guide calls this after its geometry and occlusion raycasts.
+        internal bool GuidedSnap(AssemblySocket socket)
+        {
+            if(!IsSelected || !Manager || Manager.Difficulty!=SnapDifficulty.Easy)return false;
+            bool snapped=StartSnap(socket,false);if(snapped)onDeselected.Invoke();return snapped;
+        }
+        bool StartSnap(AssemblySocket socket, bool proximity)
         {
             string reason = "";
-            if (IsSnapped || IsBusy || !Evaluate(socket, true, out reason))
+            if (IsSnapped || IsBusy || !Evaluate(socket, proximity, out reason))
             {
                 RejectionReason = IsSnapped || IsBusy ? "Part already installed or moving." : reason;
                 onSnapRejected.Invoke(); return false;
             }
             if (!socket.Reserve(this)) return false;
-            reservedSocket = socket; State = AssemblyPartState.Snapping; SetPhysics(true);
+            if(proximity && Manager && Manager.Mode==WorkshopMode.Assembly && Manager.Interaction==WorkshopInteraction.Build)
+            {
+                var player=FindAnyObjectByType<PlayerAssemblyController>();var guide=Manager.GetComponent<AssemblyEasyGuide>();
+                if(player && player.ViewCamera && guide && !guide.VisibleFrom(this,player.ViewCamera))
+                {
+                    socket.ReleaseReservation(this);RejectionReason="Move until you can see the target surface.";onSnapRejected.Invoke();return false;
+                }
+            }
+            RejectionReason="";reservedSocket = socket; State = AssemblyPartState.Snapping; SetPhysics(true);
             if (visual) visual.Clear();
             snapRoutine = StartCoroutine(SnapRoutine(socket)); return true;
         }
@@ -215,7 +231,8 @@ namespace EngineAssembly
             if (!Body) return;
             if (!Body.isKinematic) { Body.linearVelocity = Vector3.zero; Body.angularVelocity = Vector3.zero; }
             Body.isKinematic = kinematic; Body.useGravity = !kinematic && useGravityWhenLoose;
-            Body.interpolation = RigidbodyInterpolation.Interpolate;
+            // Interpolating a kinematic child in world space fights its moving socket parent.
+            Body.interpolation = kinematic ? RigidbodyInterpolation.None : RigidbodyInterpolation.Interpolate;
         }
     }
 }

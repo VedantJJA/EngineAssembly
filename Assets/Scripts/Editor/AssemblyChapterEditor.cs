@@ -46,6 +46,20 @@ namespace EngineAssembly.Editor
             var chapter=recipe.chapters[chapterIndex];
             chapter.title=EditorGUILayout.TextField("Chapter title",chapter.title);
             chapter.description=EditorGUILayout.TextField("Instructions",chapter.description);
+            if(!Application.isPlaying)
+            {
+                var art=AssetDatabase.LoadAssetAtPath<AssemblyChapterArtwork>("Assets/Resources/AssemblyChapterArtwork.asset");
+                var previous=art?art.Find(recipe.title,chapter.id):null;
+                var picture=(Texture2D)EditorGUILayout.ObjectField("Chapter card image",previous,typeof(Texture2D),false);
+                if(picture!=previous)
+                {
+                    if(!art) { art=CreateInstance<AssemblyChapterArtwork>();AssetDatabase.CreateAsset(art,"Assets/Resources/AssemblyChapterArtwork.asset"); }
+                    Undo.RecordObject(art,"Set chapter card image");
+                    var entry=art.cards.Find(c=>c.recipeTitle==recipe.title && c.chapterId==chapter.id);
+                    if(entry==null) { entry=new AssemblyChapterArtwork.Card{recipeTitle=recipe.title,chapterId=chapter.id};art.cards.Add(entry); }
+                    entry.image=picture;EditorUtility.SetDirty(art);AssetDatabase.SaveAssets();
+                }
+            }
             EditorGUILayout.BeginHorizontal();
             if(GUILayout.Button("Move chapter earlier") && chapterIndex>0) { recipe.chapters.RemoveAt(chapterIndex);recipe.chapters.Insert(--chapterIndex,chapter); }
             if(GUILayout.Button("Move chapter later") && chapterIndex<recipe.chapters.Count-1) { recipe.chapters.RemoveAt(chapterIndex);recipe.chapters.Insert(++chapterIndex,chapter); }
@@ -75,6 +89,8 @@ namespace EngineAssembly.Editor
                 part.isBase=EditorGUILayout.Toggle("Preset base",part.isBase);
                 part.geometryGroup=EditorGUILayout.TextField("Interchangeable geometry ID",part.geometryGroup);
                 part.parentPartId=EditorGUILayout.TextField("Socket parent part ID",part.parentPartId);
+                if(!string.IsNullOrEmpty(part.subAssemblyId))EditorGUILayout.LabelField("Bench subassembly",part.subAssemblyId);
+                if(recipe.subAssemblies.Any(g=>g.rootPartId==part.id))EditorGUILayout.HelpBox("This step installs the complete subassembly. Its member prerequisites must remain before this step.",MessageType.Info);
                 string dependencies=EditorGUILayout.TextField("Prerequisite IDs (comma)",string.Join(",",part.prerequisites));
                 part.prerequisites=dependencies.Split(',').Select(s=>s.Trim()).Where(s=>s.Length>0).Distinct().ToList();
                 part.orientation=(AssemblyOrientation)EditorGUILayout.EnumPopup("Required base orientation",part.orientation);
@@ -119,7 +135,7 @@ namespace EngineAssembly.Editor
         {
             var manager=FindAnyObjectByType<AssemblyManager>();var scene=ScenePart(part.id);
             if(!manager || !scene)throw new InvalidOperationException("Manager or part is missing from this scene.");
-            Transform frame=target?(string.IsNullOrEmpty(part.parentPartId)?manager.AssemblyRoot:ScenePart(part.parentPartId)?.transform):manager.TrayFrame;
+            Transform frame=target?manager.TargetFrame(part):manager.TrayFrame;
             if(!frame)throw new InvalidOperationException("Missing pose reference frame.");
             if(target) { part.targetPosition=frame.InverseTransformPoint(scene.transform.position);part.targetRotation=Quaternion.Inverse(frame.rotation)*scene.transform.rotation; }
             else { part.trayPosition=frame.InverseTransformPoint(scene.transform.position);part.trayRotation=Quaternion.Inverse(frame.rotation)*scene.transform.rotation; }

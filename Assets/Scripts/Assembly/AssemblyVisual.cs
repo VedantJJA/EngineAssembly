@@ -15,18 +15,20 @@ namespace EngineAssembly
         MaterialPropertyBlock block;
         float flashUntil;
         bool overlay;
+        bool xray;
         static Material material;
-        public void ShowGhost(AssemblyPart part, AssemblySocket target, Color color)
+        static Material xrayMaterial;
+        public void ShowGhost(AssemblyPart part, AssemblySocket target, Color color, bool throughWalls=false)
         {
             if (!target) { Clear(); return; }
-            if (!visualRoot || owner != part || overlay) Build(part,false);
+            if (!visualRoot || owner != part || overlay || xray!=throughWalls) Build(part,false,throughWalls);
             socket=target; flashUntil=0;
             if (part.Manager && !part.Manager.CanInstall(part,target,out _)) color=Blocked;
             Tint(color); UpdatePose();
         }
-        public void Hover(AssemblyPart part, bool allowed)
+        public void Hover(AssemblyPart part, bool allowed, bool throughWalls=false)
         {
-            if (!visualRoot || !overlay || owner!=part) Build(part,true);
+            if (!visualRoot || !overlay || owner!=part || xray!=throughWalls) Build(part,true,throughWalls);
             socket=null; Tint(allowed?new Color(.5f,.9f,1,.16f):Blocked);
         }
         public void Flash(AssemblyPart part)
@@ -34,15 +36,16 @@ namespace EngineAssembly
             if (part.Manager && part.Manager.IsPreparing) return;
             Build(part,true); Tint(Ready); flashUntil=Time.unscaledTime+.35f;
         }
-        void Build(AssemblyPart part, bool isOverlay)
+        void Build(AssemblyPart part, bool isOverlay, bool throughWalls=false)
         {
-            Clear(); owner=part; overlay=isOverlay;
+            Clear(); owner=part; overlay=isOverlay;xray=throughWalls;
             if (!material) material=Resources.Load<Material>("AssemblyGhost");
             if (!material) { Debug.LogError("Missing Resources/AssemblyGhost material.",this); return; }
+            if(throughWalls && !xrayMaterial) { xrayMaterial=new Material(material){name="Assembly Hint XRay",hideFlags=HideFlags.HideAndDontSave};xrayMaterial.SetInt("_ZTest",(int)CompareFunction.Always); }
             visualRoot=new GameObject(isOverlay?"Part Highlight":"Snap Preview") { hideFlags=HideFlags.DontSave, layer=2 };
             foreach (var filter in part.GetComponentsInChildren<MeshFilter>(true))
             {
-                if (!filter.sharedMesh || filter.GetComponentInParent<AssemblyPart>()!=part || !filter.GetComponent<MeshRenderer>()) continue;
+                if (!filter.sharedMesh || !(part.Manager?part.Manager.OwnsMesh(part,filter):filter.GetComponentInParent<AssemblyPart>()==part) || !filter.GetComponent<MeshRenderer>()) continue;
                 var go=new GameObject("Visual") { hideFlags=HideFlags.DontSave, layer=2 };
                 go.transform.SetParent(visualRoot.transform,false);
                 Matrix4x4 local=part.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix;
@@ -50,7 +53,7 @@ namespace EngineAssembly
                 go.AddComponent<MeshFilter>().sharedMesh=filter.sharedMesh;
                 var renderer=go.AddComponent<MeshRenderer>();
                 var materials=new Material[filter.sharedMesh.subMeshCount];
-                for(int i=0;i<materials.Length;i++) materials[i]=material;
+                for(int i=0;i<materials.Length;i++) materials[i]=throughWalls?xrayMaterial:material;
                 renderer.sharedMaterials=materials;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
                 renderers.Add(renderer);
             }

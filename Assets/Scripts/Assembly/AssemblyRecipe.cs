@@ -7,6 +7,9 @@ using UnityEngine;
 namespace EngineAssembly
 {
     public enum WorkshopMode { Assembly, Edit }
+    public enum SnapDifficulty { Hard, Medium, Easy }
+    public enum WorkshopInteraction { Build, Move }
+    public enum AssemblyTask { Assemble, Disassemble }
     public enum AssemblyOrientation { Any, Upright, UpsideDown }
     public enum SnapRotationMode { Exact, Axial, Free }
     [Serializable] public class ChapterDefinition
@@ -21,6 +24,7 @@ namespace EngineAssembly
         public int order = 1;
         public bool isBase;
         public string geometryGroup = "", parentPartId = "";
+        public string subAssemblyId = "";
         public List<string> prerequisites = new List<string>();
         public Vector3 targetPosition, trayPosition;
         public Quaternion targetRotation = Quaternion.identity, trayRotation = Quaternion.identity;
@@ -29,16 +33,24 @@ namespace EngineAssembly
         public float snapDistance = .15f, snapAngle = 45f;
         public int symmetry = 1;
     }
+    [Serializable] public class SubAssemblyDefinition
+    {
+        public string id, rootPartId, previewPartId;
+        public Vector3 benchPosition = new Vector3(1.5f,.3f,0);
+        public Vector3 focusCenter;
+        public float focusRadius = .65f;
+    }
     [Serializable] public class AssemblyRecipe
     {
         public int version = 1;
         public string title = "Engine assembly";
         public List<ChapterDefinition> chapters = new List<ChapterDefinition>();
         public List<PartDefinition> parts = new List<PartDefinition>();
+        public List<SubAssemblyDefinition> subAssemblies = new List<SubAssemblyDefinition>();
         public List<string> Validate()
         {
             var errors = new List<string>();
-            if (version != 1) errors.Add("Unsupported recipe version: " + version);
+            if (version != 1 && version != 2) errors.Add("Unsupported recipe version: " + version);
             if (chapters == null || parts == null) { errors.Add("Missing chapters or parts."); return errors; }
             if (chapters.Count == 0 || parts.Count == 0) errors.Add("A recipe needs chapters and parts.");
             var chapterIds = new HashSet<string>();
@@ -55,8 +67,24 @@ namespace EngineAssembly
                 if (!Enum.IsDefined(typeof(AssemblyOrientation), p.orientation) || !Enum.IsDefined(typeof(SnapRotationMode), p.rotationMode)) errors.Add(p.id + ": invalid orientation mode.");
                 if (p.prerequisites == null) errors.Add(p.id + ": missing prerequisites list.");
             }
-            foreach (var c in chapters.Where(c => c != null))
-                if (!parts.Any(p => p != null && p.chapterId == c.id)) errors.Add(c.id + ": empty chapter.");
+            // Empty chapters are valid authoring drafts; play selection disables them.
+            var groups = subAssemblies ?? new List<SubAssemblyDefinition>();
+            var groupIds = new HashSet<string>();var roots = new HashSet<string>();
+            foreach(var group in groups)
+            {
+                if(group==null || string.IsNullOrEmpty(group.id) || !groupIds.Add(group.id) || !roots.Add(group.rootPartId ?? "")) { errors.Add("Missing or duplicate subassembly ID/root.");continue; }
+                if(!byId.TryGetValue(group.rootPartId ?? "",out var root)) { errors.Add(group.id+": missing carrier part.");continue; }
+                var members=parts.Where(p=>p!=null && p.subAssemblyId==group.id).ToArray();
+                if(members.Length==0 || !members.Any(p=>p.id==group.previewPartId))errors.Add(group.id+": missing members/preview part.");
+                if(!string.IsNullOrEmpty(root.subAssemblyId) || root.isBase)errors.Add(group.id+": nested/preset carriers are not supported.");
+                if(!Valid(group.benchPosition) || !Valid(group.focusCenter) || !Finite(group.focusRadius) || group.focusRadius<=0)errors.Add(group.id+": invalid fixture framing.");
+                foreach(var member in members)
+                {
+                    if(member.chapterId!=root.chapterId || member.order>=root.order || member.isBase || !string.IsNullOrEmpty(member.parentPartId))errors.Add(member.id+": invalid subassembly membership/order.");
+                    if(root.prerequisites==null || !root.prerequisites.Contains(member.id))errors.Add(root.id+": carrier must depend on every member.");
+                }
+            }
+            foreach(var p in byId.Values)if(!string.IsNullOrEmpty(p.subAssemblyId) && !groupIds.Contains(p.subAssemblyId))errors.Add(p.id+": unknown subassembly.");
             foreach (var p in byId.Values)
             {
                 foreach (string id in Dependencies(p))
