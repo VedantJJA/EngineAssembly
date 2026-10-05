@@ -8,21 +8,25 @@ namespace EngineAssembly
     public class PickupablePlatform : MonoBehaviour
     {
         [SerializeField] bool lockWhenReleased=true;
+        [SerializeField] bool allowPickup=true;
         [SerializeField] bool carryRestingObjects=true;
         [SerializeField] float flipDuration=.45f;
         public UnityEvent onPickedUp=new UnityEvent(),onReleased=new UnityEvent();
         public bool IsHeld { get; private set; }
         public bool IsFlipping { get; private set; }
+        public bool CanPickUp=>allowPickup;
+        public void SetPickupAllowed(bool allowed){if(!allowed)Release();allowPickup=allowed;}
         Rigidbody body;
         readonly HashSet<Rigidbody> resting=new HashSet<Rigidbody>();
         readonly List<Passenger> passengers=new List<Passenger>();
         struct Passenger { public Rigidbody body; public Transform parent; public bool kinematic, gravity; public RigidbodyInterpolation interpolation; }
         Quaternion flipStart,flipEnd;
+        Vector3 flipCenter,flipLocalCenter;
         float flipTime;
         void Awake() { body=GetComponent<Rigidbody>(); body.isKinematic=lockWhenReleased; }
         public bool BeginGrab()
         {
-            if(IsHeld || IsFlipping) return false;
+            if(!allowPickup || IsHeld || IsFlipping) return false;
             if(carryRestingObjects)FindStagedPassengers();
             IsHeld=true;body.isKinematic=true;
             if(carryRestingObjects)
@@ -69,6 +73,7 @@ namespace EngineAssembly
         public void Flip()
         {
             if(IsFlipping)return;
+            flipCenter=GeometryCenter();flipLocalCenter=transform.InverseTransformPoint(flipCenter);
             body.isKinematic=true;flipStart=transform.rotation;flipEnd=Quaternion.AngleAxis(180,transform.right)*flipStart;
             flipTime=0;IsFlipping=true;
         }
@@ -77,7 +82,19 @@ namespace EngineAssembly
             if(!IsFlipping)return;
             flipTime+=Time.deltaTime;float t=Mathf.Clamp01(flipTime/Mathf.Max(.01f,flipDuration));
             transform.rotation=Quaternion.Slerp(flipStart,flipEnd,Mathf.SmoothStep(0,1,t));
+            transform.position+=flipCenter-transform.TransformPoint(flipLocalCenter);
             if(t>=1) { IsFlipping=false;body.isKinematic=IsHeld||lockWhenReleased; }
+        }
+        public Vector3 GeometryCenter()
+        {
+            bool first=true;var bounds=new Bounds(transform.position,Vector3.zero);
+            foreach(var renderer in GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if(!renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.GetComponentInParent<GeneratedColliderGroup>() || renderer.gameObject.hideFlags!=HideFlags.None)continue;
+                var part=renderer.GetComponentInParent<AssemblyPart>();if(part && !part.IsSnapped && part.transform!=transform)continue;
+                if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);
+            }
+            return first?transform.position:bounds.center;
         }
         void OnCollisionStay(Collision collision)
         {

@@ -20,6 +20,7 @@ namespace EngineAssembly.Editor
         [Serializable] public class Record { public string name,key; }
         [Serializable] public class Manifest { public List<Record> parts=new List<Record>(); }
         static string Hash(string value) { using(var sha=System.Security.Cryptography.SHA256.Create())return BitConverter.ToString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(value))).Replace("-","").ToLowerInvariant(); }
+        public static string GeometryKey(Mesh mesh)=>Hash(JsonUtility.ToJson(new Request{vertices=mesh.vertices,triangles=mesh.triangles}));
         public static void Export()
         {
             Directory.CreateDirectory(Cache);

@@ -1,6 +1,6 @@
 {
-    "passed": true,
-    "utc": "2026-09-29T21:04:29.0939493Z",
+    "passed": false,
+    "utc": "2026-09-30T19:12:06.3031790Z",
     "checks": [
         "Valid recipe accepted",
         "JSON round trip",
@@ -26,8 +26,7 @@
         "Axial rotation rejects reversed axis",
         "URP preview shader imports without errors",
         "Preview material available to player builds",
-        "Recipe disk save/load",
-        "Three-cylinder recipe contains 318 parts"
+        "Recipe disk save/load"
     ],
-    "error": ""
+    "error": "System.Exception: FAILED: Three-cylinder recipe contains 318 parts\r\n  at EngineAssembly.Editor.AssemblyVerification.Assert (System.Boolean condition, System.String label, System.Collections.Generic.List`1[T] checks) [0x0001b] in C:\\Users\\Vedant\\EngineAssembly\\Assets\\Scripts\\Editor\\AssemblyVerification.cs:95 \r\n  at EngineAssembly.Editor.AssemblyVerification.Run () [0x006c3] in C:\\Users\\Vedant\\EngineAssembly\\Assets\\Scripts\\Editor\\AssemblyVerification.cs:83 "
 }

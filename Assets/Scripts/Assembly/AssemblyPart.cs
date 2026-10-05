@@ -74,9 +74,17 @@ namespace EngineAssembly
             snapDistanceThreshold = definition.snapDistance; snapAngleThreshold = definition.snapAngle;
             rotationMode = definition.rotationMode; rotationalSymmetry = definition.symmetry; CacheAnchor();
         }
+        internal void ClearRecipeConfiguration()
+        {
+            if(TargetSocket)TargetSocket.gameObject.SetActive(false);
+            Definition=null;Manager=null;
+        }
         void Update()
         {
             if (!IsSelected || (Manager && Manager.Interaction == WorkshopInteraction.Move)) { if (visual && IsSelected) visual.Clear(); return; }
+            var player=FindAnyObjectByType<PlayerAssemblyController>();
+            if(player && player.Holds(this)){if(visual)visual.Clear();return;}
+            if(player && player.CurrentHeldPart==this && player.CarryMode) { if(visual)visual.Clear();return; }
             if(Manager && Manager.Mode==WorkshopMode.Assembly && (Manager.Difficulty==SnapDifficulty.Easy || Manager.Task==AssemblyTask.Disassemble)) { if(visual)visual.Clear();return; }
             Candidate = FindBestSocket();
             bool ready = Candidate && Evaluate(Candidate, true, out _);
@@ -92,6 +100,15 @@ namespace EngineAssembly
         public bool BeginGrab()
         {
             if (IsBusy || (Manager && !Manager.CanPickUp(this, out _))) return false;
+            return Grab();
+        }
+        internal bool BeginInventoryGrab(AssemblyPart stack)
+        {
+            if(!Manager || !Manager.CanCollect(this,stack,out _))return false;
+            return Grab();
+        }
+        bool Grab()
+        {
             if (IsSnapped && !Unsnap()) return false;
             State = AssemblyPartState.Held;
             SetPhysics(true);
@@ -229,8 +246,11 @@ namespace EngineAssembly
         void SetPhysics(bool kinematic)
         {
             if (!Body) return;
+            GetComponent<SubAssembly>()?.RefreshPhysics();
             if (!Body.isKinematic) { Body.linearVelocity = Vector3.zero; Body.angularVelocity = Vector3.zero; }
+            var precision=GetComponent<AssemblyPrecisionSurface>();if(precision)precision.PreparePhysics(kinematic);
             Body.isKinematic = kinematic; Body.useGravity = !kinematic && useGravityWhenLoose;
+            if(precision)precision.RefreshPhysics();
             // Interpolating a kinematic child in world space fights its moving socket parent.
             Body.interpolation = kinematic ? RigidbodyInterpolation.None : RigidbodyInterpolation.Interpolate;
         }

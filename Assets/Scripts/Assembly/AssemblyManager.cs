@@ -21,6 +21,12 @@ namespace EngineAssembly
         public UnityEvent onChapterCompleted = new UnityEvent(), onAssemblyCompleted = new UnityEvent();
         public event Action Changed;
         public AssemblyRecipe Recipe { get; private set; }
+        PCRepairChapter repair;
+        public PCRepairChapter Repair=>repair?repair:repair=GetComponent<PCRepairChapter>();
+        public bool RepairActive=>Repair && Repair.Active;
+        public bool IsPlayableChapter(string id)=>id==PCRepairChapter.ChapterId && Repair || Recipe.parts.Any(p=>p.chapterId==id);
+        internal void RegisterRepairPart(AssemblyPart part){assemblyParts.Add(part);byId[part.PartId]=part;}
+        internal void UnregisterRepairPart(AssemblyPart part){assemblyParts.Remove(part);byId.Remove(part.PartId);}
         public WorkshopMode Mode { get; private set; }
         public WorkshopInteraction Interaction { get; private set; }
         public AssemblyTask Task { get; private set; }
@@ -34,11 +40,15 @@ namespace EngineAssembly
         public void AddChapter(string title)
         {
             if (Mode != WorkshopMode.Edit || Recipe == null) return;
-            Recipe.chapters.Add(new ChapterDefinition { id=Guid.NewGuid().ToString("N"), title=string.IsNullOrWhiteSpace(title)?"New chapter":title.Trim() });
-            SelectChapter(Recipe.chapters.Count-1);
+            int index=Recipe.chapters.FindIndex(c=>c.id==PCRepairChapter.ChapterId);if(index<0)index=Recipe.chapters.Count;
+            Recipe.chapters.Insert(index,new ChapterDefinition { id=Guid.NewGuid().ToString("N"), title=string.IsNullOrWhiteSpace(title)?"New chapter":title.Trim() });
+            SelectChapter(index);
         }
         public int CurrentChapterIndex { get; private set; }
         public string CurrentChapterId => Recipe == null ? "" : Recipe.chapters[CurrentChapterIndex].id;
+        [SerializeField] bool useHeadBenchPosition;
+        [SerializeField] Vector3 headBenchPosition = new Vector3(2.4f,-.5f,0);
+        public Vector3 BenchPosition(SubAssemblyDefinition group)=>useHeadBenchPosition && group.rootPartId=="480_Complete_Cylinder_Head"?headBenchPosition:group.benchPosition;
         public Transform AssemblyRoot => assemblyRoot;
         public Transform TrayFrame => trayFrame ? trayFrame : transform;
         public IReadOnlyList<AssemblyPart> AssemblyParts => assemblyParts;
@@ -46,9 +56,9 @@ namespace EngineAssembly
         public string Status { get; private set; } = "";
         readonly Dictionary<string, AssemblyPart> byId = new Dictionary<string, AssemblyPart>();
         bool completionSent;
-        public bool ChapterComplete => Recipe != null && Recipe.parts.Any(p => p.chapterId == CurrentChapterId) && Recipe.parts.Where(p => p.chapterId == CurrentChapterId && !p.isBase).All(p => Task==AssemblyTask.Assemble?IsPlaced(p.id):!IsPlaced(p.id));
-        public int ChapterPartCount => Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase) ?? 0;
-        public int ChapterInstalledCount => Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase && IsPlaced(p.id)) ?? 0;
+        public bool ChapterComplete => RepairActive?Repair.Complete:Recipe != null && Recipe.parts.Any(p => p.chapterId == CurrentChapterId) && Recipe.parts.Where(p => p.chapterId == CurrentChapterId && !p.isBase).All(p => Task==AssemblyTask.Assemble?IsPlaced(p.id):!IsPlaced(p.id));
+        public int ChapterPartCount => RepairActive?Repair.StepCount:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase) ?? 0;
+        public int ChapterInstalledCount => RepairActive?Repair.CompletedSteps:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase && IsPlaced(p.id)) ?? 0;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ClearInstance() => Instance = null;
         void Awake() { if (!Instance) Instance = this; Difficulty=(SnapDifficulty)Mathf.Clamp(PlayerPrefs.GetInt("Assembly.SnapDifficulty",0),0,2); EnsureFrames(); }
         void Start()
@@ -65,6 +75,9 @@ namespace EngineAssembly
         void OnDestroy() { if (Instance == this) Instance = null; }
         void EnsureFrames()
         {
+            // The spawn tray is a fixed supply surface. Portable work platforms
+            // retain their own pickup setting, including in existing saved scenes.
+            if(trayFrame && trayFrame!=assemblyRoot && trayFrame.TryGetComponent<PickupablePlatform>(out var supplyTable))supplyTable.SetPickupAllowed(false);
             if (!assemblyRoot)
             {
                 assemblyRoot = new GameObject("Assembly Workpiece").transform;
@@ -84,15 +97,25 @@ namespace EngineAssembly
         public AssemblyPart FindPart(string id) => id != null && byId.TryGetValue(id, out var p) ? p : null;
         public SubAssemblyDefinition CarrierDefinition(string id)=>Recipe?.subAssemblies?.FirstOrDefault(s=>s.rootPartId==id);
         public SubAssemblyDefinition MemberGroup(AssemblyPart part)=>Recipe?.subAssemblies?.FirstOrDefault(s=>s.id==part?.Definition?.subAssemblyId);
-        public IEnumerable<AssemblyPart> Members(SubAssemblyDefinition group)=>group==null?Enumerable.Empty<AssemblyPart>():assemblyParts.Where(p=>p && p.Definition?.subAssemblyId==group.id);
+        public IEnumerable<AssemblyPart> Members(SubAssemblyDefinition group)=>group==null?Enumerable.Empty<AssemblyPart>():Recipe.parts.Where(p=>p.subAssemblyId==group.id).Select(p=>FindPart(p.id)).Where(p=>p).Select(p=>p.TargetSocket && p.TargetSocket.CurrentPart?p.TargetSocket.CurrentPart:p);
         public bool GroupComplete(SubAssemblyDefinition group)=>group!=null && Members(group).All(p=>IsPlaced(p.PartId));
         public Transform MovableFrame(AssemblyPart part)
         {
             var group=MemberGroup(part)??CarrierDefinition(part.PartId);var carrier=group==null?null:FindPart(group.rootPartId);
             return carrier && !carrier.IsSnapped?carrier.transform:assemblyRoot;
         }
+        public Transform FlipFrame()
+        {
+            var next=NextHintPart();
+            // A complete unit installs into its destination; flip that destination,
+            // rather than the loose unit that is being carried from the bench.
+            if(!next || CarrierDefinition(next.PartId)!=null)return next?TargetFrame(next.Definition):assemblyRoot;
+            return TargetFrame(next.Definition);
+        }
+        public void FlipWorkpiece(){var frame=FlipFrame();if(frame && frame.TryGetComponent<PickupablePlatform>(out var platform))platform.Flip();}
         public AssemblyPart InteractionPart(AssemblyPart part)
         {
+            if(RepairActive)return Repair.InteractionPart(part);
             var group=MemberGroup(part);var root=group==null?null:FindPart(group.rootPartId);
             return root && GroupComplete(group) && (Task==AssemblyTask.Assemble || root.IsSnapped || root.IsSelected)?root:part;
         }
@@ -123,8 +146,10 @@ namespace EngineAssembly
                     var b=mesh.sharedMesh.bounds;var matrix=root.transform.worldToLocalMatrix*mesh.transform.localToWorldMatrix;
                     for(int i=0;i<8;i++) { var corner=b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));var point=matrix.MultiplyPoint3x4(corner);if(first){bounds=new Bounds(point,Vector3.zero);first=false;}else bounds.Encapsulate(point); }
                 }
-                bool complete=GroupComplete(group);box.enabled=complete && (Task==AssemblyTask.Assemble || root.IsSnapped || root.IsSelected);
+                // The loose unit proxy must never fill cavities once the unit is installed.
+                bool complete=GroupComplete(group);box.enabled=complete && !root.IsSnapped;
                 if(complete && !first){box.center=bounds.center;box.size=bounds.size;}
+                root.GetComponent<SubAssembly>()?.RefreshPhysics();
             }
         }
         public bool IsPlaced(string id)
@@ -137,6 +162,7 @@ namespace EngineAssembly
             if (recipe == null) throw new ArgumentNullException(nameof(recipe));
             var errors = recipe.Validate();
             if (errors.Count > 0) throw new InvalidOperationException(string.Join("\n", errors));
+            Repair?.End();
             var candidates = assemblyParts.Where(p => p).ToList();
             if (candidates.GroupBy(p => p.PartId).Any(g => string.IsNullOrEmpty(g.Key) || g.Count() > 1)) errors.Add("Scene has missing or duplicate part IDs. Use Batch Setup to assign stable IDs.");
             foreach (var p in recipe.parts) if (!candidates.Any(a => a.PartId == p.id) && !(recipe.subAssemblies?.Any(s=>s.rootPartId==p.id)??false)) errors.Add("Scene part missing: " + p.id);
@@ -150,6 +176,7 @@ namespace EngineAssembly
             {
                 if(candidates.Any(p=>p.PartId==group.rootPartId))continue;
                 var go=new GameObject(group.rootPartId);UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go,gameObject.scene);
+                go.transform.localScale=assemblyRoot.lossyScale;
                 var carrier=go.AddComponent<AssemblyPart>();carrier.SetIdentity(group.rootPartId,group.rootPartId);go.AddComponent<BoxCollider>().enabled=false;
                 go.AddComponent<SubAssembly>();
                 go.AddComponent<PickupablePlatform>();
@@ -173,7 +200,8 @@ namespace EngineAssembly
                 socket.transform.SetParent(parent,false);
                 socket.transform.localPosition = d.targetPosition; socket.transform.localRotation = d.targetRotation;
             }
-            foreach (var p in candidates.Where(p => !Recipe.parts.Any(d => d.id == p.PartId))) p.gameObject.SetActive(false);
+            foreach (var p in candidates.Where(p => !Recipe.parts.Any(d => d.id == p.PartId))) { p.ClearRecipeConfiguration();p.gameObject.SetActive(false); }
+            Repair?.EnsureChapter();
             IsPreparing = false;
             SelectChapter(Mathf.Clamp(CurrentChapterIndex,0,Recipe.chapters.Count-1));
         }
@@ -199,13 +227,14 @@ namespace EngineAssembly
         public void SetMode(WorkshopMode mode)
         {
             Mode = mode;
-            if(Recipe!=null && mode==WorkshopMode.Assembly && !Recipe.parts.Any(p=>p.chapterId==CurrentChapterId))
-                CurrentChapterIndex=Mathf.Max(0,Recipe.chapters.FindIndex(c=>Recipe.parts.Any(p=>p.chapterId==c.id)));
+            if(Recipe!=null && mode==WorkshopMode.Assembly && !IsPlayableChapter(CurrentChapterId))
+                CurrentChapterIndex=Mathf.Max(0,Recipe.chapters.FindIndex(c=>IsPlayableChapter(c.id)));
             if (Recipe != null) SelectChapter(CurrentChapterIndex);
         }
         public bool SelectChapter(int index)
         {
             if (Recipe == null || index < 0 || index >= Recipe.chapters.Count) return false;
+            Repair?.End();
             IsPreparing = true; CurrentChapterIndex = index; completionSent = false;
             foreach (var p in assemblyParts.Where(p => p && p.Definition != null)) { p.CancelSnap(); p.Unsnap(true); }
             foreach (var d in Recipe.parts)
@@ -217,7 +246,7 @@ namespace EngineAssembly
             }
             foreach(var group in Recipe.subAssemblies)
             {
-                var root=byId[group.rootPartId];root.transform.SetPositionAndRotation(assemblyRoot.TransformPoint(group.benchPosition),assemblyRoot.rotation);
+                var root=byId[group.rootPartId];root.transform.SetPositionAndRotation(assemblyRoot.TransformPoint(BenchPosition(group)),assemblyRoot.rotation);
             }
             // Topological installation makes socket parenting independent of file order.
             var pending = Recipe.parts.Where(d => Recipe.chapters.FindIndex(c => c.id == d.chapterId) < index
@@ -232,17 +261,19 @@ namespace EngineAssembly
                 if (Recipe.chapters.FindIndex(c => c.id == d.chapterId) > index) byId[d.id].gameObject.SetActive(false);
             IsPreparing = false;
             RefreshCarriers();
+            if(CurrentChapterId==PCRepairChapter.ChapterId && Mode==WorkshopMode.Assembly){Task=AssemblyTask.Assemble;Repair?.Begin();}
             Status = Recipe.chapters[index].title; Changed?.Invoke(); return true;
         }
         public bool ContinueChapter()
         {
             if (Mode != WorkshopMode.Assembly || !ChapterComplete) { Report("Complete this chapter first."); return false; }
-            int next=Recipe.chapters.FindIndex(CurrentChapterIndex+1,c=>Recipe.parts.Any(p=>p.chapterId==c.id));
+            int next=Recipe.chapters.FindIndex(CurrentChapterIndex+1,c=>IsPlayableChapter(c.id));
             if (next<0) { Report("Engine assembly complete."); return false; }
             return SelectChapter(next);
         }
         public bool CanPickUp(AssemblyPart part, out string reason)
         {
+            if(RepairActive)return Repair.CanPickUp(part,out reason);
             reason = "";
             if (!part || IsPreparing || Recipe == null || part.Manager != this || part.ChapterId != CurrentChapterId) { reason = "Select this part's chapter first."; return false; }
             if (part.Definition.isBase) { reason = "Move or flip the workpiece instead."; return false; }
@@ -251,12 +282,28 @@ namespace EngineAssembly
             var group=MemberGroup(part);
             if(group!=null && IsPlaced(group.rootPartId)) { reason="Remove the completed subassembly as one unit first.";return false; }
             if(Mode==WorkshopMode.Assembly && Task==AssemblyTask.Assemble && Interaction==WorkshopInteraction.Build && !part.IsSnapped)
-                return CanInstall(part,part.TargetSocket,out reason);
+            {
+                // Staging does not require the destination to be upright yet.
+                // Installation still checks its orientation in CanInstall.
+                foreach(var id in AssemblyRecipe.Dependencies(part.Definition))if(!IsPlaced(id)){reason="First install "+(FindPart(id)?.PartDisplayName??id);return false;}
+                if(Recipe.parts.Any(p=>p.chapterId==CurrentChapterId && p.order<part.Definition.order && !IsPlaced(p.id))){reason="Complete the earlier assembly step.";return false;}
+                return true;
+            }
             if(Mode==WorkshopMode.Assembly && Task==AssemblyTask.Disassemble && Interaction==WorkshopInteraction.Build && !part.IsSnapped) { reason="This part is already removed.";return false; }
             return !part.IsSnapped || CanRemove(part,out reason);
         }
+        public bool CanCollect(AssemblyPart part,AssemblyPart stack,out string reason)
+        {
+            if(RepairActive){reason="Complete the current repair step before picking another part.";return false;}
+            reason="Carry one matching part type at a time.";
+            if(!part || !stack || !AssemblyInventory.Matches(part,stack))return false;
+            if(part.Manager!=this || part.ChapterId!=CurrentChapterId || part.Definition.isBase || part.IsSnapped || part.IsSelected || part.IsBusy || Task==AssemblyTask.Disassemble)return false;
+            var group=MemberGroup(part);if(group!=null && IsPlaced(group.rootPartId))return false;
+            reason="";return true; // Future sockets stay locked by CanInstall.
+        }
         public bool CanInstall(AssemblyPart part, AssemblySocket socket, out string reason)
         {
+            if(RepairActive)return Repair.CanInstall(part,socket,out reason);
             reason = "";
             if (!part || !socket || Recipe == null || part.Manager != this || part.ChapterId != CurrentChapterId) { reason = "This part belongs to another chapter."; return false; }
             var d = socket.TargetPart ? socket.TargetPart.Definition : part.Definition;
@@ -269,13 +316,15 @@ namespace EngineAssembly
             foreach (string dependency in AssemblyRecipe.Dependencies(d))
                 if (!IsPlaced(dependency)) { reason = "First install " + (FindPart(dependency)?.PartDisplayName ?? dependency); return false; }
             if (Recipe.parts.Any(p => p.chapterId == CurrentChapterId && p.order < d.order && !IsPlaced(p.id))) { reason = "Complete the earlier assembly step."; return false; }
-            float up = Vector3.Dot(assemblyRoot.up,Vector3.up);
+            var orientationFrame=TargetFrame(d);
+            float up = Vector3.Dot(orientationFrame.up,Vector3.up);
             if ((d.orientation == AssemblyOrientation.Upright && up < .85f) || (d.orientation == AssemblyOrientation.UpsideDown && up > -.85f))
-            { reason = d.orientation == AssemblyOrientation.Upright ? "Turn the base upright." : "Turn the base upside down."; return false; }
+            { reason = d.orientation == AssemblyOrientation.Upright ? "Turn this workpiece upright." : "Turn this workpiece upside down."; return false; }
             return true;
         }
         public bool CanRemove(AssemblyPart part, out string reason)
         {
+            if(RepairActive)return Repair.CanRemove(part,out reason);
             reason = "";
             if (part.ChapterId != CurrentChapterId || part.Definition.isBase) { reason = "This part is fixed for this chapter."; return false; }
             string id = part.InstalledSocket && part.InstalledSocket.TargetPart ? part.InstalledSocket.TargetPart.PartId : part.PartId;
@@ -292,6 +341,7 @@ namespace EngineAssembly
         {
             if (IsPreparing) return;
             RefreshCarriers();
+            if(RepairActive)Repair.OnInstalled(part);
             if (audioSource && snapSound) audioSource.PlayOneShot(snapSound);
             onPartSnapped.Invoke(part); Changed?.Invoke();
             if (Mode == WorkshopMode.Assembly && ChapterComplete && !completionSent)
@@ -315,17 +365,19 @@ namespace EngineAssembly
         }
         public AssemblyPart NextHintPart()
         {
+            if(RepairActive)return Repair.NextPart;
             if(Recipe==null)return null;
             var candidates=assemblyParts.Where(p=>p && p.gameObject.activeInHierarchy && p.ChapterId==CurrentChapterId && !p.Definition.isBase && !p.IsBusy);
             if(Task==AssemblyTask.Disassemble && Mode==WorkshopMode.Assembly)return candidates.Where(p=>p.IsSnapped && CanRemove(p,out _)).OrderByDescending(p=>p.Definition.order).FirstOrDefault();
-            var next=candidates.Where(p=>!p.IsSnapped).OrderBy(p=>p.Definition.order).ToList();
+            var next=candidates.Where(p=>!p.IsSnapped).OrderBy(p=>p.Definition.order).ThenBy(p=>Recipe.parts.IndexOf(p.Definition)).ToList();
             return next.FirstOrDefault(p=>p.TargetSocket && CanInstall(p,p.TargetSocket,out _))??next.FirstOrDefault();
         }
         public void Report(string message) { Status = message; Changed?.Invoke(); }
         public void Save(string filename)
         {
             if (Mode != WorkshopMode.Edit) throw new InvalidOperationException("Switch to Edit mode to save a recipe.");
-            string path = AssemblyRecipeStore.Save(Recipe,filename); Report("Saved " + System.IO.Path.GetFileName(path));
+            var saved=AssemblyRecipeStore.Parse(JsonUtility.ToJson(Recipe));saved.chapters.RemoveAll(c=>c.id==PCRepairChapter.ChapterId);
+            string path = AssemblyRecipeStore.Save(saved,filename); Report("Saved " + System.IO.Path.GetFileName(path));
         }
         public void CaptureTray(AssemblyPart part)
         {

@@ -65,5 +65,17 @@ FBX was reimported into Blender to check all names, parents and vertex counts. A
 Model-preparation scripts are under `Tools/EngineModel`. Run `organize_engine.py` using Blender against the original source, not against the labeled output. `verify_export.py` reopens both source and output, checks the merged motor positions, renders the result, and reimports the FBX to check its hierarchy.
 
 ## Revised runtime assembly process
-The version-2 runtime recipe now supersedes the original filename-derived teaching sequence and chapter-wide fastener priority rule. The original 318 CAD mesh IDs remain unchanged. See ../Docs/Subassemblies.md and assembly-order-review.json for the seven complete-unit installation steps, explicit mechanical dependencies and original-pose verification.
+The version-2 runtime recipe now supersedes the original filename-derived teaching sequence and chapter-wide fastener priority rule. The original 318 CAD mesh IDs remain unchanged. See ../Docs/Subassemblies.md and assembly-order-review.json and sump-timing-review.json for the eight complete-unit installation steps, explicit mechanical dependencies and original-pose verification.
+
+## Corrected cylinder-head geometry
+
+`Assets/Model/3cyl.blend` contains the corrected unlabelled CAD conversion. Comparing its 430 mesh objects with `Assets/Model/Edit/3cyl.blend` found only `Part16` changed. The corrected mesh was transferred into `401_Cylinder_Head_01` in the existing labelled Blender and FBX exports. All 318 labels, parents, transforms, materials, motor/bearing merges and split caps were retained. Both unlabelled source files remain untouched.
+
+`corrected-source-comparison.json` records the source comparison; `corrected-head-transfer.json` records the transfer. `head-openings-review.json` compares access to all twelve valve seats and twelve seals before and after correction. `corrected-fbx-verification.json` verifies all labelled parts and surfaces survive FBX export. Reproduction scripts are `inspect_corrected_source.py`, `transfer_corrected_head.py`, `check_head_openings.py` and `verify_corrected_export.py` under `Tools/EngineModel`. Run the transfer against the existing labelled model, not the raw source.
+
+The same valve-side camera shows the previous caps and partial covers in `head-before.png`, and the opened bores in `head-corrected.png`. `render_corrected_head.py` reproduces these views without saving changes to either model.
+
+| Before | Corrected |
+| --- | --- |
+| ![Covered cylinder-head bores](head-before.png) | ![Open cylinder-head bores](head-corrected.png) |
 

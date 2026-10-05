@@ -42,7 +42,7 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  yield return null;yield return null;yield return null;
  m=FindAnyObjectByType<AssemblyManager>();ui=m.GetComponent<MobileAssemblyController>();
  Assert(m.Recipe!=null && m.Recipe.Validate().Count==0,"Version 2 recipe validates");
- Assert(m.AssemblyParts.Count==325 && m.Recipe.subAssemblies.Count==7,"318 original components plus seven generated carriers");
+ Assert(m.AssemblyParts.Count(p=>p.Definition!=null && m.Recipe.parts.Any(d=>d.id==p.PartId))==317+m.Recipe.subAssemblies.Count && m.Recipe.subAssemblies.Count==8,"317 playable components plus eight generated carriers; wiring excluded");
  foreach(var p in m.AssemblyParts){var s=new SerializedObject(p);s.FindProperty("snapDuration").floatValue=0;s.ApplyModifiedPropertiesWithoutUndo();}
  var hint=m.GetComponent<AssemblyHint>();yield return null;
  Assert(hint.Enabled && hint.HighlightedPart,"Hints active by default");
@@ -58,7 +58,7 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  var late=m.FindPart(ordered.Last().id);
  Assert(!m.CanInstall(late,late.TargetSocket,out _)&&!late.BeginGrab(),difficulty+" chapter "+chapter+" blocks later-step pickup and snap");
  foreach(var d in ordered){
- if(d.orientation!=AssemblyOrientation.Any)m.AssemblyRoot.rotation=d.orientation==AssemblyOrientation.Upright?Quaternion.identity:Quaternion.Euler(180,0,0);
+ if(d.orientation!=AssemblyOrientation.Any)m.TargetFrame(d).rotation=d.orientation==AssemblyOrientation.Upright?Quaternion.identity:Quaternion.Euler(180,0,0);
  var p=m.FindPart(d.id);
  if(!m.CanInstall(p,p.TargetSocket,out var reason))throw new Exception(d.id+" cannot install: "+reason);
  var group=m.CarrierDefinition(d.id);
@@ -81,11 +81,35 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  Assert(m.ChapterComplete,difficulty+" completes chapter "+chapter+" without a deadlock");
  }
  }
+ // Valve stacks are local dependency chains; the head, not the engine, must be flipped.
+ ui.ChooseChapter(3);m.SetDifficulty(SnapDifficulty.Hard,false);yield return null;
+ var headPart=m.FindPart("401_Cylinder_Head_01");headPart.InstallImmediate(headPart.TargetSocket);
+ var valves=m.AssemblyParts.Where(p=>p.PartId.StartsWith("404_")).ToArray();var headFrame=m.TargetFrame(valves[0].Definition);m.AssemblyRoot.rotation=Quaternion.identity;headFrame.rotation=Quaternion.identity;
+ Assert(!m.CanInstall(valves[0],valves[0].TargetSocket,out _),"Valve insertion requires the loose head upside down");
+ headFrame.rotation=Quaternion.Euler(180,0,0);
+ Assert(m.CanInstall(valves[0],valves[0].TargetSocket,out _) && Vector3.Dot(m.AssemblyRoot.up,Vector3.up)>.99f,"Flipping the head enables valves without flipping the engine");
+ foreach(var valve in valves)valve.InstallImmediate(valve.TargetSocket);
+ headFrame.rotation=Quaternion.identity;
+ var firstValve=valves[0];var seat=m.AssemblyParts.Single(p=>p.PartId.StartsWith("402_") && p.Definition.prerequisites.Contains(firstValve.PartId));
+ var seal=m.AssemblyParts.Single(p=>p.PartId.StartsWith("403_") && p.Definition.prerequisites.Contains(seat.PartId));
+ var spring=m.AssemblyParts.Single(p=>p.PartId.StartsWith("405_") && p.Definition.prerequisites.Contains(seal.PartId));
+ var retainer=m.AssemblyParts.Single(p=>p.PartId.StartsWith("406_") && p.Definition.prerequisites.Contains(spring.PartId));
+ var keepers=m.AssemblyParts.Where(p=>p.PartId.StartsWith("407_") && p.Definition.prerequisites.Contains(retainer.PartId)).ToArray();
+ Assert(!m.CanInstall(spring,spring.TargetSocket,out _) && !m.CanInstall(keepers[0],keepers[0].TargetSocket,out _),"Springs and keeper halves reject missing local prerequisites");
+ foreach(var part in new[]{seat,seal,spring,retainer}.Concat(keepers)){
+ Assert(m.CanInstall(part,part.TargetSocket,out _),"One valve stack can advance independently: "+part.PartId);part.InstallImmediate(part.TargetSocket);
+ }
+ var hintSeat=m.NextHintPart();Assert(hintSeat && hintSeat.PartId.StartsWith("402_"),"Hint moves to another valve stack after completing one stack");
+ hintSeat.InstallImmediate(hintSeat.TargetSocket);
+ Assert(m.NextHintPart().PartId.StartsWith("403_") && m.NextHintPart().Definition.prerequisites.Contains(hintSeat.PartId),"Hints recommend the seal for the current stack before other seats");
+ Assert(keepers.Length==2 && m.AssemblyParts.Where(p=>p.PartId.StartsWith("402_") && p!=seat && p!=hintSeat).All(p=>!p.IsSnapped),"Both keeper halves complete one stack while other stacks remain unbuilt");
  // Carrier cannot be acquired incomplete, and placement order still applies to UI.
  ui.ChooseChapter(1);m.SetDifficulty(SnapDifficulty.Easy,false);yield return null;
  var g=m.Recipe.subAssemblies.First(s=>s.id.Contains("Cyl01"));var carrier=m.FindPart(g.rootPartId);
  Assert(!ui.SelectPart(carrier.PartId),"Mobile cannot select incomplete piston unit");
  Assert(!ui.SelectPart("206_Connecting_Rod_Big_End_Cap_Cyl01_01"),"Rod cap cannot precede piston-unit installation");
+ var pistonRoots=m.Recipe.subAssemblies.Where(s=>s.rootPartId.StartsWith("230_Piston_Rod_Unit_")).Select(s=>m.FindPart(s.rootPartId).transform).ToArray();
+ Assert(pistonRoots.Select(p=>p.parent).Distinct().Count()==3 && pistonRoots[0].parent==ui.ActiveWorkpiece && Vector3.Distance(pistonRoots[0].position,pistonRoots[1].position)>5 && Vector3.Distance(pistonRoots[1].position,pistonRoots[2].position)>5,"Each piston has its own independently focused mobile workspace");
  var first=m.NextHintPart();Assert(ui.SelectPart(first.PartId),"Mobile selects first bench component");
  yield return null;
  var camera=ui.ViewCamera;var guide=m.GetComponent<AssemblyEasyGuide>();
@@ -109,6 +133,8 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  ui.PanModel(new Vector2(50,35));var delta=frame.position-before;
  Assert(delta.magnitude>.001f&&Mathf.Abs(Vector3.Dot(delta,camera.transform.forward))<.0001f&&Quaternion.Angle(rotation,frame.rotation)<.001f,"Pan translates active subassembly in camera plane without rotating");
  Assert(Vector3.Distance(target.TargetSocket.SnapPosition,frame.TransformPoint(target.Definition.targetPosition))<.001f,"Panning keeps ghost sockets attached");
+ float zoomBefore=Vector3.Distance(ui.ViewCamera.transform.position,ui.ActiveWorkpiece.position);ui.ZoomModel(1.4f);
+ Assert(Vector3.Distance(ui.ViewCamera.transform.position,ui.ActiveWorkpiece.position)<zoomBefore && Vector3.Distance(target.TargetSocket.SnapPosition,frame.TransformPoint(target.Definition.targetPosition))<.001f,"Pinch zoom moves the camera closer without moving sockets");
  var old=frame.rotation;ui.RotateEngine(new Vector2(40,25));Assert(Quaternion.Angle(old,frame.rotation)>1,"One-finger rotation rotates active subassembly");
 #if ENABLE_INPUT_SYSTEM
  var touch=InputSystem.AddDevice<Touchscreen>();var center=camera.pixelRect.center;
@@ -156,15 +182,16 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  var local=m.Members(g).ToDictionary(p=>p,p=>rootPart.transform.InverseTransformPoint(p.transform.position));
  rootPart.MoveHeld(rootPart.transform.position+Vector3.right,Quaternion.Euler(15,30,45));
  Assert(local.All(pair=>Vector3.Distance(pair.Key.transform.position,rootPart.transform.TransformPoint(pair.Value))<.001f),"Carrying and rotating the unit preserves every member's relative pose");player.DropHeldPart();
- m.SetInteraction(WorkshopInteraction.Move);player.PickUp(rootPart);Assert(rootPart.GetComponent<PickupablePlatform>().IsHeld,"PC Move mode manipulates loose subassembly fixture instead of engine");player.DropHeldPart();m.SetInteraction(WorkshopInteraction.Build);Destroy(playerObject);yield return null;
+ player.PickUp(rootPart);Assert(player.CurrentHeldPart==rootPart && rootPart.IsSelected,"PC picks up a completed loose fixture directly without a global Move mode");player.DropHeldPart();Destroy(playerObject);yield return null;
  // Prior chapter reconstruction includes all carriers and preserves full geometry.
  ui.ChooseChapter(8);yield return null;
  Assert(m.Recipe.parts.Where(p=>p.chapterId!="chapter-9").All(p=>m.IsPlaced(p.id)),"Chapter jump reconstructs earlier subassemblies completely");
- var physical=m.AssemblyParts.Where(p=>m.CarrierDefinition(p.PartId)==null).ToArray();
+ Assert(m.Recipe.subAssemblies.Where(s=>m.IsPlaced(s.rootPartId)).All(s=>!m.FindPart(s.rootPartId).GetComponent<BoxCollider>().enabled),"Installed subassembly proxies do not fill engine cavities");
+ var physical=m.AssemblyParts.Where(p=>m.CarrierDefinition(p.PartId)==null && m.Recipe.parts.Any(d=>d.id==p.PartId)).ToArray();
  if(physical.Any(p=>p.GetComponentInChildren<GeneratedColliderGroup>(true))) {
  Assert(physical.All(p=>p.GetComponentInChildren<GeneratedColliderGroup>(true)),"Every physical component retains its CoACD hull group");
  Assert(physical.All(p=>p.GetComponents<Collider>().All(c=>!c.enabled || c.isTrigger)),"Mobile chapter changes never re-enable replaced broad colliders");
- Assert(physical.All(p=>p.GetComponent<MeshFilter>().sharedMesh.vertexCount>0),"Every physical component has a renderable mesh, including CAD wiring");
+ Assert(physical.All(p=>p.GetComponent<MeshFilter>().sharedMesh.vertexCount>0),"Every retained physical component has a renderable mesh");
  }
  ui.ChooseChapter(1);m.SetTask(AssemblyTask.Disassemble);yield return null;
  int safety=0;

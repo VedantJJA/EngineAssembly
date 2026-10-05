@@ -136,15 +136,28 @@ namespace EngineAssembly.Editor
             manager.SetMode(WorkshopMode.Edit);manager.SetInteraction(WorkshopInteraction.Move);
             var playerObject=new GameObject("Control test player");playerObject.AddComponent<CharacterController>();var cameraObject=new GameObject("View");cameraObject.transform.SetParent(playerObject.transform,false);cameraObject.AddComponent<Camera>();
             playerObject.transform.position=new Vector3(0,0,-2);var player=playerObject.AddComponent<PlayerAssemblyController>();
-            player.PickUp(a);Assert(root.GetComponent<PickupablePlatform>().IsHeld && a.IsSnapped,"Edit Move picks up the engine frame instead of displacing an installed block");
+            player.PickUpWorkpiece();Assert(root.GetComponent<PickupablePlatform>().IsHeld && a.IsSnapped,"Explicit workpiece pickup moves the engine frame without a global Move mode");
             var relative=Quaternion.Inverse(player.ViewCamera.transform.rotation)*root.rotation;
             playerObject.transform.Rotate(0,110,0);yield return null;
             Assert(Quaternion.Angle(Quaternion.Inverse(player.ViewCamera.transform.rotation)*root.rotation,relative)<.1f,"Held workpiece retains its facing side while turning");
             Assert(Vector3.Distance(a.transform.position,a.GetTargetPose(a.TargetSocket).position)<.001f && Vector3.Distance(b.transform.position,b.GetTargetPose(b.TargetSocket).position)<.001f,"Every socket stays aligned when the engine frame moves");
-            player.DropHeldPart();manager.SetInteraction(WorkshopInteraction.Build);manager.SetMode(WorkshopMode.Assembly);player.PickUp(a);
+            player.DropHeldPart();manager.SetInteraction(WorkshopInteraction.Build);manager.SetMode(WorkshopMode.Assembly);manager.SetDifficulty(SnapDifficulty.Hard,false);
+            var hullRoot=new GameObject("Test convex hulls");hullRoot.transform.SetParent(a.transform,false);hullRoot.AddComponent<GeneratedColliderGroup>();hullRoot.AddComponent<BoxCollider>();
+            AssemblyBatchSetup.AddPrecisionSurface(a.gameObject);
+            var preciseCollider=a.transform.Find("Precision CAD surface").GetComponent<MeshCollider>();
+            player.PickUp(a);
+            Assert(preciseCollider.enabled && Physics.GetIgnoreCollision(playerObject.GetComponent<CharacterController>(),preciseCollider),"Picking up a precision component ignores player collision on its active exact surface");
+            Assert(player.CarryMode && a.GetComponent<Renderer>().enabled && a.transform.localScale==Vector3.one*.1f,"Carry mode uses the actual object at its original size");
+            Assert(Physics.GetIgnoreCollision(playerObject.GetComponent<CharacterController>(),a.GetComponent<Collider>()),"Held component cannot collide with the player");
+            player.TogglePlacementMode();Assert(player.PlacementMode && a.GetComponent<Renderer>().enabled,"Q placement toggle restores world model for orientation");
+            player.TogglePlacementMode();Assert(player.CarryMode,"Q toggle returns to carrying");
             relative=Quaternion.Inverse(player.ViewCamera.transform.rotation)*a.transform.rotation;playerObject.transform.Rotate(0,-65,0);yield return null;
             Assert(Quaternion.Angle(Quaternion.Inverse(player.ViewCamera.transform.rotation)*a.transform.rotation,relative)<.1f,"Held loose part retains its facing side while turning");
             player.DropHeldPart();
+            Assert(!Physics.GetIgnoreCollision(playerObject.GetComponent<CharacterController>(),a.GetComponent<Collider>()),"Dropping restores the component's normal player collision");
+            manager.SetDifficulty(SnapDifficulty.Easy,false);player.PickUp(a);player.TogglePlacementMode();Assert(player.CarryMode && !player.PlacementMode,"Easy difficulty stays in hand mode");player.DropHeldPart(false);
+            playerObject.transform.position=new Vector3(20,-30,0);player.SendMessage("Update");
+            Assert(Vector3.Distance(playerObject.transform.position,new Vector3(0,0,-2))<.1f,"Falling below the workspace automatically respawns at the original safe point");
             // An oversized simulation hull must not hide a visible part or shift selection.
             var selection=playerObject.GetComponent<AssemblyPickupQuery>();
             var pickPart=GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<AssemblyPart>();pickPart.SetIdentity("pickup-test","Pickup test");
@@ -190,6 +203,11 @@ namespace EngineAssembly.Editor
             movable.MoveHeld(new Vector3(3,-2,0),Quaternion.Euler(0,35,0));movable.Release();
             Assert(!staged.transform.parent && stagedBody.isKinematic && staged.transform.position.x>2.9f,"Releasing bench restores passenger physics at the moved location");
             Destroy(bench);Destroy(staged);
+            var pivotObject=new GameObject("Offset CAD flip fixture");pivotObject.transform.position=new Vector3(15,1,0);var pivot=pivotObject.AddComponent<PickupablePlatform>();
+            var offset=GameObject.CreatePrimitive(PrimitiveType.Cube);offset.transform.SetParent(pivotObject.transform,false);offset.transform.localPosition=new Vector3(2,1,3);offset.transform.localScale=new Vector3(1,.5f,2);
+            var centerBefore=pivot.GeometryCenter();pivot.Flip();yield return new WaitForSeconds(.6f);
+            Assert(Vector3.Distance(centerBefore,pivot.GeometryCenter())<.001f,"Offset CAD pivot flips around the geometry centre without raising or orbiting it");
+            Destroy(pivotObject);
             manager.SetDifficulty(SnapDifficulty.Hard);
         }
         void Assert(bool condition,string label) { if(!condition)throw new Exception(label);checks.Add(label); }

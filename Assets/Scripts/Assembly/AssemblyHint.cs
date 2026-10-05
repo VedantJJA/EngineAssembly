@@ -18,12 +18,13 @@ namespace EngineAssembly
         void Refresh()
         {
             if(!Enabled || !manager) { HighlightedPart=null;source.Clear();target.Clear();return; }
-            var held=System.Linq.Enumerable.FirstOrDefault(manager.AssemblyParts,p=>p && p.IsSelected);
+            var held=System.Linq.Enumerable.FirstOrDefault(manager.AssemblyParts,p=>p && p.IsSelected && p.TargetSocket && manager.CanInstall(p,p.TargetSocket,out _));
             HighlightedPart=held?held:manager.NextHintPart();
             if(!HighlightedPart) { source.Clear();target.Clear();return; }
-            source.Hover(HighlightedPart,true,true);
-            if(held && manager.Difficulty==SnapDifficulty.Easy) { target.Clear();return; }
-            if(manager.Task==AssemblyTask.Assemble || manager.Mode==WorkshopMode.Edit)
+            var player=FindAnyObjectByType<PlayerAssemblyController>();
+            if(player && player.CurrentHeldPart==HighlightedPart && player.CarryMode)source.Clear();else source.Hover(HighlightedPart,true,true);
+            if(held) { target.Clear();return; }
+            if((manager.Task==AssemblyTask.Assemble || manager.Mode==WorkshopMode.Edit) && (!manager.RepairActive || manager.Repair.IsPlacementStep))
                 target.ShowGhost(HighlightedPart,HighlightedPart.TargetSocket,AssemblyVisual.Ready,true);
             else target.Clear();
         }

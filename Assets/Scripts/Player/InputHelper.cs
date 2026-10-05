@@ -119,6 +119,7 @@ namespace EngineAssembly
                 case KeyCode.Space: return Key.Space;
                 case KeyCode.Return: return Key.Enter;
                 case KeyCode.Tab: return Key.Tab;
+                case KeyCode.CapsLock: return Key.CapsLock;
                 case KeyCode.Escape: return Key.Escape;
                 case KeyCode.Backspace: return Key.Backspace;
                 case KeyCode.Delete: return Key.Delete;

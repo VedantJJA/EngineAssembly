@@ -38,10 +38,21 @@
         "Hint highlights next required component",
         "Hint includes source and target visual channels",
         "Hint source and ghost use through-wall depth testing",
-        "Edit Move picks up the engine frame instead of displacing an installed block",
+        "Explicit workpiece pickup moves the engine frame without a global Move mode",
         "Held workpiece retains its facing side while turning",
         "Every socket stays aligned when the engine frame moves",
+        "Picking up a precision component ignores player collision on its active exact surface",
+        "Carry mode uses the actual object at its original size",
+        "Held component cannot collide with the player",
+        "Q placement toggle restores world model for orientation",
+        "Q toggle returns to carrying",
         "Held loose part retains its facing side while turning",
+        "Dropping restores the component's normal player collision",
+        "Easy difficulty stays in hand mode",
+        "Falling below the workspace automatically respawns at the original safe point",
+        "Visible part selection works at eye height 1.65",
+        "Visible part selection works at eye height 0.9",
+        "Pickup respects solid environment occlusion",
         "Control key crouches the character collider",
         "Crouch cannot stand into a low ceiling",
         "Character stands when headroom is clear",
@@ -49,7 +60,8 @@
         "Right click zooms when hands are empty",
         "Releasing right click restores normal field of view",
         "Moving a bench carries staged kinematic parts",
-        "Releasing bench restores passenger physics at the moved location"
+        "Releasing bench restores passenger physics at the moved location",
+        "Offset CAD pivot flips around the geometry centre without raising or orbiting it"
     ],
     "error": ""
 }

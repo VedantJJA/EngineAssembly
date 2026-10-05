@@ -6,8 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/MainMenu.unity
+    guid: 1675f5b410764964b849a97143a3a206
+  - enabled: 1
+    path: Assets/Scenes/AssemblyWorkshop.unity
+    guid: 357040779167bb14eb68c9b326955e13
+  - enabled: 1
+    path: Assets/Scenes/MobileAssembly.unity
+    guid: 0a78afae0b4cd9f4290da219506ef9bc
+  - enabled: 1
+    path: Assets/Scenes/MobileEngineDisplay.unity
+    guid: 97685236ad61e064c9d57805415fcf0b
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

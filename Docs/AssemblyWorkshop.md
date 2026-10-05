@@ -1,6 +1,6 @@
 # Assembly workshop
 
-Open `Assets/Scenes/AssemblyWorkshop.unity` and press Play. The scene uses the labeled three-cylinder FBX, 318 parts, and nine chapters. Existing scenes are retained; this is the scene configured for the new workflow.
+Open `Assets/Scenes/AssemblyWorkshop.unity` and press Play. The scene uses the labeled three-cylinder FBX, 317 playable physical parts, eight subassembly carriers, and nine chapters. Motor wiring is excluded from the experience. Existing scenes are retained; this is the scene configured for the new workflow.
 
 ## Two modes
 
@@ -10,7 +10,7 @@ The chapter selector's **TASK: ASSEMBLE / DISASSEMBLE** card switches the select
 
 **Edit** (F6) previews any selected chapter with all previous chapters assembled. Tab opens chapter cards; F7 opens the authoring panel. Add a chapter, edit its name/instructions, assign parts using ALL PARTS and MOVE TO THIS CHAPTER, and edit assembly priorities. Empty chapters are saved as drafts and cannot be played. Play progression skips drafts. Save JSON before leaving Play mode to retain recipe changes.
 
-In either Edit or Play, Move mode carries the whole installed engine frame when you pick up an installed part. Every socket stays attached to that frame. Moving a loose part in Edit + Move captures its tray pose. To deliberately redefine an individual assembly target, position the loose part and use the explicit CAPTURE TARGET POSE authoring action. PREVIEW reapplies the edited recipe.
+There is no global Move mode. Use MOVE WORKPIECE in the authoring panel to carry the installed engine frame; every socket stays attached to that frame. Moving and releasing a loose part in Edit captures its tray pose. To deliberately redefine an individual assembly target, position the loose part and use CAPTURE TARGET POSE. PREVIEW reapplies the edited recipe.
 
 The dedicated Unity window at **Tools > Engine Assembly > Chapter Editor** offers more detailed authoring outside Play mode: chapter names/order, moving parts between chapters, exact target/tray poses, dependencies, socket parenting, interchangeable geometry IDs, snap radius/angle, axial/free rotation, and rotational symmetry. Select or frame a chapter's objects from this window. JSON saves made in Play mode persist after leaving Play mode.
 
@@ -18,30 +18,41 @@ JSON source files live in `Assets/AssemblyRecipes`. The generated Resources cata
 
 ## Controls
 
+The PC HUD places chapter progress at the top left, a bold shadowed instruction card at the top right, and the carried item and quantity at the bottom left. P hides/restores instructions. Fastener groups share one instruction. Captions remain available with H hints turned off; see `Docs/EngineLearning.md` and `Docs/AssemblyNarration.txt` for the authored instruction and TTS content. The controls reference is in Escape > Settings > Controls, rather than across the gameplay screen.
+
 | Input | Action |
 | --- | --- |
 | Tab | Open/close the chapter card selector |
 | F6 | Switch between Edit and Play |
 | F7 | Open chapter authoring (Edit only) |
-| Escape | Pause: Continue, Chapters, Settings, Quit |
-| M | Toggle Build / Move |
+| Escape | Pause: Continue, Chapters, Settings, Main menu, Quit |
 | H | Toggle persistent hints (enabled by default; visible through geometry) |
+| V | Toggle the screen-border arrow to the next pickup, or the held part's placement target; it hides while the target is on screen and returns when it leaves the screen |
+| Q | Toggle Carry / Placement in Hard and Medium; Easy uses Carry only |
+| R | Toggle Rotate / Move while placing a part or carrying a platform |
+| P | Hide / show the instruction card |
 | Space | Jump |
 | Hold Ctrl or C | Crouch (standing requires clear headroom) |
 | Enter | Continue after completing a chapter |
 | WASD / Shift | Walk / walk faster |
 | Mouse | Look |
 | E or left click | Pick up or release the highlighted part/platform |
-| Hold right mouse and move | Rotate the held object; with empty hands, zoom instead |
-| Mouse wheel | Move a held object closer/farther |
+| Hold right mouse and move | Manipulate the selected Rotate/Move tool in Placement mode or on a platform; otherwise zoom |
+| Hold Shift + right mouse and move | Move closer/farther when the Move tool is selected |
 | G | Release the held object |
-| F | Flip the workpiece, or the held platform, by 180 degrees |
+| F | Flip the active bench workpiece/engine, or the held platform, by 180 degrees |
 
-Use **Move workpiece** in the authoring panel to carry the installed assembly. In Play + Move mode, clicking an installed part picks up the entire workpiece. Clicking the workbench/platform in Move mode carries it and its resting parts. Build mode handles assembly snapping; Move mode never snaps on release. F flips the base so underside steps can be completed. Loose tray parts remain separate from the engine. The sample tray positions are relative to the movable workbench, so later chapters use its new position.
+Use **Move workpiece** in the authoring panel to carry the installed assembly. Clicking the base or a pickupable platform also carries it. F flips the destination workpiece required by the next assembly operation, including while holding a part. Once a piston or cylinder-head unit is complete, F flips the engine into which it will be inserted. During a bench build it flips that bench fixture. Flipping preserves the visible centre. Loose tray parts remain separate from the engine. The sample tray positions are relative to the movable workbench, so later chapters use its new position.
 
-Menus pause simulation and release the cursor. Switching chapter or F6 resets chapter placement; closing a menu preserves it. Editing a recipe and saving JSON persists part targets, tray poses, priorities and chapters; moving a bench/workpiece is a session placement, not a saved world-layout system.
+Menus pause simulation and release the cursor without dropping inventory. Switching chapter or F6 resets chapter placement; closing a menu preserves it. Tab shows a three-column grid, with six chapter cards visible together; scroll to the remaining cards and the Repair bonus. Clicking a card starts that chapter. Editing a recipe and saving JSON persists part targets, tray poses, priorities and chapters; moving a bench/workpiece is a session placement, not a saved world-layout system. In the Editor's Game view, crouch + backward (Ctrl+S) is consumed during workshop gameplay before Unity's Save shortcut; normal Editor save shortcuts remain available outside gameplay.
+
+The PC-only **Repair** bonus starts with the complete engine and guides fourteen operations to replace one timing-idler bearing. Its replacement object has a separate identity and retains the original bearing mesh and colliders. Removal steps require setting the held part aside with G; the complete idler is staged on the small platform. Installation steps use the normal difficulty and visible-ghost checks. Only the current repair part is eligible. Repair is a runtime exercise and is excluded from exported assembly JSON and mobile chapters. See [PCRepair.md](PCRepair.md).
 
 ## Difficulty and card artwork
+
+Picked-up components keep their original size and appearance. Carry mode holds the actual object steady relative to the camera, preserving the side facing you; no hand geometry is created. In Hard/Medium, Q enables Placement controls before snapping. Collect matching parts while carrying to form a single-type stack: semantic type and geometry must match, including flipped instances. Different screw specifications do not stack. All carried sockets are previewed, while assembly order still determines which are eligible; clicking an eligible socket installs its own component and reduces the inventory count. Held components ignore the player collider until released or installed. Falling below the workspace teleports the player to the starting position.
+
+`Assets/Scenes/MainMenu.unity` is the first build scene. Its custom cards open the Windows workshop or the current mobile prototype for both Android experiences. Meta Quest repair is a disabled future-experience card. Options saves desktop snap difficulty and audio volume.
 
 Escape > Settings selects **Hard** (position and rotation), **Medium** (position only; rotation aligns during snapping), or **Easy** (pick up the part, then look directly at its eligible ghost and click). E/G drops an Easy-mode part without installing it. Difficulty is remembered locally. All three enforce prerequisites, assembly priority and required base orientation. Easy mode raycasts exact target and installed-part meshes in a separate physics scene, so ghost meshes never become physical obstacles and convex hulls cannot falsely block visible engine cavities. Solid environment objects still block the view. H hints remain visible through those objects, but hints never bypass placement rules.
 
@@ -76,7 +87,15 @@ The URP preview shader uses transparent fill and a Fresnel edge: blue for a targ
 
 ## Pickupable platforms
 
+Flipping rotates around the visible workpiece's centre, including CAD models whose object origin is at an edge. The PC engine and parts table retain the original model scale. The separate head fixture sits lower, at the middle bench position shown in the layout reference (head-bench offset 2.4, -0.5, 0). The PC manager's **Use Head Bench Position / Head Bench Position** settings control this layout independently of the shared mobile recipe. Pickup preserves each object's displayed size; generated subassembly carriers inherit the engine's scale.
+
+Small ghosts accept a nearby cursor using actual visible surface samples. Shallow CAD contact overlaps with prerequisite parts are tolerated; unrelated parts and walls still block placement. Spring-seat and stem-seal ghosts now use their actual final positions in every difficulty. The corrected cylinder-head geometry opens the previously covered bores. Exact query meshes are normalized before cooking, and selection accepts either face winding without changing the project's backface setting.
+
 Add `PickupablePlatform` plus an appropriate collider to a movable bench/platform. The Rigidbody is added automatically. By default it remains kinematic on release, so it can act as a stable work surface. Its `lockWhenReleased` option allows a normal physics prop instead. Resting rigidbodies can be carried while the platform is held; their parenting and physics settings are restored on release. Parts installed on the workpiece stay attached through their sockets.
+
+The large **Parts Table** has **Allow Pickup** disabled and stays fixed. The **Portable Work Platform** beside the engine remains movable. Tray poses are packed as contiguous rectangles by part family, preserving full bolt/screw specifications; a family cannot wrap onto the opposite end of the table. All 317 playable physical components remain present in 102 families; original CAD wiring is preserved outside gameplay. The oil sump is a separate bench build (sump, baffle, four screws), then one carrier installation. Camshaft inner washers precede hub bolts and outer pulleys. `Tools/EngineModel/revise_sump_timing.py` and `revise_retainer_order.py` apply these recipe changes without replacing unrelated chapter edits; `WorkshopProcessUpdate.ApplyBatch` updates the table layout and carrier artwork in the isolated Unity project.
+
+AssemblyManager also locks its spawn tray at startup, so this setting works in existing scenes without replacing saved scene contents. The latest update passed 1,029 native PC process checks for 317 tray placements and separation of 102 families, actual camshaft washer/bolt placement, sump bench construction and carrier insertion in Easy and Hard. It also passed 73 complete-assembly checks, 31 caption/display checks, and 284 retainer/physics assertions covering three pickup/drop cycles for each of the eight carriers. Other chapters retain their authored peer order. The grouped tray preview is `Docs/Previews/GroupedPartsTable.png`.
 
 ## Batch setup and colliders
 
@@ -107,6 +126,8 @@ Backend references: [CoACD](https://github.com/SarahWeiii/CoACD), [V-HACD Python
 The old disassembly-recording and descending-order implementation was replaced. Existing script GUIDs were preserved where classes were rewritten, but old recorded JSON is not compatible with the version-1 chapter schema. The old recorded file and old scenes are retained. For another engine, batch-setup parts, add/configure AssemblyManager, capture the scene in the Chapter Editor, then author and save a recipe.
 
 Use **Tools > Engine Assembly > Run Verification** for editor checks. `Tools/Verification/compile.ps1` compiles runtime/editor code against this project's Unity references without changing the open scene. The isolated Unity test project and its cache are ignored by Git. Check the JSON reports in `Tools/Verification` for the exact assertions executed.
+
+The current PC interaction update passed 46 dedicated control/inventory checks, 24 menu checks, 61 runtime assembly checks, 11 workspace/arrow checks, and all 72 valve-stack placements in native Unity. The 16 mobile checks and 73 subassembly checks also passed. These cover identical flipped springs, exact socket identities in every difficulty, strict wall occlusion, standing/crouching, carrying while flipping the engine, Q/R mouse controls, the scoped Editor save-shortcut guard, original scale and the new head-bench position. UI previews are in `Docs/Previews/InventoryHUD.png`, `ChapterSelector.png`, `SettingsSelector.png` and `WorkshopControls.png`.
 
 The CAD model's detailed geometry and original scale remain unchanged. The rework does not optimize its polygon count or calibrate real-world AR scale. Chapter order is an educational starting point; refine the recipe for your intended teaching procedure.
 

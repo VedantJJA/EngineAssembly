@@ -36,9 +36,16 @@ namespace EngineAssembly
         Quaternion fixtureRotation;
         Vector3 fixturePosition,lastPanPointer;
         bool multiTouch,panAllowed,mousePanning;
-        Transform Workpiece=>fixture==null?manager.AssemblyRoot:manager.FindPart(fixture.rootPartId).transform;
-        Vector3 FocusCenter=>fixture==null?engineCenter:fixture.focusCenter;
-        float FocusRadius=>fixture==null?engineRadius:fixture.focusRadius;
+        Transform fixtureStage;
+        readonly Dictionary<string,Transform> workspaces=new Dictionary<string,Transform>();
+        readonly Dictionary<string,Pose> workspaceHome=new Dictionary<string,Pose>();
+        float fixtureRadius=1,zoomFactor=1,lastPinchDistance;
+        Transform Workpiece=>fixture==null?manager.AssemblyRoot:fixtureStage;
+        Vector3 FocusCenter=>fixture==null?engineCenter:Vector3.zero;
+        float FocusRadius=>fixture==null?engineRadius:fixtureRadius;
+        public Transform ActiveWorkpiece=>Workpiece;
+        public string ActiveWorkspaceId=>fixture?.id??"engine";
+        public Transform WorkspaceFor(string id)=>workspaces.TryGetValue(id,out var stage)?stage:null;
         bool ready,refreshPending,dragging,pointerActive,overUI;
         Vector2 startPointer,lastPointer;
         Rect lastSafeArea;
@@ -65,13 +72,14 @@ namespace EngineAssembly
             idlePreview=new GameObject("Floating assembly preview").AddComponent<AssemblyVisual>();idlePreview.transform.SetParent(transform,false);
             foreach(var part in manager.AssemblyParts)
             {
-                renderers[part]=part.GetComponentsInChildren<Renderer>(true).Where(r=>r.GetComponentInParent<AssemblyPart>()==part).ToArray();
+                renderers[part]=part.GetComponentsInChildren<Renderer>(true).Where(r=>r.GetComponentInParent<AssemblyPart>(true)==part).ToArray();
                 // Preserve author-disabled colliders: the CoACD bake replaces the old broad hull.
-                colliders[part]=part.GetComponentsInChildren<Collider>(true).Where(c=>c.enabled && c.GetComponentInParent<AssemblyPart>()==part).ToArray();
+                colliders[part]=part.GetComponentsInChildren<Collider>(true).Where(c=>c.enabled && c.GetComponentInParent<AssemblyPart>(true)==part).ToArray();
             }
             CreateUI();
+            AssemblyCaptionPresenter.Create(safe,manager,true);
             manager.Changed+=OnChanged;manager.onPartSnapped.AddListener(OnInstalled);
-            ready=true;RefreshChapter();UpdateViewport();
+            ready=true;PrepareFixtureStage();RefreshChapter();UpdateViewport();
             Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         }
         void OnChanged()=>refreshPending=true;
@@ -79,6 +87,7 @@ namespace EngineAssembly
         void OnDestroy()
         {
             if(manager) { manager.Changed-=OnChanged;manager.onPartSnapped.RemoveListener(OnInstalled); }
+            foreach(var stage in workspaces.Values)if(stage)Destroy(stage.gameObject);
         }
         void Update()
         {
@@ -107,7 +116,7 @@ namespace EngineAssembly
         public bool TapTarget(Vector2 screenPosition)
         {
             if(!ready || ChapterMenuOpen || !selected || selected.IsBusy || !viewCamera.pixelRect.Contains(screenPosition))return false;
-            bool result=guide.Place(viewCamera.ScreenPointToRay(screenPosition),100);
+            bool result=guide.Place(viewCamera.ScreenPointToRay(screenPosition),100,viewCamera);
             status.text=result?"Installing...":"Tap the visible ghost. Drag to turn the engine.";
             return result;
         }
@@ -133,6 +142,29 @@ namespace EngineAssembly
             var to=viewCamera.ScreenToWorldPoint(new Vector3(center.x+pixelDelta.x,center.y+pixelDelta.y,depth));
             Workpiece.position+=to-from;
         }
+        public void ZoomModel(float ratio)
+        {
+            if(!ready || ChapterMenuOpen || ratio<=0)return;
+            float next=Mathf.Clamp(zoomFactor*ratio,.4f,3.5f);float applied=next/zoomFactor;zoomFactor=next;
+            var center=Workpiece.TransformPoint(FocusCenter);
+            viewCamera.transform.position=center+(viewCamera.transform.position-center)/applied;
+        }
+        void PrepareFixtureStage()
+        {
+            foreach(var stage in workspaces.Values)if(stage)Destroy(stage.gameObject);
+            workspaces.Clear();workspaceHome.Clear();fixtureStage=null;
+            var groups=manager.Recipe.subAssemblies.Where(g=>manager.FindPart(g.rootPartId).ChapterId==manager.CurrentChapterId).OrderBy(g=>manager.FindPart(g.previewPartId).OrderIndex).ToArray();
+            for(int i=0;i<groups.Length;i++)
+            {
+                var g=groups[i];var root=manager.FindPart(g.rootPartId);
+                var stage=new GameObject("Workspace · "+root.PartDisplayName).transform;
+                stage.SetPositionAndRotation(manager.AssemblyRoot.TransformPoint(engineCenter)+Vector3.right*(8+i*8),manager.AssemblyRoot.rotation);
+                workspaces[g.id]=stage;workspaceHome[g.id]=new Pose(stage.position,stage.rotation);
+                if(root.IsSnapped)continue;
+                root.transform.SetParent(stage,false);root.transform.localRotation=Quaternion.identity;
+                root.transform.localPosition=-g.focusCenter;
+            }
+        }
         void CancelSelection()
         {
             if(!selected)return;
@@ -148,6 +180,7 @@ namespace EngineAssembly
             if(!ready)return;CancelSelection();
             fixture=null;
             manager.SelectChapter(index);chapterPanel.gameObject.SetActive(false);
+            zoomFactor=1;PrepareFixtureStage();
             cardContent.GetComponentInParent<UnityEngine.UI.ScrollRect>().horizontalNormalizedPosition=0;
             RefreshChapter();
         }
@@ -161,17 +194,15 @@ namespace EngineAssembly
                 fixture=nextFixture;
                 if(fixture!=null)
                 {
-                    var root=manager.FindPart(fixture.rootPartId).transform;
-                    root.rotation=manager.AssemblyRoot.rotation;
-                    root.position=manager.AssemblyRoot.TransformPoint(engineCenter)+Vector3.right*5-root.TransformVector(fixture.focusCenter);
-                    fixturePosition=root.position;fixtureRotation=root.rotation;
+                    fixtureStage=WorkspaceFor(fixture.id);fixtureRadius=fixture.focusRadius;
+                    var home=workspaceHome[fixture.id];fixturePosition=home.position;fixtureRotation=home.rotation;
                 }
             }
             foreach(var part in manager.AssemblyParts)
             {
                 bool visible=part.IsSnapped;
                 var group=manager.MemberGroup(part);
-                if(group!=null)visible=part.IsSnapped && (group==fixture || (fixture==null && manager.IsPlaced(group.rootPartId)));
+                if(group!=null)visible=part.IsSnapped && (fixture!=null && group.id==fixture.id || fixture==null && manager.IsPlaced(group.rootPartId));
                 else if(fixture!=null)visible=false;
                 foreach(var renderer in renderers[part])if(renderer)renderer.enabled=visible;
                 foreach(var collider in colliders[part])if(collider)collider.enabled=visible && !manager.IsCarriedMember(part);
@@ -179,16 +210,17 @@ namespace EngineAssembly
             title.text=manager.Recipe.chapters[manager.CurrentChapterIndex].title;
             actionText.text=manager.ChapterInstalledCount+" / "+manager.ChapterPartCount+" INSTALLED";
             selectionText.text=selected?selected.PartDisplayName:manager.ChapterComplete?"Section complete":"Choose a part below";
-            status.text=manager.ChapterComplete?"Continue to the next chapter":selected?"Tap a visible target to install":fixture!=null?"BUILD SUBASSEMBLY · Select a part below":"1 finger: rotate · 2 fingers: move · Tap a card";
+            status.text=manager.ChapterComplete?"Continue to the next chapter":selected?"Tap a visible target to install":fixture!=null?manager.FindPart(fixture.rootPartId).PartDisplayName+" · Separate workspace":"1 finger: rotate · 2 fingers: move / pinch to zoom";
             next.gameObject.SetActive(manager.ChapterComplete);
             var preview=manager.NextHintPart();
             idlePreview.Clear();
             RefreshCards();
-            if(focusChanged)UpdateViewport();
+            if(focusChanged) { zoomFactor=1;UpdateViewport();cardContent.GetComponentInParent<UnityEngine.UI.ScrollRect>().horizontalNormalizedPosition=0; }
         }
         void RefreshCards()
         {
-            var parts=manager.Recipe.parts.Where(d=>d.chapterId==manager.CurrentChapterId && !manager.IsPlaced(d.id)).OrderBy(d=>d.order).ThenBy(d=>d.displayName).ToArray();
+            var parts=manager.Recipe.parts.Where(d=>d.chapterId==manager.CurrentChapterId && !manager.IsPlaced(d.id)
+                && (fixture!=null?d.subAssemblyId==fixture.id:string.IsNullOrEmpty(d.subAssemblyId))).OrderBy(d=>d.order).ToArray();
             var ids=new HashSet<string>(parts.Select(d=>d.id));
             foreach(var id in cards.Keys.Where(id=>!ids.Contains(id)).ToArray()) { cards[id].gameObject.SetActive(false);Destroy(cards[id].gameObject);cards.Remove(id); }
             for(int i=0;i<parts.Length;i++)
@@ -231,9 +263,11 @@ namespace EngineAssembly
             var header=Box(safe,Panel);Anchor(header,new Vector2(0,1),Vector2.one,new Vector2(0,-184),Vector2.zero);
             Label(header,"ENGINE / LAB",22,Mint,new Vector2(28,-20),new Vector2(700,32));
             title=Label(header,"",36,TextColor,new Vector2(28,-62),new Vector2(770,84),true);
+            title.rectTransform.anchorMax=Vector2.one;title.rectTransform.sizeDelta=new Vector2(-278,84);
             actionText=Label(header,"",19,Muted,new Vector2(28,-147),new Vector2(700,28));
             var chapters=MakeCard(header,ToggleChapters);Anchor((RectTransform)chapters.transform,Vector2.one,Vector2.one,new Vector2(-224,-66),new Vector2(-24,-16));CenterLabel(chapters.transform,"CHAPTERS",20);
-            var rotate=MakeCard(safe,()=> { Workpiece.SetPositionAndRotation(fixture==null?initialPosition:fixturePosition,fixture==null?initialRotation:fixtureRotation);RotateEngine(Vector2.zero);UpdateViewport(); });
+            var home=MakeCard(header,ExperienceMenu.GoHome);Anchor((RectTransform)home.transform,Vector2.one,Vector2.one,new Vector2(-224,-128),new Vector2(-24,-78));CenterLabel(home.transform,"MAIN MENU",18);
+            var rotate=MakeCard(safe,()=> { zoomFactor=1;Workpiece.SetPositionAndRotation(fixture==null?initialPosition:fixturePosition,fixture==null?initialRotation:fixtureRotation);RotateEngine(Vector2.zero);UpdateViewport(); });
             Anchor((RectTransform)rotate.transform,new Vector2(1,0),new Vector2(1,0),new Vector2(-212,348),new Vector2(-24,400));CenterLabel(rotate.transform,"RESET VIEW",18);
             var flip=MakeCard(safe,()=>RotateEngine(new Vector2(0,600)));
             Anchor((RectTransform)flip.transform,Vector2.zero,Vector2.zero,new Vector2(24,348),new Vector2(194,400));CenterLabel(flip.transform,"FLIP",18);
@@ -247,7 +281,7 @@ namespace EngineAssembly
             var layout=cardContent.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();layout.spacing=14;layout.childControlWidth=true;layout.childControlHeight=true;layout.childForceExpandWidth=false;layout.childForceExpandHeight=true;
             cardContent.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>().horizontalFit=UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
             scroll.viewport=viewport;scroll.content=cardContent;
-            next=MakeCard(safe,()=> { if(!manager.ContinueChapter())ToggleChapters();else RefreshChapter(); });
+            next=MakeCard(safe,()=> { if(!manager.ContinueChapter())ToggleChapters();else { fixture=null;zoomFactor=1;PrepareFixtureStage();RefreshChapter();UpdateViewport(); } });
             Anchor((RectTransform)next.transform,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(-220,430),new Vector2(220,498));CenterLabel(next.transform,"CONTINUE",25);
             chapterPanel=Box(safe,Background);Stretch(chapterPanel);
             Label(chapterPanel,"CHOOSE A CHAPTER",34,Mint,new Vector2(28,-26),new Vector2(820,58),true);
@@ -272,11 +306,11 @@ namespace EngineAssembly
             lastSafeArea=Screen.safeArea;lastScreen=new Vector2Int(Screen.width,Screen.height);
             safe.anchorMin=lastSafeArea.min/new Vector2(Screen.width,Screen.height);safe.anchorMax=lastSafeArea.max/new Vector2(Screen.width,Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;
             Canvas.ForceUpdateCanvases();
-            float bottom=lastSafeArea.yMin+410*canvas.scaleFactor,top=lastSafeArea.yMax-200*canvas.scaleFactor;
+            float bottom=lastSafeArea.yMin+410*canvas.scaleFactor,top=lastSafeArea.yMax-350*canvas.scaleFactor;
             viewCamera.pixelRect=new Rect(lastSafeArea.xMin,bottom,lastSafeArea.width,Mathf.Max(100,top-bottom));
             float vertical=viewCamera.fieldOfView*Mathf.Deg2Rad*.5f;
             float horizontal=Mathf.Atan(Mathf.Tan(vertical)*viewCamera.aspect);
-            float distance=FocusRadius/Mathf.Sin(Mathf.Min(vertical,horizontal))*1.12f;
+            float distance=FocusRadius/Mathf.Sin(Mathf.Min(vertical,horizontal))*1.12f/zoomFactor;
             viewCamera.transform.SetPositionAndRotation(Workpiece.TransformPoint(FocusCenter)+new Vector3(0,0,-distance),Quaternion.identity);
         }
         void ReadPointer()
@@ -290,13 +324,15 @@ namespace EngineAssembly
                 if(touches.Length>=2)
                 {
                     Vector2 center=(touches[0].position.ReadValue()+touches[1].position.ReadValue())*.5f;
+                    float span=Vector2.Distance(touches[0].position.ReadValue(),touches[1].position.ReadValue());
                     if(!multiTouch)panAllowed=touches.Length==2 && touches.All(t=>viewCamera.pixelRect.Contains(t.position.ReadValue()) && !PointerOverUI(t.position.ReadValue()));
-                    else if(panAllowed && touches.Length==2)PanModel(center-(Vector2)lastPanPointer);
+                    else if(panAllowed && touches.Length==2) { PanModel(center-(Vector2)lastPanPointer);if(lastPinchDistance>10)ZoomModel(span/lastPinchDistance); }
                     if(touches.Length>2)panAllowed=false;
-                    multiTouch=true;pointerActive=false;lastPanPointer=center;return;
+                    multiTouch=true;pointerActive=false;lastPanPointer=center;lastPinchDistance=span;return;
                 }
                 if(multiTouch) { if(touches.Length==0)multiTouch=false;pointerActive=false;return; }
             }
+            if(Mouse.current!=null && viewCamera.pixelRect.Contains(Mouse.current.position.ReadValue()) && !PointerOverUI(Mouse.current.position.ReadValue()))ZoomModel(Mathf.Exp(Mouse.current.scroll.ReadValue().y/120*.12f));
             if(Mouse.current!=null && (Mouse.current.middleButton.isPressed || Mouse.current.middleButton.wasReleasedThisFrame))
             {
                 var point=Mouse.current.position.ReadValue();

@@ -63,7 +63,7 @@ namespace EngineAssembly.Editor
                 AddBox("Floor",new Vector3(0,-.15f,3),new Vector3(18,.3f,18),new Color(.12f,.15f,.2f));
                 float far=packing.Values.Max(v=>v.y+v.z)+.4f;
                 var table=AddBox("Parts Table",new Vector3(0,.9f,(2+far)/2),new Vector3(9,.2f,far-2+.4f),new Color(.18f,.24f,.3f));
-                table.AddComponent<PickupablePlatform>();
+                table.AddComponent<PickupablePlatform>().SetPickupAllowed(false);
                 var managerSettings=new SerializedObject(manager);managerSettings.FindProperty("trayFrame").objectReferenceValue=table.transform;managerSettings.ApplyModifiedPropertiesWithoutUndo();
                 foreach(var d in recipe.parts) { d.trayPosition=table.transform.InverseTransformPoint(d.trayPosition);d.trayRotation=Quaternion.Inverse(table.transform.rotation)*d.trayRotation; }
                 AssemblyRecipeStore.Save(recipe,"three-cylinder");AssetDatabase.ImportAsset(RecipePath);
