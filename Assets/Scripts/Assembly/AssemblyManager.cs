@@ -45,9 +45,11 @@ namespace EngineAssembly
             SelectChapter(index);
         }
         public int CurrentChapterIndex { get; private set; }
+        public int ChapterVisit { get; private set; }
         public string CurrentChapterId => Recipe == null ? "" : Recipe.chapters[CurrentChapterIndex].id;
         [SerializeField] bool useHeadBenchPosition;
         [SerializeField] Vector3 headBenchPosition = new Vector3(2.4f,-.5f,0);
+        public static Quaternion InitialFixtureRotation(SubAssemblyDefinition group)=>group.rootPartId.StartsWith("230_Piston_Rod_Unit_")?Quaternion.Euler(180,0,0):Quaternion.identity;
         public Vector3 BenchPosition(SubAssemblyDefinition group)=>useHeadBenchPosition && group.rootPartId=="480_Complete_Cylinder_Head"?headBenchPosition:group.benchPosition;
         public Transform AssemblyRoot => assemblyRoot;
         public Transform TrayFrame => trayFrame ? trayFrame : transform;
@@ -56,6 +58,10 @@ namespace EngineAssembly
         public string Status { get; private set; } = "";
         readonly Dictionary<string, AssemblyPart> byId = new Dictionary<string, AssemblyPart>();
         bool completionSent;
+        [SerializeField,Range(.1f,1)] float engineScale=.6f;
+        bool scaled;
+        public float EngineScale=>engineScale;
+        public bool RequiresWorkpieceOrientation=>!GetComponent<MobileAssemblyController>() && FindAnyObjectByType<PlayerAssemblyController>();
         public bool ChapterComplete => RepairActive?Repair.Complete:Recipe != null && Recipe.parts.Any(p => p.chapterId == CurrentChapterId) && Recipe.parts.Where(p => p.chapterId == CurrentChapterId && !p.isBase).All(p => Task==AssemblyTask.Assemble?IsPlaced(p.id):!IsPlaced(p.id));
         public int ChapterPartCount => RepairActive?Repair.StepCount:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase) ?? 0;
         public int ChapterInstalledCount => RepairActive?Repair.CompletedSteps:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase && IsPlaced(p.id)) ?? 0;
@@ -71,6 +77,9 @@ namespace EngineAssembly
             if (showWorkshopUI && !GetComponent<AssemblyWorkshopUI>()) gameObject.AddComponent<AssemblyWorkshopUI>();
             if (!GetComponent<AssemblyEasyGuide>()) gameObject.AddComponent<AssemblyEasyGuide>();
             if (!GetComponent<AssemblyHint>()) gameObject.AddComponent<AssemblyHint>();
+            if (!GetComponent<AssemblyStepAssist>()) gameObject.AddComponent<AssemblyStepAssist>();
+            if (!GetComponent<AssemblyNarrator>()) gameObject.AddComponent<AssemblyNarrator>();
+            if (FindAnyObjectByType<PlayerAssemblyController>() && !GetComponent<WorkpieceLift>()) gameObject.AddComponent<WorkpieceLift>();
         }
         void OnDestroy() { if (Instance == this) Instance = null; }
         void EnsureFrames()
@@ -104,7 +113,7 @@ namespace EngineAssembly
             var group=MemberGroup(part)??CarrierDefinition(part.PartId);var carrier=group==null?null:FindPart(group.rootPartId);
             return carrier && !carrier.IsSnapped?carrier.transform:assemblyRoot;
         }
-        public Transform FlipFrame()
+        public Transform SuggestedWorkpieceFrame()
         {
             var next=NextHintPart();
             // A complete unit installs into its destination; flip that destination,
@@ -112,7 +121,71 @@ namespace EngineAssembly
             if(!next || CarrierDefinition(next.PartId)!=null)return next?TargetFrame(next.Definition):assemblyRoot;
             return TargetFrame(next.Definition);
         }
-        public void FlipWorkpiece(){var frame=FlipFrame();if(frame && frame.TryGetComponent<PickupablePlatform>(out var platform))platform.Flip();}
+        public Transform FlipFrame()=>GetComponent<WorkpieceLift>() is WorkpieceLift lift && lift.ActiveFrame?lift.ActiveFrame:SuggestedWorkpieceFrame();
+        public void FlipWorkpiece(){var lift=GetComponent<WorkpieceLift>();if(lift){lift.FlipActive();return;}var frame=FlipFrame();if(frame && frame.TryGetComponent<PickupablePlatform>(out var platform))platform.Flip(WorkpieceBounds(frame).center);}
+        public Bounds WorkpieceBounds(Transform frame)
+        {
+            if(frame.TryGetComponent<PickupablePlatform>(out var platform) && platform.TryGeometryBounds(out var installed))return installed;
+            // An empty fixture has no visible meshes yet. Use its next component's
+            // target geometry, rather than the off-centre CAD transform origin.
+            var next=NextHintPart();var group=CarrierDefinition(frame.GetComponent<AssemblyPart>()?.PartId);
+            if(group!=null && (!next || TargetFrame(next.Definition)!=frame))next=FindPart(group.previewPartId);
+            var bounds=new Bounds(frame.position,Vector3.zero);bool first=true;
+            if(!next || !next.TargetSocket || TargetFrame(next.Definition)!=frame)return bounds;
+            var pose=next.GetTargetPose(next.TargetSocket);
+            var target=Matrix4x4.TRS(pose.position,pose.rotation,next.transform.lossyScale)*next.transform.worldToLocalMatrix;
+            foreach(var mesh in next.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if(!mesh.sharedMesh || mesh.GetComponentInParent<GeneratedColliderGroup>() || !OwnsMesh(next,mesh))continue;
+                var b=mesh.sharedMesh.bounds;var matrix=target*mesh.transform.localToWorldMatrix;
+                for(int i=0;i<8;i++)
+                {
+                    var point=matrix.MultiplyPoint3x4(b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1)));
+                    if(first){bounds=new Bounds(point,Vector3.zero);first=false;}else bounds.Encapsulate(point);
+                }
+            }
+            return bounds;
+        }
+        // Size fixtures for the completed unit, including geometry which is still
+        // on a supply bench. Parent sockets are evaluated at their assembled poses.
+        public Bounds PlannedWorkpieceBounds(Transform frame)
+        {
+            var group=CarrierDefinition(frame.GetComponent<AssemblyPart>()?.PartId);
+            var matrices=new Dictionary<string,Matrix4x4>();
+            Matrix4x4 TargetMatrix(AssemblyPart part)
+            {
+                if(matrices.TryGetValue(part.PartId,out var cached))return cached;
+                var d=part.Definition;var member=MemberGroup(part);Matrix4x4 parent;
+                if(member!=null)parent=group==member?frame.localToWorldMatrix:TargetMatrix(FindPart(member.rootPartId));
+                else if(!string.IsNullOrEmpty(d.parentPartId))parent=TargetMatrix(FindPart(d.parentPartId));
+                else parent=frame.localToWorldMatrix;
+                var pose=part.GetTargetPose(part.TargetSocket);var socket=part.TargetSocket;
+                // Snap poses preserve the source's world scale. Never propagate a
+                // parent's imported CAD scale into its children's mesh scale.
+                var socketRotation=parent.rotation*d.targetRotation;
+                var rotation=socketRotation*Quaternion.Inverse(socket.SnapRotation)*pose.rotation;
+                var offset=Quaternion.Inverse(socket.SnapRotation)*(pose.position-socket.SnapPosition);
+                var position=parent.MultiplyPoint3x4(d.targetPosition)+socketRotation*offset;
+                return matrices[part.PartId]=Matrix4x4.TRS(position,rotation,part.transform.lossyScale);
+            }
+            bool first=true;var result=new Bounds(frame.position,Vector3.zero);
+            foreach(var d in Recipe.parts.Where(d=>group==null || d.subAssemblyId==group.id))
+            {
+                var part=FindPart(d.id);if(!part || !part.TargetSocket)continue;
+                var target=TargetMatrix(part)*part.transform.worldToLocalMatrix;
+                foreach(var mesh in part.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if(!mesh.sharedMesh || mesh.gameObject.hideFlags!=HideFlags.None || mesh.GetComponentInParent<AssemblyPart>(true)!=part || mesh.GetComponentInParent<GeneratedColliderGroup>(true))continue;
+                    var b=mesh.sharedMesh.bounds;var matrix=target*mesh.transform.localToWorldMatrix;
+                    for(int i=0;i<8;i++)
+                    {
+                        var point=matrix.MultiplyPoint3x4(b.center+Vector3.Scale(b.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1)));
+                        if(first){result=new Bounds(point,Vector3.zero);first=false;}else result.Encapsulate(point);
+                    }
+                }
+            }
+            return first?WorkpieceBounds(frame):result;
+        }
         public AssemblyPart InteractionPart(AssemblyPart part)
         {
             if(RepairActive)return Repair.InteractionPart(part);
@@ -170,6 +243,13 @@ namespace EngineAssembly
             // Validation finishes before changing any scene state.
             IsPreparing = true;
             foreach (var p in candidates) { p.CancelSnap(); p.Unsnap(true); }
+            if(!scaled)
+            {
+                // Detach first so both mounted and staged meshes scale once. Socket
+                // coordinates stay in the original recipe's reference frame.
+                foreach(var p in candidates){p.transform.SetParent(null,true);p.transform.localScale*=engineScale;}
+                assemblyRoot.localScale*=engineScale;scaled=true;
+            }
             Recipe = AssemblyRecipeStore.Parse(JsonUtility.ToJson(recipe)); // Own an editable copy.
             if(Recipe.subAssemblies==null)Recipe.subAssemblies=new List<SubAssemblyDefinition>();
             foreach(var group in Recipe.subAssemblies)
@@ -234,6 +314,8 @@ namespace EngineAssembly
         public bool SelectChapter(int index)
         {
             if (Recipe == null || index < 0 || index >= Recipe.chapters.Count) return false;
+            ChapterVisit++;
+            GetComponent<WorkpieceLift>()?.CancelTransitions();
             Repair?.End();
             IsPreparing = true; CurrentChapterIndex = index; completionSent = false;
             foreach (var p in assemblyParts.Where(p => p && p.Definition != null)) { p.CancelSnap(); p.Unsnap(true); }
@@ -246,7 +328,7 @@ namespace EngineAssembly
             }
             foreach(var group in Recipe.subAssemblies)
             {
-                var root=byId[group.rootPartId];root.transform.SetPositionAndRotation(assemblyRoot.TransformPoint(BenchPosition(group)),assemblyRoot.rotation);
+                var root=byId[group.rootPartId];root.transform.SetPositionAndRotation(assemblyRoot.TransformPoint(BenchPosition(group)),group.rootPartId.StartsWith("230_Piston_Rod_Unit_")?InitialFixtureRotation(group):assemblyRoot.rotation);
             }
             // Topological installation makes socket parenting independent of file order.
             var pending = Recipe.parts.Where(d => Recipe.chapters.FindIndex(c => c.id == d.chapterId) < index
@@ -261,6 +343,7 @@ namespace EngineAssembly
                 if (Recipe.chapters.FindIndex(c => c.id == d.chapterId) > index) byId[d.id].gameObject.SetActive(false);
             IsPreparing = false;
             RefreshCarriers();
+            GetComponent<WorkshopSupplyLayout>()?.StageChapter(this);
             if(CurrentChapterId==PCRepairChapter.ChapterId && Mode==WorkshopMode.Assembly){Task=AssemblyTask.Assemble;Repair?.Begin();}
             Status = Recipe.chapters[index].title; Changed?.Invoke(); return true;
         }
@@ -273,6 +356,7 @@ namespace EngineAssembly
         }
         public bool CanPickUp(AssemblyPart part, out string reason)
         {
+            if(part && part.GetComponentInParent<PickupablePlatform>() is PickupablePlatform turning && turning.IsFlipping){reason="Wait for the lift to finish turning.";return false;}
             if(RepairActive)return Repair.CanPickUp(part,out reason);
             reason = "";
             if (!part || IsPreparing || Recipe == null || part.Manager != this || part.ChapterId != CurrentChapterId) { reason = "Select this part's chapter first."; return false; }
@@ -303,6 +387,8 @@ namespace EngineAssembly
         }
         public bool CanInstall(AssemblyPart part, AssemblySocket socket, out string reason)
         {
+            var destination=part && part.Definition!=null?TargetFrame(socket && socket.TargetPart?socket.TargetPart.Definition:part.Definition):null;
+            if(destination && destination.GetComponentInParent<PickupablePlatform>() is PickupablePlatform turning && turning.IsFlipping){reason="Wait for the lift to finish turning.";return false;}
             if(RepairActive)return Repair.CanInstall(part,socket,out reason);
             reason = "";
             if (!part || !socket || Recipe == null || part.Manager != this || part.ChapterId != CurrentChapterId) { reason = "This part belongs to another chapter."; return false; }
@@ -316,11 +402,14 @@ namespace EngineAssembly
             foreach (string dependency in AssemblyRecipe.Dependencies(d))
                 if (!IsPlaced(dependency)) { reason = "First install " + (FindPart(dependency)?.PartDisplayName ?? dependency); return false; }
             if (Recipe.parts.Any(p => p.chapterId == CurrentChapterId && p.order < d.order && !IsPlaced(p.id))) { reason = "Complete the earlier assembly step."; return false; }
-            var orientationFrame=TargetFrame(d);
-            float up = Vector3.Dot(orientationFrame.up,Vector3.up);
-            if ((d.orientation == AssemblyOrientation.Upright && up < .85f) || (d.orientation == AssemblyOrientation.UpsideDown && up > -.85f))
-            { reason = d.orientation == AssemblyOrientation.Upright ? "Turn this workpiece upright." : "Turn this workpiece upside down."; return false; }
+            if(RequiresWorkpieceOrientation && !OrientationReady(d)) { reason=d.orientation==AssemblyOrientation.UpsideDown?"Turn this workpiece upside down with F before fitting this part.":"Turn this workpiece upright with F before fitting this part.";return false; }
             return true;
+        }
+        public bool OrientationReady(PartDefinition definition)
+        {
+            if(definition==null || definition.orientation==AssemblyOrientation.Any || !RequiresWorkpieceOrientation)return true;
+            float up=Vector3.Dot(TargetFrame(definition).up,Vector3.up);
+            return definition.orientation==AssemblyOrientation.Upright?up>.5f:up<-.5f;
         }
         public bool CanRemove(AssemblyPart part, out string reason)
         {
@@ -369,9 +458,12 @@ namespace EngineAssembly
             if(Recipe==null)return null;
             var candidates=assemblyParts.Where(p=>p && p.gameObject.activeInHierarchy && p.ChapterId==CurrentChapterId && !p.Definition.isBase && !p.IsBusy);
             if(Task==AssemblyTask.Disassemble && Mode==WorkshopMode.Assembly)return candidates.Where(p=>p.IsSnapped && CanRemove(p,out _)).OrderByDescending(p=>p.Definition.order).FirstOrDefault();
-            var next=candidates.Where(p=>!p.IsSnapped).OrderBy(p=>p.Definition.order).ThenBy(p=>Recipe.parts.IndexOf(p.Definition)).ToList();
+            var next=RecommendedParts(candidates.Where(p=>!p.IsSnapped)).ToList();
             return next.FirstOrDefault(p=>p.TargetSocket && CanInstall(p,p.TargetSocket,out _))??next.FirstOrDefault();
         }
+        public IOrderedEnumerable<AssemblyPart> RecommendedParts(IEnumerable<AssemblyPart> parts)=>parts.OrderBy(p=>p.Definition.order)
+            .ThenBy(p=>p.ChapterId=="chapter-4" && p.PartId.Contains("_Valves_") && int.TryParse(p.PartId.Split('_')[0],out var family)?family:0)
+            .ThenBy(p=>Recipe.parts.IndexOf(p.Definition));
         public void Report(string message) { Status = message; Changed?.Invoke(); }
         public void Save(string filename)
         {

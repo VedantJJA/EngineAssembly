@@ -97,6 +97,10 @@ namespace EngineAssembly.Editor
                     {
                         var platform=GameObject.Find("Portable Work Platform").GetComponent<Renderer>().bounds;
                         Assert(Mathf.Abs(AssemblyHeldView.WorldBounds(part).min.y-platform.max.y-.03f)<.03f && part.Body.isKinematic,"Removed idler is staged safely on the small work platform");
+                        var lift=manager.GetComponent<WorkpieceLift>();float engineY=manager.AssemblyRoot.position.y;var target=repair.NextPart.GetTargetPose(repair.NextPart.TargetSocket);
+                        Assert(lift.StationCount==2 && lift.Select(1) && lift.ActiveFrame==part.transform,"Detached repair unit receives its own selectable lift");
+                        Assert(lift.Move(.05f) && Mathf.Abs(manager.AssemblyRoot.position.y-engineY)<.001f && Vector3.Distance(repair.NextPart.GetTargetPose(repair.NextPart.TargetSocket).position,target.position+Vector3.up*.05f)<.002f,"Repair lift moves the unit and its sockets without moving the engine");
+                        lift.Move(-.05f);lift.Select(0);
                     }
                     if(step.partId==PCRepairChapter.ReplacementId)
                         Assert(manager.Members(manager.CarrierDefinition(PCRepairChapter.UnitId)).Contains(repair.Replacement),"Subassembly membership uses the replacement bearing occupying the original socket");

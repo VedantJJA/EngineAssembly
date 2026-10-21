@@ -53,7 +53,7 @@ namespace EngineAssembly.Editor
             display.SetTimeline(.91f);display.SetTimeline(.42f);Assert(midway.SequenceEqual(display.EngineRoot.GetComponentsInChildren<MeshRenderer>().Where(r=>r.enabled).Select(r=>r.name).OrderBy(s=>s)),"Reverse scrubbing reconstructs the same component state deterministically");
             Assert(InView(display),"All intermediate assembly geometry fits the engine viewport");
             var piston=recipe.subAssemblies.First(g=>g.id.Contains("Cyl01"));int carrierIndex=indices[piston.rootPartId];
-            display.SetTimeline((float)carrierIndex/display.StepCount);
+            display.SetTimeline((carrierIndex-.02f)/display.StepCount);
             var fixture=display.EngineRoot.Find(piston.rootPartId+" display fixture");Assert(Vector3.Distance(fixture.localPosition,piston.benchPosition)<.001f,"Completed piston remains on the bench before its carrier step");
             display.SetTimeline((carrierIndex+.5f)/display.StepCount);var carrier=recipe.parts.First(p=>p.id==piston.rootPartId);
             Assert(Vector3.Distance(fixture.localPosition,piston.benchPosition)>.01f && Vector3.Distance(fixture.localPosition,carrier.targetPosition)>.01f,"Carrier step smoothly moves the whole piston unit into the engine");
@@ -87,9 +87,9 @@ namespace EngineAssembly.Editor
             foreach(var p in manager.Recipe.parts.Where(p=>p.chapterId==manager.CurrentChapterId && p.order==303 && !manager.IsPlaced(p.id)))manager.FindPart(p.id).InstallImmediate(manager.FindPart(p.id).TargetSocket);
             yield return null;yield return null;Assert(captions.CurrentCueId!=cueId && captions.CaptionText.Contains("oil sump"),"Caption advances to the sump bench build after the complete fastener group");
             manager.SelectChapter(3);var head=manager.FindPart("401_Cylinder_Head_01");head.InstallImmediate(head.TargetSocket);yield return null;yield return null;
-            Assert(captions.CaptionText.Contains("upside down") && captions.CaptionText.Contains("twelve valves"),"Head caption explains underside insertion before spring stacks");
+            Assert(captions.CaptionText.Contains("exhaust valves") && captions.CaptionText.Contains("combustion-chamber side"),"Head caption identifies the current valve family and insertion side before spring stacks");
             manager.GetComponent<AssemblyHint>().Toggle();yield return null;
-            Assert(!manager.GetComponent<AssemblyHint>().Enabled && captions.CaptionText.Contains("twelve valves"),"Assembly instructions remain available with visual hints disabled");
+            Assert(!manager.GetComponent<AssemblyHint>().Enabled && captions.CaptionText.Contains("exhaust valves"),"Assembly instructions remain available with visual hints disabled");
             var texts=captions.GetComponentsInChildren<TextMeshProUGUI>();Assert(texts.Any(t=>(t.fontStyle&FontStyles.Bold)!=0) && texts.All(t=>t.GetComponent<UnityEngine.UI.Shadow>() && !t.raycastTarget),"Video captions have bold text, shadows and do not block interaction");
             Capture(manager.GetComponentInChildren<Canvas>(),Camera.main,"assembly-captions",1440,900);
             SceneManager.LoadScene("MobileAssembly");yield return null;yield return null;yield return null;yield return null;

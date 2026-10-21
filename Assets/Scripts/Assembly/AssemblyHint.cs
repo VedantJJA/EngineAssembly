@@ -18,9 +18,10 @@ namespace EngineAssembly
         void Refresh()
         {
             if(!Enabled || !manager) { HighlightedPart=null;source.Clear();target.Clear();return; }
-            var held=System.Linq.Enumerable.FirstOrDefault(manager.AssemblyParts,p=>p && p.IsSelected && p.TargetSocket && manager.CanInstall(p,p.TargetSocket,out _));
+            var held=System.Linq.Enumerable.FirstOrDefault(manager.RecommendedParts(System.Linq.Enumerable.Where(manager.AssemblyParts,p=>p && p.IsSelected && p.TargetSocket && manager.CanInstall(p,p.TargetSocket,out _))));
             HighlightedPart=held?held:manager.NextHintPart();
             if(!HighlightedPart) { source.Clear();target.Clear();return; }
+            if(manager.TargetFrame(HighlightedPart.Definition).GetComponentInParent<PickupablePlatform>() is PickupablePlatform platform && platform.IsFlipping){source.Clear();target.Clear();return;}
             var player=FindAnyObjectByType<PlayerAssemblyController>();
             if(player && player.CurrentHeldPart==HighlightedPart && player.CarryMode)source.Clear();else source.Hover(HighlightedPart,true,true);
             if(held) { target.Clear();return; }

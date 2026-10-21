@@ -25,7 +25,8 @@ namespace EngineAssembly
         [Tooltip("Optional mating point on this part. Target pose aligns this point, not the CAD origin.")]
         [SerializeField] Transform gripAnchor;
         [SerializeField] bool snapOnRelease = true;
-        [SerializeField, Min(0)] float snapDuration = .18f;
+        // Kept for existing scene/tool serialization. Gameplay placement is immediate.
+        [SerializeField, HideInInspector, Min(0)] float snapDuration;
         [SerializeField] bool useGravityWhenLoose = true;
         public UnityEvent onSelected = new UnityEvent(), onDeselected = new UnityEvent(), onSnapped = new UnityEvent(), onUnsnapped = new UnityEvent(), onSnapRejected = new UnityEvent();
         static readonly List<AssemblyPart> active = new List<AssemblyPart>();
@@ -50,7 +51,6 @@ namespace EngineAssembly
         public string RejectionReason { get; private set; } = "";
         public Rigidbody Body { get { if (!body) body = GetComponent<Rigidbody>(); return body; } }
         Rigidbody body;
-        Coroutine snapRoutine;
         AssemblySocket reservedSocket;
         AssemblyVisual visual;
         Vector3 anchorPosition;
@@ -168,6 +168,8 @@ namespace EngineAssembly
         }
         public bool TrySnap() => SnapToSocket(FindBestSocket());
         public bool SnapToSocket(AssemblySocket socket) => StartSnap(socket, true);
+        // Assistance shares the normal dependency checks and installation events.
+        internal bool AssistedSnap(AssemblySocket socket) => StartSnap(socket,false);
         // Only the line-of-sight guide calls this after its geometry and occlusion raycasts.
         internal bool GuidedSnap(AssemblySocket socket)
         {
@@ -193,22 +195,10 @@ namespace EngineAssembly
             }
             RejectionReason="";reservedSocket = socket; State = AssemblyPartState.Snapping; SetPhysics(true);
             if (visual) visual.Clear();
-            snapRoutine = StartCoroutine(SnapRoutine(socket)); return true;
-        }
-        IEnumerator SnapRoutine(AssemblySocket socket)
-        {
-            Vector3 start = transform.position; Quaternion rotation = transform.rotation;
-            float elapsed = 0;
-            while (elapsed < snapDuration)
-            {
-                if (!socket || !Evaluate(socket, false, out _)) { CancelSnap(); yield break; }
-                elapsed += Time.deltaTime;
-                Pose target = GetTargetPose(socket); float t = Mathf.SmoothStep(0,1,Mathf.Clamp01(elapsed / Mathf.Max(.001f,snapDuration)));
-                transform.SetPositionAndRotation(Vector3.Lerp(start,target.position,t), Quaternion.Slerp(rotation,target.rotation,t));
-                yield return null;
-            }
-            snapRoutine = null;
-            if (!socket || !InstallImmediate(socket)) CancelSnap();
+            // No travel animation in the workshop: a successful placement takes
+            // effect in this click, including carrier attachment and inventory events.
+            if(InstallImmediate(socket))return true;
+            CancelSnap();return false;
         }
         // Used only by chapter preparation/editor preview, not as a player shortcut.
         public bool InstallImmediate(AssemblySocket socket)
@@ -223,7 +213,6 @@ namespace EngineAssembly
         }
         public void CancelSnap()
         {
-            if (snapRoutine != null) { StopCoroutine(snapRoutine); snapRoutine = null; }
             if (reservedSocket) reservedSocket.ReleaseReservation(this);
             reservedSocket = null;
             if (IsBusy || IsSelected) { State = AssemblyPartState.Loose; SetPhysics(false); }

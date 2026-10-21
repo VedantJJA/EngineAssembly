@@ -34,6 +34,13 @@ namespace EngineAssembly
         public AssemblyInventory Inventory=>inventory;
         public bool IsHoldingPart=>heldPart;
         public bool Holds(AssemblyPart part)=>inventory && inventory.Contains(part);
+        public void DetachForAssistance(AssemblyPart part)
+        {
+            if(!inventory.Contains(part))return;
+            inventory.Reveal(part);inventory.Remove(part);
+            if(heldPart==part){heldPart=null;if(inventory.Count>0)Activate(inventory.Items.First());}
+            ClearHover();
+        }
         public bool IsInEditMode=>AssemblyManager.Instance && AssemblyManager.Instance.Mode==WorkshopMode.Edit;
         public bool IsEditModeActive=>IsInEditMode;
         public Camera ViewCamera=>playerCamera;
@@ -59,11 +66,19 @@ namespace EngineAssembly
             if(!heldPart && inventory.Count>0)Activate(inventory.Items.First());
             if(!workshopUI)workshopUI=FindAnyObjectByType<AssemblyWorkshopUI>();
             bool menu=workshopUI && workshopUI.IsOpen;
-            Cursor.lockState=menu?CursorLockMode.None:CursorLockMode.Locked;Cursor.visible=menu;
+            var desiredLock=menu?CursorLockMode.None:CursorLockMode.Locked;
+            if(Cursor.lockState!=desiredLock)Cursor.lockState=desiredLock;
+            if(Cursor.visible!=menu)Cursor.visible=menu;
             if(menu){ClearHover();return;}
+            if(InputHelper.IsKeyDown(KeyCode.R))AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.ReplayCurrent();
+            if(LiftControlHandle.ProcessDesktop(playerCamera,MouseDown(0),MouseHeld(0),MouseDelta().y,pickupDistance)){ClearHover();return;}
+            var lift=AssemblyManager.Instance?AssemblyManager.Instance.GetComponent<WorkpieceLift>():null;
+            if(lift && InputHelper.IsKeyDown(KeyCode.LeftArrow))lift.Cycle(-1);
+            if(lift && InputHelper.IsKeyDown(KeyCode.RightArrow))lift.Cycle(1);
+            if(lift)lift.MoveFromInput((InputHelper.IsKeyHeld(KeyCode.UpArrow)?1:0)-(InputHelper.IsKeyHeld(KeyCode.DownArrow)?1:0));
             if(InputHelper.IsKeyDown(KeyCode.F))FlipWorkpiece();
             if(InputHelper.IsKeyDown(KeyCode.Q))TogglePlacementMode();
-            if((PlacementMode || heldPlatform) && InputHelper.IsKeyDown(KeyCode.R))TogglePlacementTool();
+            if((PlacementMode || heldPlatform) && InputHelper.IsKeyDown(KeyCode.T))TogglePlacementTool();
             var delta=MouseDelta();bool manipulating=(PlacementMode || heldPlatform) && MouseHeld(1);
             playerCamera.fieldOfView=Mathf.Lerp(playerCamera.fieldOfView,!manipulating && MouseHeld(1)?zoomFieldOfView:normalFov,12*Time.deltaTime);
             if(!manipulating){transform.Rotate(Vector3.up,delta.x*mouseSensitivity);pitch=Mathf.Clamp(pitch-delta.y*mouseSensitivity,-85,85);playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);}
@@ -132,6 +147,7 @@ namespace EngineAssembly
         {
             bool first=inventory.Count==0;if(!inventory.Collect(part))return;
             if(first){heldPart=part;CaptureContact(contact);}else {inventory.Hide(part);part.MoveHeld(new Vector3(0,-1000,0),part.transform.rotation);collisionGuard.Track(part.transform,part,null);}
+            AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.NotifyInventoryStack(inventory.Count);
             ClearHover();
         }
         public bool TryPlace(Ray ray)
@@ -157,9 +173,9 @@ namespace EngineAssembly
             contactLocal=localCenter;heldViewRotation=Quaternion.Inverse(playerCamera.transform.rotation)*part.transform.rotation;
             collisionGuard.Track(part.transform,part,null);
         }
-        void CaptureContact(Vector3 point){holdDistance=Mathf.Clamp(Vector3.Distance(playerCamera.transform.position,point),minHoldDistance,maxHoldDistance);contactLocal=Held.InverseTransformPoint(point);heldViewRotation=Quaternion.Inverse(playerCamera.transform.rotation)*Held.rotation;placementMode=false;placementOffset=Vector3.zero;collisionGuard.Track(Held,heldPart,heldPlatform);}
+        void CaptureContact(Vector3 point){if(heldPart && heldPart.GetComponent<SubAssembly>())point=AssemblyHeldView.WorldBounds(heldPart).center;holdDistance=Mathf.Clamp(Vector3.Distance(playerCamera.transform.position,point),minHoldDistance,maxHoldDistance);contactLocal=Held.InverseTransformPoint(point);heldViewRotation=Quaternion.Inverse(playerCamera.transform.rotation)*Held.rotation;placementMode=false;placementOffset=Vector3.zero;collisionGuard.Track(Held,heldPart,heldPlatform);}
         void ClearHover(){if(hoveredPart && hover)hover.Clear();hoveredPart=null;HoverMessage="";}
-        public void FlipWorkpiece(){if(heldPlatform)heldPlatform.Flip();else AssemblyManager.Instance?.FlipWorkpiece();}
+        public void FlipWorkpiece(){var manager=AssemblyManager.Instance;if(heldPlatform)heldPlatform.Flip(manager?manager.WorkpieceBounds(heldPlatform.transform).center:heldPlatform.GeometryCenter());else manager?.FlipWorkpiece();}
         public void TogglePlacementTool()=>Tool=Tool==PlacementTool.Move?PlacementTool.Rotate:PlacementTool.Move;
         public void TogglePlacementMode(){if(!heldPart || heldPart.Manager && heldPart.Manager.Difficulty==SnapDifficulty.Easy)return;placementMode=!placementMode;placementOffset=Vector3.zero;if(placementMode)holdDistance=Mathf.Clamp(1.5f,minHoldDistance,maxHoldDistance);}
         public void PickUp(AssemblyPart part){if(part && part.Manager)part=part.Manager.InteractionPart(part);if(heldPlatform || !part)return;Collect(part,AssemblyHeldView.WorldBounds(part).center);}

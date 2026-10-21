@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 809f642ded6cf5546acf626224a84067, type: 3}
+  m_Name: EngineSurfaceLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.EngineSurfaceLibrary
+  surfaces:
+  - name: Cast aluminium
+    material: {fileID: 2100000, guid: 0fb87cce9f5c03840908d5788f008584, type: 2}
+  - name: Machined aluminium
+    material: {fileID: 2100000, guid: 010c44d387ce8a04fb10bd5d265dbe2d, type: 2}
+  - name: Cast iron
+    material: {fileID: 2100000, guid: 0fb1dc0557c3b1d41a493ec0d54c9d45, type: 2}
+  - name: Machined steel
+    material: {fileID: 2100000, guid: a35008311abdcc1498994d3a71eba26f, type: 2}
+  - name: Fastener steel
+    material: {fileID: 2100000, guid: 14031e8ee74038c4b93579aade692901, type: 2}
+  - name: Bearing alloy
+    material: {fileID: 2100000, guid: eda7349e16342fe44a4cce1c7cdab003, type: 2}
+  - name: Rubber
+    material: {fileID: 2100000, guid: e28069da969e7034d8521513d1b40a22, type: 2}
+  - name: Painted motor housing
+    material: {fileID: 2100000, guid: 0e2c6c53663f4174cb578197b9c04dfd, type: 2}

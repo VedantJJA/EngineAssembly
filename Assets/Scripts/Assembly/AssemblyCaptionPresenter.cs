@@ -20,30 +20,39 @@ namespace EngineAssembly
             var rect=new GameObject("Assembly captions",typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);
             rect.anchorMin=new Vector2(mobile?.025f:1,1);rect.anchorMax=new Vector2(mobile?.975f:1,1);
             rect.pivot=new Vector2(mobile?.5f:1,1);rect.sizeDelta=new Vector2(mobile?0:430,mobile?138:246);rect.anchoredPosition=new Vector2(mobile?0:-28,mobile?-194:-28);
-            var background=rect.gameObject.AddComponent<UnityEngine.UI.Image>();background.color=new Color(.018f,.029f,.042f,.86f);background.raycastTarget=false;
+            var background=rect.gameObject.AddComponent<UnityEngine.UI.Image>();background.color=new Color(1,1,1,.97f);background.raycastTarget=false;
             WorkshopUIArt.Card(background);
+            if(mobile)background.color=new Color(1,1,1,.97f);
             var presenter=rect.gameObject.AddComponent<AssemblyCaptionPresenter>();presenter.manager=manager;presenter.mobile=mobile;
             presenter.caption=Label(rect,"Caption",mobile?24:20,new Vector2(16,mobile?38:64),new Vector2(-16,mobile?-14:-50));
             if(!mobile)
             {
                 presenter.caption.alignment=TextAlignmentOptions.TopLeft;
-                presenter.stepTitle=Label(rect,"Step heading",16,new Vector2(16,204),new Vector2(-16,-12));presenter.stepTitle.rectTransform.anchorMin=new Vector2(0,1);presenter.stepTitle.rectTransform.offsetMin=new Vector2(16,-42);presenter.stepTitle.alignment=TextAlignmentOptions.Left;presenter.stepTitle.color=new Color(.53f,.94f,.78f);
+                presenter.stepTitle=Label(rect,"Step heading",16,new Vector2(16,204),new Vector2(-16,-12));presenter.stepTitle.rectTransform.anchorMin=new Vector2(0,1);presenter.stepTitle.rectTransform.offsetMin=new Vector2(16,-42);presenter.stepTitle.alignment=TextAlignmentOptions.Left;presenter.stepTitle.color=WorkshopTheme.Accent;
                 var toggle=Label(rect,"Steps toggle",13,new Vector2(16,4),new Vector2(-16,24));toggle.rectTransform.anchorMax=new Vector2(1,0);toggle.rectTransform.offsetMax=new Vector2(-16,24);toggle.text="P to hide steps";toggle.fontStyle=FontStyles.Normal;
             }
             presenter.context=Label(rect,"Instruction progress",mobile?16:16,new Vector2(16,7),new Vector2(-16,35));
             presenter.context.rectTransform.anchorMax=new Vector2(1,0);presenter.context.rectTransform.offsetMin=new Vector2(16,mobile?7:27);presenter.context.rectTransform.offsetMax=new Vector2(-16,mobile?35:57);
-            presenter.context.color=new Color(.53f,.94f,.78f);presenter.context.fontStyle=FontStyles.Normal;
+            presenter.context.color=WorkshopTheme.Accent;presenter.context.fontStyle=FontStyles.Normal;
             presenter.context.textWrappingMode=TextWrappingModes.NoWrap;presenter.context.overflowMode=TextOverflowModes.Ellipsis;
+            if(mobile)
+            {
+                presenter.caption.color=new Color(.08f,.14f,.20f);presenter.context.color=new Color(.04f,.40f,.43f);
+                presenter.caption.GetComponent<UnityEngine.UI.Shadow>().effectColor=new Color(.1f,.2f,.3f,.1f);
+                presenter.context.GetComponent<UnityEngine.UI.Shadow>().effectColor=Color.clear;
+                presenter.caption.fontSize=23;presenter.caption.enableAutoSizing=true;presenter.caption.fontSizeMin=18;presenter.caption.fontSizeMax=23;
+                presenter.caption.overflowMode=TextOverflowModes.Overflow;
+            }
             return presenter;
         }
         static TextMeshProUGUI Label(RectTransform parent,string name,float size,Vector2 low,Vector2 high)
         {
             var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);
             rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=low;rect.offsetMax=high;
-            var text=rect.gameObject.AddComponent<TextMeshProUGUI>();text.font=Resources.Load<TMP_FontAsset>("WorkshopHeading");text.fontSize=size;text.color=Color.white;text.fontStyle=FontStyles.Bold;
+            var text=rect.gameObject.AddComponent<TextMeshProUGUI>();text.font=Resources.Load<TMP_FontAsset>("WorkshopHeading");text.fontSize=size;text.color=WorkshopTheme.Text;text.fontStyle=FontStyles.Bold;
             text.alignment=TextAlignmentOptions.Center;text.raycastTarget=false;text.textWrappingMode=TextWrappingModes.Normal;
             text.enableAutoSizing=true;text.fontSizeMin=size-5;text.fontSizeMax=size;
-            var shadow=rect.gameObject.AddComponent<UnityEngine.UI.Shadow>();shadow.effectColor=new Color(0,0,0,.95f);shadow.effectDistance=new Vector2(2,-3);
+            var shadow=rect.gameObject.AddComponent<UnityEngine.UI.Shadow>();shadow.effectColor=WorkshopTheme.Shadow;shadow.effectDistance=new Vector2(1,-1);
             return text;
         }
         void LateUpdate()
@@ -56,7 +65,7 @@ namespace EngineAssembly
             foreach(var text in GetComponentsInChildren<TextMeshProUGUI>())text.enabled=visible;GetComponent<UnityEngine.UI.Image>().enabled=visible;if(!visible)return;
             if(manager.RepairActive)
             {
-                var repair=manager.Repair;CurrentCueId="repair-step-"+repair.CompletedSteps;
+                var repair=manager.Repair;CurrentCueId=repair.Complete?"repair-complete":"repair-step-"+repair.CompletedSteps;
                 if(stepTitle)stepTitle.text=repair.Complete?"REPAIR COMPLETE":"REPAIR · STEP "+(repair.CompletedSteps+1).ToString("00")+" / "+repair.StepCount;
                 caption.text=repair.Complete?"Repair complete. The replacement bearing is fitted and the timing drive is rebuilt.":repair.CurrentStep.instruction;
                 context.text=repair.Complete?"TAB to choose another chapter.":repair.IsPlacementStep?"Next: "+repair.NextPart.PartDisplayName:"Pick up the highlighted part, then G to set aside.";
@@ -74,12 +83,10 @@ namespace EngineAssembly
             int total=cue.partIds.Count(id=>manager.FindPart(id)),done=cue.partIds.Count(manager.IsPlaced);
             if(manager.Task==AssemblyTask.Disassemble)
                 caption.text="Remove "+next.PartDisplayName+" from its mounting position. Work in reverse assembly order.";
-            else caption.text=cue.caption;
-            string orientation="";
-            float up=Vector3.Dot(manager.TargetFrame(next.Definition).up,Vector3.up);
-            if((next.Definition.orientation==AssemblyOrientation.Upright && up<.85f) || (next.Definition.orientation==AssemblyOrientation.UpsideDown && up>-.85f))
-                orientation=(next.Definition.orientation==AssemblyOrientation.Upright?"Turn this workpiece upright. ":"Turn this workpiece upside down. ")+(mobile?"Use FLIP or drag. ":"Press F. ");
-            context.text=orientation+"Next: "+next.PartDisplayName+(total>1?"   ·   "+done+" / "+total:"");
+            else caption.text=manager.RequiresWorkpieceOrientation?cue.caption:AccessibleCaption(cue.caption);
+            context.text="Next: "+next.PartDisplayName+(total>1?"   ·   "+done+" / "+total:"");
+            if(!manager.OrientationReady(next.Definition))context.text=next.Definition.orientation==AssemblyOrientation.UpsideDown?"Turn this workpiece upside down · F":"Turn this workpiece upright · F";
         }
+        public static string AccessibleCaption(string text)=>text.Replace("Turn the engine upright. ","").Replace("Turn the engine upside down. ","").Replace("Turn the block upside down. ","").Replace("Turn the workpiece upright. ","").Replace("Turn the workpiece upside down. ","");
     }
 }

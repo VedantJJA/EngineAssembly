@@ -31,6 +31,7 @@ namespace EngineAssembly
             foreach (var part in manager.AssemblyParts)
             {
                 bool eligible=active && part && part.gameObject.activeInHierarchy && part.IsSelected && part.TargetSocket;
+                if(eligible && manager.TargetFrame(part.Definition).GetComponentInParent<PickupablePlatform>() is PickupablePlatform platform && platform.IsFlipping)eligible=false;
                 var target=targets.Find(t=>t.part==part);
                 bool occluder=active && part && part.gameObject.activeInHierarchy && part.IsSnapped && !manager.IsCarriedMember(part) && HasVisibleGeometry(part);
                 if (!eligible && !occluder) { if(target!=null) { target.query.SetActive(false);target.visual.Clear(); } continue; }
@@ -192,6 +193,7 @@ namespace EngineAssembly
         public bool Place(Ray ray,float distance,Camera camera=null) { var part=Aim(ray,distance,camera);return part && part.IsSelected && (manager.Difficulty==SnapDifficulty.Easy?part.GuidedSnap(part.TargetSocket):part.SnapToSocket(part.TargetSocket)); }
         static bool HasVisibleGeometry(AssemblyPart part)=>part.GetComponentsInChildren<MeshRenderer>(true).Any(r=>r.enabled && r.gameObject.activeInHierarchy);
         void LateUpdate() { RefreshTargets(); }
+        void OnDisable(){foreach(var t in targets){if(t.visual)t.visual.Clear();if(t.query)t.query.SetActive(false);}LookTarget=null;}
         void OnDestroy()
         {
             foreach(var t in targets)if(t.visual)Destroy(t.visual.gameObject);

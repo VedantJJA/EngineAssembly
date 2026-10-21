@@ -7,7 +7,7 @@ namespace EngineAssembly
 {
     [Serializable] public class AssemblyInstruction
     {
-        public string id, chapterId, caption, narration;
+        public string id, chapterId, caption, narration, voiceId;
         public List<string> partIds=new List<string>();
     }
     [Serializable] public class EnginePartDetail { public string partId,title,description; }
@@ -33,7 +33,7 @@ namespace EngineAssembly
                 return cached;
             }
         }
-        public static AssemblyInstruction ForPart(PartDefinition part)=>Data.steps.FirstOrDefault(s=>s.chapterId==part.chapterId && s.partIds.Contains(part.id))
+        public static AssemblyInstruction ForPart(PartDefinition part)=>part==null?new AssemblyInstruction{id=""}:Data.steps.FirstOrDefault(s=>s.chapterId==part.chapterId && s.partIds.Contains(part.id))
             ?? new AssemblyInstruction{id=part.id,chapterId=part.chapterId,caption="Fit "+part.displayName+" at its matching mounting position.",narration="Fit "+part.displayName+" at its matching mounting position.",partIds=new List<string>{part.id}};
         public static EnginePartDetail Detail(PartDefinition part)=>Data.details.FirstOrDefault(d=>d.partId==part.id)
             ?? new EnginePartDetail{partId=part.id,title=part.displayName,description="An engine component in this assembly recipe."};

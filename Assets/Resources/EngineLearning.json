@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "recipeTitle": "Three-cylinder engine workshop",
   "steps": [
     {
@@ -8,22 +8,42 @@
       "partIds": [
         "101_Cylinder_Block_01"
       ],
-      "caption": "Place the cylinder block on the workpiece. The three cylinder bores identify the top; the crankshaft opening is underneath.",
-      "narration": "Place the cylinder block on the workpiece. The three cylinder bores identify the top; the crankshaft opening is underneath."
+      "caption": "Start with the cylinder block, the large body with three round holes. Place it in the main engine work area.",
+      "narration": "Start with the cylinder block, the large body with three round holes. Place it in the main engine work area.",
+      "voiceId": ""
     },
     {
       "id": "chapter-1-cue-002",
       "chapterId": "chapter-1",
       "partIds": [
-        "102_Crankshaft_Needle_Bearing_45x50x10_01",
-        "102_Crankshaft_Needle_Bearing_60x66x12_01",
+        "102_Crankshaft_Needle_Bearing_45x50x10_01"
+      ],
+      "caption": "Fit the smaller needle bearing into its matching crankshaft support.",
+      "narration": "Place the smaller needle bearing in its matching round recess on the open crankcase side.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-1-cue-168",
+      "chapterId": "chapter-1",
+      "partIds": [
+        "102_Crankshaft_Needle_Bearing_60x66x12_01"
+      ],
+      "caption": "Fit the larger needle bearing into its matching crankshaft support.",
+      "narration": "Place the larger needle bearing in its matching round recess on the open crankcase side.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-1-cue-169",
+      "chapterId": "chapter-1",
+      "partIds": [
         "102_Upper_Main_Bearing_Shell_01",
         "102_Upper_Main_Bearing_Shell_02",
         "102_Upper_Main_Bearing_Shell_03",
         "102_Upper_Main_Bearing_Shell_04"
       ],
-      "caption": "Turn the block upside down. Fit the two needle bearings and four upper main-bearing shells into their matching crankshaft bearing positions.",
-      "narration": "Turn the block upside down. Fit the two needle bearings and four upper main-bearing shells into their matching crankshaft bearing positions."
+      "caption": "Fit the curved upper main-bearing shells into the remaining crankshaft supports.",
+      "narration": "Fit each curved upper main-bearing shell into a matching crankshaft support. Keep its bearing surface facing the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-1-cue-003",
@@ -31,8 +51,9 @@
       "partIds": [
         "103_Crankshaft_01"
       ],
-      "caption": "Lower the crankshaft into the bearings in the open crankcase. Align its journals with the bearing supports.",
-      "narration": "Lower the crankshaft into the bearings in the open crankcase. Align its journals with the bearing supports."
+      "caption": "Fit the crankshaft into the open underside of the block. Its smooth round sections rest in the bearings you just placed.",
+      "narration": "Fit the crankshaft into the open underside of the block. Its smooth round sections rest in the bearings you just placed.",
+      "voiceId": ""
     },
     {
       "id": "chapter-2-cue-004",
@@ -40,8 +61,9 @@
       "partIds": [
         "201_Piston_Cyl01_01"
       ],
-      "caption": "Start the cylinder 1 piston on its bench fixture. Cylinder 1 is the bore at the timing-drive end. Place the piston with its crown above the wrist-pin bore.",
-      "narration": "Start the cylinder 1 piston on its bench fixture. Cylinder 1 is the bore at the timing-drive end. Place the piston with its crown above the wrist-pin bore."
+      "caption": "Place the piston crown-down in its separate work area. The flat top rests on the deck, leaving the underside open for the connecting rod.",
+      "narration": "Start the piston in its separate work area. The wide, flat piston top will face the cylinder head; the holes through its sides hold the wrist pin.",
+      "voiceId": "piston-201"
     },
     {
       "id": "chapter-2-cue-005",
@@ -49,8 +71,9 @@
       "partIds": [
         "202_Connecting_Rod_Cyl01_01"
       ],
-      "caption": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes.",
-      "narration": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes."
+      "caption": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "narration": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "voiceId": "piston-202"
     },
     {
       "id": "chapter-2-cue-006",
@@ -58,8 +81,9 @@
       "partIds": [
         "203_Piston_Wrist_Pin_Cyl01_01"
       ],
-      "caption": "Slide the wrist pin through the piston and the connecting rod small end.",
-      "narration": "Slide the wrist pin through the piston and the connecting rod small end."
+      "caption": "Slide the wrist pin, the short smooth metal rod, through the piston and the narrow end of the connecting rod.",
+      "narration": "Slide the wrist pin through the piston and the narrow end of the connecting rod. Add the retaining clips afterward so the pin cannot slide out.",
+      "voiceId": "piston-203"
     },
     {
       "id": "chapter-2-cue-007",
@@ -68,8 +92,9 @@
         "205_Wrist_Pin_Circlip_Cyl01_01",
         "205_Wrist_Pin_Circlip_Cyl01_02"
       ],
-      "caption": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin.",
-      "narration": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin."
+      "caption": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "narration": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "voiceId": "piston-204"
     },
     {
       "id": "chapter-2-cue-008",
@@ -78,8 +103,9 @@
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl01_01",
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl01_02"
       ],
-      "caption": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now.",
-      "narration": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now."
+      "caption": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "narration": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "voiceId": "piston-206"
     },
     {
       "id": "chapter-2-cue-009",
@@ -87,8 +113,9 @@
       "partIds": [
         "204_Oil_Control_Ring_Cyl01_01"
       ],
-      "caption": "Fit the oil-control ring into the lowest ring groove on the piston.",
-      "narration": "Fit the oil-control ring into the lowest ring groove on the piston."
+      "caption": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "narration": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "voiceId": "piston-207"
     },
     {
       "id": "chapter-2-cue-010",
@@ -96,8 +123,9 @@
       "partIds": [
         "204_Second_Compression_Ring_Cyl01_01"
       ],
-      "caption": "Fit the second compression ring into the middle piston groove.",
-      "narration": "Fit the second compression ring into the middle piston groove."
+      "caption": "Fit the second compression ring into the middle groove around the piston.",
+      "narration": "Fit the second compression ring into the middle groove around the piston.",
+      "voiceId": "piston-208"
     },
     {
       "id": "chapter-2-cue-011",
@@ -105,8 +133,9 @@
       "partIds": [
         "204_Top_Compression_Ring_Cyl01_01"
       ],
-      "caption": "Fit the top compression ring into the highest piston groove.",
-      "narration": "Fit the top compression ring into the highest piston groove."
+      "caption": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "narration": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "voiceId": "piston-209"
     },
     {
       "id": "chapter-2-cue-012",
@@ -114,8 +143,9 @@
       "partIds": [
         "201_Piston_Cyl02_01"
       ],
-      "caption": "Start the cylinder 2 piston on its bench fixture. Cylinder 2 is the bore at the centre of the block. Place the piston with its crown above the wrist-pin bore.",
-      "narration": "Start the cylinder 2 piston on its bench fixture. Cylinder 2 is the bore at the centre of the block. Place the piston with its crown above the wrist-pin bore."
+      "caption": "Place the piston crown-down in its separate work area. The flat top rests on the deck, leaving the underside open for the connecting rod.",
+      "narration": "Start the piston in its separate work area. The wide, flat piston top will face the cylinder head; the holes through its sides hold the wrist pin.",
+      "voiceId": "piston-201"
     },
     {
       "id": "chapter-2-cue-013",
@@ -123,8 +153,9 @@
       "partIds": [
         "202_Connecting_Rod_Cyl02_01"
       ],
-      "caption": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes.",
-      "narration": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes."
+      "caption": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "narration": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "voiceId": "piston-202"
     },
     {
       "id": "chapter-2-cue-014",
@@ -132,8 +163,9 @@
       "partIds": [
         "203_Piston_Wrist_Pin_Cyl02_01"
       ],
-      "caption": "Slide the wrist pin through the piston and the connecting rod small end.",
-      "narration": "Slide the wrist pin through the piston and the connecting rod small end."
+      "caption": "Slide the wrist pin, the short smooth metal rod, through the piston and the narrow end of the connecting rod.",
+      "narration": "Slide the wrist pin through the piston and the narrow end of the connecting rod. Add the retaining clips afterward so the pin cannot slide out.",
+      "voiceId": "piston-203"
     },
     {
       "id": "chapter-2-cue-015",
@@ -142,8 +174,9 @@
         "205_Wrist_Pin_Circlip_Cyl02_01",
         "205_Wrist_Pin_Circlip_Cyl02_02"
       ],
-      "caption": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin.",
-      "narration": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin."
+      "caption": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "narration": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "voiceId": "piston-204"
     },
     {
       "id": "chapter-2-cue-016",
@@ -152,8 +185,9 @@
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl02_01",
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl02_02"
       ],
-      "caption": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now.",
-      "narration": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now."
+      "caption": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "narration": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "voiceId": "piston-206"
     },
     {
       "id": "chapter-2-cue-017",
@@ -161,8 +195,9 @@
       "partIds": [
         "204_Oil_Control_Ring_Cyl02_01"
       ],
-      "caption": "Fit the oil-control ring into the lowest ring groove on the piston.",
-      "narration": "Fit the oil-control ring into the lowest ring groove on the piston."
+      "caption": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "narration": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "voiceId": "piston-207"
     },
     {
       "id": "chapter-2-cue-018",
@@ -170,8 +205,9 @@
       "partIds": [
         "204_Second_Compression_Ring_Cyl02_01"
       ],
-      "caption": "Fit the second compression ring into the middle piston groove.",
-      "narration": "Fit the second compression ring into the middle piston groove."
+      "caption": "Fit the second compression ring into the middle groove around the piston.",
+      "narration": "Fit the second compression ring into the middle groove around the piston.",
+      "voiceId": "piston-208"
     },
     {
       "id": "chapter-2-cue-019",
@@ -179,8 +215,9 @@
       "partIds": [
         "204_Top_Compression_Ring_Cyl02_01"
       ],
-      "caption": "Fit the top compression ring into the highest piston groove.",
-      "narration": "Fit the top compression ring into the highest piston groove."
+      "caption": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "narration": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "voiceId": "piston-209"
     },
     {
       "id": "chapter-2-cue-020",
@@ -188,8 +225,9 @@
       "partIds": [
         "201_Piston_Cyl03_01"
       ],
-      "caption": "Start the cylinder 3 piston on its bench fixture. Cylinder 3 is the bore at the flywheel end. Place the piston with its crown above the wrist-pin bore.",
-      "narration": "Start the cylinder 3 piston on its bench fixture. Cylinder 3 is the bore at the flywheel end. Place the piston with its crown above the wrist-pin bore."
+      "caption": "Place the piston crown-down in its separate work area. The flat top rests on the deck, leaving the underside open for the connecting rod.",
+      "narration": "Start the piston in its separate work area. The wide, flat piston top will face the cylinder head; the holes through its sides hold the wrist pin.",
+      "voiceId": "piston-201"
     },
     {
       "id": "chapter-2-cue-021",
@@ -197,8 +235,9 @@
       "partIds": [
         "202_Connecting_Rod_Cyl03_01"
       ],
-      "caption": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes.",
-      "narration": "Put the small end of the connecting rod between the piston bosses. Align its bore with the wrist-pin holes."
+      "caption": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "narration": "Place the narrow end of the connecting rod between the two supports inside the piston. Line up all three holes for the wrist pin.",
+      "voiceId": "piston-202"
     },
     {
       "id": "chapter-2-cue-022",
@@ -206,8 +245,9 @@
       "partIds": [
         "203_Piston_Wrist_Pin_Cyl03_01"
       ],
-      "caption": "Slide the wrist pin through the piston and the connecting rod small end.",
-      "narration": "Slide the wrist pin through the piston and the connecting rod small end."
+      "caption": "Slide the wrist pin, the short smooth metal rod, through the piston and the narrow end of the connecting rod.",
+      "narration": "Slide the wrist pin through the piston and the narrow end of the connecting rod. Add the retaining clips afterward so the pin cannot slide out.",
+      "voiceId": "piston-203"
     },
     {
       "id": "chapter-2-cue-023",
@@ -216,8 +256,9 @@
         "205_Wrist_Pin_Circlip_Cyl03_01",
         "205_Wrist_Pin_Circlip_Cyl03_02"
       ],
-      "caption": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin.",
-      "narration": "Fit both wrist-pin circlips into the grooves at opposite ends of the seated wrist pin."
+      "caption": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "narration": "Fit one wrist-pin circlip into the groove at each end of the pin. These two small clips stop the pin sliding out.",
+      "voiceId": "piston-204"
     },
     {
       "id": "chapter-2-cue-024",
@@ -226,8 +267,9 @@
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl03_01",
         "290_Stud_JIS_B_1173_Metric_M8x50_Cyl03_02"
       ],
-      "caption": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now.",
-      "narration": "Fit both big-end studs into the connecting rod. Leave the separate rod cap off for now."
+      "caption": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "narration": "Fit the two threaded studs into the wide end of the connecting rod. Leave the separate rod cap off until the piston is in the engine.",
+      "voiceId": "piston-206"
     },
     {
       "id": "chapter-2-cue-025",
@@ -235,8 +277,9 @@
       "partIds": [
         "204_Oil_Control_Ring_Cyl03_01"
       ],
-      "caption": "Fit the oil-control ring into the lowest ring groove on the piston.",
-      "narration": "Fit the oil-control ring into the lowest ring groove on the piston."
+      "caption": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "narration": "Fit the oil-control ring into the lowest groove around the piston, nearest the connecting rod.",
+      "voiceId": "piston-207"
     },
     {
       "id": "chapter-2-cue-026",
@@ -244,8 +287,9 @@
       "partIds": [
         "204_Second_Compression_Ring_Cyl03_01"
       ],
-      "caption": "Fit the second compression ring into the middle piston groove.",
-      "narration": "Fit the second compression ring into the middle piston groove."
+      "caption": "Fit the second compression ring into the middle groove around the piston.",
+      "narration": "Fit the second compression ring into the middle groove around the piston.",
+      "voiceId": "piston-208"
     },
     {
       "id": "chapter-2-cue-027",
@@ -253,8 +297,9 @@
       "partIds": [
         "204_Top_Compression_Ring_Cyl03_01"
       ],
-      "caption": "Fit the top compression ring into the highest piston groove.",
-      "narration": "Fit the top compression ring into the highest piston groove."
+      "caption": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "narration": "Fit the top compression ring into the groove nearest the flat top of the piston.",
+      "voiceId": "piston-209"
     },
     {
       "id": "chapter-2-cue-028",
@@ -264,8 +309,9 @@
         "230_Piston_Rod_Unit_Cyl02",
         "230_Piston_Rod_Unit_Cyl03"
       ],
-      "caption": "Keep the engine upright. Install the complete piston units into their bores: C1 at the timing end, C2 in the middle, C3 at the flywheel end. Each open rod big end goes around its crankshaft journal.",
-      "narration": "Keep the engine upright. Install the complete piston units into their bores: C1 at the timing end, C2 in the middle, C3 at the flywheel end. Each open rod big end goes around its crankshaft journal."
+      "caption": "Fit the complete piston units into the three cylinder bores. Keep their flat tops facing the cylinder head and guide each connecting rod toward the crankshaft.",
+      "narration": "Fit the complete piston units into the three cylinder bores. Keep their flat tops facing the cylinder head and guide each connecting rod toward the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-2-cue-029",
@@ -275,8 +321,9 @@
         "206_Connecting_Rod_Big_End_Cap_Cyl02_01",
         "206_Connecting_Rod_Big_End_Cap_Cyl03_01"
       ],
-      "caption": "Turn the engine upside down. Fit each separate big-end cap around the lower half of its crankshaft journal, against the matching rod.",
-      "narration": "Turn the engine upside down. Fit each separate big-end cap around the lower half of its crankshaft journal, against the matching rod."
+      "caption": "From underneath the block, fit each rod cap to its connecting rod. Together they surround the smooth round section of the crankshaft.",
+      "narration": "From underneath the block, fit each rod cap to its connecting rod. Together they surround the smooth round section of the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-2-cue-030",
@@ -289,8 +336,9 @@
         "290_Nut_JIS_B_1170_Class_1_High_Type_M_8_Cyl03_01",
         "290_Nut_JIS_B_1170_Class_1_High_Type_M_8_Cyl03_02"
       ],
-      "caption": "Fit the two nuts on each connecting-rod cap stud. Complete all three rod caps.",
-      "narration": "Fit the two nuts on each connecting-rod cap stud. Complete all three rod caps."
+      "caption": "Fit two nuts onto the studs of each rod cap. Finish all three caps before moving on.",
+      "narration": "Fit two nuts onto the studs of each rod cap. Finish all three caps before moving on.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-031",
@@ -301,8 +349,9 @@
         "301_Lower_Main_Bearing_Shell_03",
         "301_Lower_Main_Bearing_Shell_04"
       ],
-      "caption": "Keep the engine upside down. Fit the four lower main-bearing shells into the lower bearing positions.",
-      "narration": "Keep the engine upside down. Fit the four lower main-bearing shells into the lower bearing positions."
+      "caption": "Fit the four curved lower bearing shells into their matching supports underneath the crankshaft.",
+      "narration": "Fit the four curved lower bearing shells into their matching supports underneath the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-032",
@@ -310,8 +359,9 @@
       "partIds": [
         "302_Lower_Crankcase_Bedplate_01"
       ],
-      "caption": "Place the lower crankcase bedplate over the bearing supports on the underside of the engine.",
-      "narration": "Place the lower crankcase bedplate over the bearing supports on the underside of the engine."
+      "caption": "Fit the bedplate, the large lower support frame, to the underside of the block. It closes over the crankshaft bearing supports.",
+      "narration": "Fit the bedplate, the large lower support frame, to the underside of the block. It closes over the crankshaft bearing supports.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-033",
@@ -330,7 +380,16 @@
         "390_Bolt_ISO_4162_M10_x_100_Fasteners_11",
         "390_Bolt_ISO_4162_M10_x_100_Fasteners_12",
         "390_Bolt_ISO_4162_M10_x_100_Fasteners_13",
-        "390_Bolt_ISO_4162_M10_x_100_Fasteners_14",
+        "390_Bolt_ISO_4162_M10_x_100_Fasteners_14"
+      ],
+      "caption": "Fit the long M10 bedplate bolts around the lower support frame.",
+      "narration": "Fit the long M10 bedplate bolts into their matching holes around the lower support frame.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-170",
+      "chapterId": "chapter-3",
+      "partIds": [
         "390_Bolt_ISO_4162_M8_x_80_Fasteners_01",
         "390_Bolt_ISO_4162_M8_x_80_Fasteners_02",
         "390_Bolt_ISO_4162_M8_x_80_Fasteners_03",
@@ -340,8 +399,9 @@
         "390_Bolt_ISO_4162_M8_x_80_Fasteners_07",
         "390_Bolt_ISO_4162_M8_x_80_Fasteners_08"
       ],
-      "caption": "Install the bedplate bolts in their matching holes around the lower crankcase.",
-      "narration": "Install the bedplate bolts in their matching holes around the lower crankcase."
+      "caption": "Fit the shorter M8 bedplate bolts into the remaining matching holes.",
+      "narration": "Fit the shorter M8 bedplate bolts into their matching holes around the lower support frame.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-034",
@@ -349,8 +409,9 @@
       "partIds": [
         "304_Oil_Sump_01"
       ],
-      "caption": "Start the oil sump on the separate bench fixture, with its open bowl facing upward.",
-      "narration": "Start the oil sump on the separate bench fixture, with its open bowl facing upward."
+      "caption": "Start the oil sump in its separate work area. This is the large bowl underneath the engine; its open side faces the engine.",
+      "narration": "Start the oil sump in its separate work area. This is the large bowl underneath the engine; its open side faces the engine.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-035",
@@ -358,8 +419,9 @@
       "partIds": [
         "303_Oil_Sump_Baffle_Plate_01"
       ],
-      "caption": "Fit the oil-sump baffle inside the open sump. Align its four screw holes with the mounting points.",
-      "narration": "Fit the oil-sump baffle inside the open sump. Align its four screw holes with the mounting points."
+      "caption": "Place the flat baffle plate inside the oil sump. Line up its four screw holes with the small supports inside the bowl.",
+      "narration": "Place the flat baffle plate inside the oil sump. Line up its four screw holes with the small supports inside the bowl.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-036",
@@ -370,8 +432,9 @@
         "390_Screw_ISO_7045_Z_M4_x_5_4_8_Z_Fasteners_03",
         "390_Screw_ISO_7045_Z_M4_x_5_4_8_Z_Fasteners_04"
       ],
-      "caption": "Install the four screws securing the baffle inside the sump.",
-      "narration": "Install the four screws securing the baffle inside the sump."
+      "caption": "Fit the four baffle screws into the aligned holes inside the sump. The sump and baffle are now one complete unit.",
+      "narration": "Fit the four baffle screws into the aligned holes inside the sump. The sump and baffle are now one complete unit.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-037",
@@ -379,27 +442,74 @@
       "partIds": [
         "380_Complete_Oil_Sump"
       ],
-      "caption": "Keep the engine upside down. Pick up the complete sump-and-baffle unit and place it against the underside of the lower crankcase.",
-      "narration": "Keep the engine upside down. Pick up the complete sump-and-baffle unit and place it against the underside of the lower crankcase."
+      "caption": "Fit the complete sump-and-baffle unit underneath the bedplate. Its open side closes against the engine.",
+      "narration": "Fit the complete sump-and-baffle unit underneath the bedplate. Its open side closes against the engine.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-038",
       "chapterId": "chapter-3",
       "partIds": [
-        "390_Bolt_ISO_4162_M16_x_55_Fasteners_01",
-        "390_Bolt_ISO_4762_M8_x_30_Fasteners_01",
+        "390_Bolt_ISO_4162_M16_x_55_Fasteners_01"
+      ],
+      "caption": "Fit the large M16 sump bolt at its matching opening.",
+      "narration": "Fit the large M16 bolt into its matching opening on the installed sump.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-171",
+      "chapterId": "chapter-3",
+      "partIds": [
+        "390_Bolt_ISO_4762_M8_x_30_Fasteners_01"
+      ],
+      "caption": "Fit the short M8 by 30 sump bolt.",
+      "narration": "Fit the short M8 by 30 bolt into its matching sump hole.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-172",
+      "chapterId": "chapter-3",
+      "partIds": [
         "390_Bolt_ISO_4762_M8_x_35_Fasteners_01",
         "390_Bolt_ISO_4762_M8_x_35_Fasteners_02",
         "390_Bolt_ISO_4762_M8_x_35_Fasteners_03",
-        "390_Bolt_ISO_4762_M8_x_35_Fasteners_04",
-        "390_Bolt_ISO_4762_M8_x_40_Fasteners_01",
-        "390_Bolt_ISO_4762_M8_x_45_Fasteners_01",
+        "390_Bolt_ISO_4762_M8_x_35_Fasteners_04"
+      ],
+      "caption": "Fit the M8 by 35 sump bolts.",
+      "narration": "Fit the M8 by 35 bolts into their matching sump holes.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-173",
+      "chapterId": "chapter-3",
+      "partIds": [
+        "390_Bolt_ISO_4762_M8_x_40_Fasteners_01"
+      ],
+      "caption": "Fit the M8 by 40 sump bolt.",
+      "narration": "Fit the M8 by 40 bolt into its matching sump hole.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-174",
+      "chapterId": "chapter-3",
+      "partIds": [
+        "390_Bolt_ISO_4762_M8_x_45_Fasteners_01"
+      ],
+      "caption": "Fit the M8 by 45 sump bolt.",
+      "narration": "Fit the M8 by 45 bolt into its matching sump hole.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-3-cue-175",
+      "chapterId": "chapter-3",
+      "partIds": [
         "390_Bolt_ISO_4762_M8_x_80_Fasteners_01",
         "390_Bolt_ISO_4762_M8_x_80_Fasteners_02",
         "390_Bolt_ISO_4762_M8_x_80_Fasteners_03"
       ],
-      "caption": "Fit the oil-sump fasteners into the matching holes around the installed sump.",
-      "narration": "Fit the oil-sump fasteners into the matching holes around the installed sump."
+      "caption": "Fit the long M8 by 80 sump bolts.",
+      "narration": "Fit the long M8 by 80 bolts into their matching sump holes.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-039",
@@ -407,8 +517,9 @@
       "partIds": [
         "305_Flywheel_01"
       ],
-      "caption": "Turn the engine upright. Fit the flywheel onto the rear flange of the crankshaft.",
-      "narration": "Turn the engine upright. Fit the flywheel onto the rear flange of the crankshaft."
+      "caption": "Fit the flywheel, the large round disc, onto the crankshaft end opposite the timing-belt end.",
+      "narration": "Fit the flywheel, the large round disc, onto the crankshaft end opposite the timing-belt end.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-040",
@@ -416,8 +527,9 @@
       "partIds": [
         "306_Flywheel_Retaining_Plate_01"
       ],
-      "caption": "Place the flywheel retaining plate over the centre of the flywheel.",
-      "narration": "Place the flywheel retaining plate over the centre of the flywheel."
+      "caption": "Place the flywheel retaining plate over the centre of the flywheel. Line up the bolt holes.",
+      "narration": "Place the flywheel retaining plate over the centre of the flywheel. Line up the bolt holes.",
+      "voiceId": ""
     },
     {
       "id": "chapter-3-cue-041",
@@ -430,8 +542,9 @@
         "390_Bolt_ISO_4017_M10_x_20_Fasteners_05",
         "390_Bolt_ISO_4017_M10_x_20_Fasteners_06"
       ],
-      "caption": "Install the six bolts through the flywheel retaining plate.",
-      "narration": "Install the six bolts through the flywheel retaining plate."
+      "caption": "Fit the six bolts through the retaining plate to secure the flywheel.",
+      "narration": "Fit the six bolts through the retaining plate to secure the flywheel.",
+      "voiceId": ""
     },
     {
       "id": "chapter-4-cue-042",
@@ -439,8 +552,9 @@
       "partIds": [
         "401_Cylinder_Head_01"
       ],
-      "caption": "Place the loose head on its bench. C1 is the timing-end chamber, C2 the middle, C3 the flywheel end. Within each valve pair, valve 1 is nearer the flywheel end; valve 2 is nearer the timing end.",
-      "narration": "Place the loose head on its bench. C1 is the timing-end chamber, C2 the middle, C3 the flywheel end. Within each valve pair, valve 1 is nearer the flywheel end; valve 2 is nearer the timing end."
+      "caption": "Start the cylinder head in its separate work area. Its underside has three combustion chambers; each chamber has four valve positions.",
+      "narration": "Start the cylinder head in its separate work area. Its underside has three combustion chambers; each chamber has four valve positions.",
+      "voiceId": ""
     },
     {
       "id": "chapter-4-cue-043",
@@ -451,7 +565,16 @@
         "404_Exhaust_Valve_Cyl02_Valves_01",
         "404_Exhaust_Valve_Cyl02_Valves_02",
         "404_Exhaust_Valve_Cyl03_Valves_01",
-        "404_Exhaust_Valve_Cyl03_Valves_02",
+        "404_Exhaust_Valve_Cyl03_Valves_02"
+      ],
+      "caption": "Insert the exhaust valves from the combustion-chamber side of the head.",
+      "narration": "Slide each exhaust valve stem through its guide from the combustion-chamber side. Keep the wide valve face inside the chamber.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-4-cue-176",
+      "chapterId": "chapter-4",
+      "partIds": [
         "404_Intake_Valve_Cyl01_Valves_01",
         "404_Intake_Valve_Cyl01_Valves_02",
         "404_Intake_Valve_Cyl02_Valves_01",
@@ -459,8 +582,9 @@
         "404_Intake_Valve_Cyl03_Valves_01",
         "404_Intake_Valve_Cyl03_Valves_02"
       ],
-      "caption": "Flip the loose head upside down. Insert all twelve valves from the combustion-chamber side, guiding each stem through its matching guide. There are two intake and two exhaust valves per cylinder.",
-      "narration": "Flip the loose head upside down. Insert all twelve valves from the combustion-chamber side, guiding each stem through its matching guide. There are two intake and two exhaust valves per cylinder."
+      "caption": "Insert the intake valves from the combustion-chamber side of the head.",
+      "narration": "Slide each intake valve stem through its guide from the combustion-chamber side. Keep the wide valve face inside the chamber.",
+      "voiceId": ""
     },
     {
       "id": "chapter-4-cue-044",
@@ -468,8 +592,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl01_Valves_03"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C1 IN1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C1 IN1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-045",
@@ -477,8 +602,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl01_Valves_02"
       ],
-      "caption": "Fit the stem seal over the valve stem for C1 IN1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C1 IN1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-046",
@@ -486,8 +612,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl01_Valves_04"
       ],
-      "caption": "Place the valve spring around the stem for C1 IN1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C1 IN1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-047",
@@ -495,8 +622,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl01_Valves_02"
       ],
-      "caption": "Place the retainer over the top of the spring for C1 IN1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C1 IN1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-048",
@@ -505,8 +633,9 @@
         "407_Valve_Keeper_Half_Cyl01_Valves_02",
         "407_Valve_Keeper_Half_Cyl01_Valves_04"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C1 IN1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C1 IN1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-049",
@@ -514,8 +643,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl01_Valves_01"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C1 IN2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C1 IN2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-050",
@@ -523,8 +653,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl01_Valves_01"
       ],
-      "caption": "Fit the stem seal over the valve stem for C1 IN2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C1 IN2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-051",
@@ -532,8 +663,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl01_Valves_03"
       ],
-      "caption": "Place the valve spring around the stem for C1 IN2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C1 IN2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-052",
@@ -541,8 +673,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl01_Valves_01"
       ],
-      "caption": "Place the retainer over the top of the spring for C1 IN2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C1 IN2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-053",
@@ -551,8 +684,9 @@
         "407_Valve_Keeper_Half_Cyl01_Valves_01",
         "407_Valve_Keeper_Half_Cyl01_Valves_03"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C1 IN2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C1 IN2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-054",
@@ -560,8 +694,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl01_Valves_04"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C1 EX1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C1 EX1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-055",
@@ -569,8 +704,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl01_Valves_03"
       ],
-      "caption": "Fit the stem seal over the valve stem for C1 EX1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C1 EX1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-056",
@@ -578,8 +714,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl01_Valves_02"
       ],
-      "caption": "Place the valve spring around the stem for C1 EX1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C1 EX1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-057",
@@ -587,8 +724,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl01_Valves_04"
       ],
-      "caption": "Place the retainer over the top of the spring for C1 EX1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C1 EX1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-058",
@@ -597,8 +735,9 @@
         "407_Valve_Keeper_Half_Cyl01_Valves_06",
         "407_Valve_Keeper_Half_Cyl01_Valves_08"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C1 EX1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C1 EX1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-059",
@@ -606,8 +745,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl01_Valves_02"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C1 EX2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C1 EX2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-060",
@@ -615,8 +755,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl01_Valves_04"
       ],
-      "caption": "Fit the stem seal over the valve stem for C1 EX2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C1 EX2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-061",
@@ -624,8 +765,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl01_Valves_01"
       ],
-      "caption": "Place the valve spring around the stem for C1 EX2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C1 EX2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-062",
@@ -633,8 +775,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl01_Valves_03"
       ],
-      "caption": "Place the retainer over the top of the spring for C1 EX2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C1 EX2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-063",
@@ -643,8 +786,9 @@
         "407_Valve_Keeper_Half_Cyl01_Valves_05",
         "407_Valve_Keeper_Half_Cyl01_Valves_07"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C1 EX2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C1 EX2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-064",
@@ -652,8 +796,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl02_Valves_01"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C2 IN1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C2 IN1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-065",
@@ -661,8 +806,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl02_Valves_02"
       ],
-      "caption": "Fit the stem seal over the valve stem for C2 IN1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C2 IN1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-066",
@@ -670,8 +816,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl02_Valves_04"
       ],
-      "caption": "Place the valve spring around the stem for C2 IN1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C2 IN1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-067",
@@ -679,8 +826,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl02_Valves_01"
       ],
-      "caption": "Place the retainer over the top of the spring for C2 IN1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C2 IN1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-068",
@@ -689,8 +837,9 @@
         "407_Valve_Keeper_Half_Cyl02_Valves_01",
         "407_Valve_Keeper_Half_Cyl02_Valves_03"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C2 IN1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C2 IN1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-069",
@@ -698,8 +847,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl02_Valves_02"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C2 IN2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C2 IN2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-070",
@@ -707,8 +857,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl02_Valves_01"
       ],
-      "caption": "Fit the stem seal over the valve stem for C2 IN2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C2 IN2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-071",
@@ -716,8 +867,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl02_Valves_03"
       ],
-      "caption": "Place the valve spring around the stem for C2 IN2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C2 IN2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-072",
@@ -725,8 +877,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl02_Valves_02"
       ],
-      "caption": "Place the retainer over the top of the spring for C2 IN2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C2 IN2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-073",
@@ -735,8 +888,9 @@
         "407_Valve_Keeper_Half_Cyl02_Valves_02",
         "407_Valve_Keeper_Half_Cyl02_Valves_04"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C2 IN2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C2 IN2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-074",
@@ -744,8 +898,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl02_Valves_04"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C2 EX1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C2 EX1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-075",
@@ -753,8 +908,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl02_Valves_04"
       ],
-      "caption": "Fit the stem seal over the valve stem for C2 EX1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C2 EX1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-076",
@@ -762,8 +918,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl02_Valves_02"
       ],
-      "caption": "Place the valve spring around the stem for C2 EX1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C2 EX1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-077",
@@ -771,8 +928,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl02_Valves_04"
       ],
-      "caption": "Place the retainer over the top of the spring for C2 EX1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C2 EX1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-078",
@@ -781,8 +939,9 @@
         "407_Valve_Keeper_Half_Cyl02_Valves_05",
         "407_Valve_Keeper_Half_Cyl02_Valves_07"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C2 EX1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C2 EX1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-079",
@@ -790,8 +949,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl02_Valves_03"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C2 EX2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C2 EX2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-080",
@@ -799,8 +959,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl02_Valves_03"
       ],
-      "caption": "Fit the stem seal over the valve stem for C2 EX2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C2 EX2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-081",
@@ -808,8 +969,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl02_Valves_01"
       ],
-      "caption": "Place the valve spring around the stem for C2 EX2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C2 EX2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-082",
@@ -817,8 +979,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl02_Valves_03"
       ],
-      "caption": "Place the retainer over the top of the spring for C2 EX2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C2 EX2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-083",
@@ -827,8 +990,9 @@
         "407_Valve_Keeper_Half_Cyl02_Valves_06",
         "407_Valve_Keeper_Half_Cyl02_Valves_08"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C2 EX2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C2 EX2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-084",
@@ -836,8 +1000,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl03_Valves_04"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C3 IN1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C3 IN1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-085",
@@ -845,8 +1010,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl03_Valves_02"
       ],
-      "caption": "Fit the stem seal over the valve stem for C3 IN1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C3 IN1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-086",
@@ -854,8 +1020,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl03_Valves_04"
       ],
-      "caption": "Place the valve spring around the stem for C3 IN1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C3 IN1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-087",
@@ -863,8 +1030,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl03_Valves_01"
       ],
-      "caption": "Place the retainer over the top of the spring for C3 IN1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C3 IN1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-088",
@@ -873,8 +1041,9 @@
         "407_Valve_Keeper_Half_Cyl03_Valves_01",
         "407_Valve_Keeper_Half_Cyl03_Valves_03"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C3 IN1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C3 IN1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-089",
@@ -882,8 +1051,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl03_Valves_01"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C3 IN2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C3 IN2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-090",
@@ -891,8 +1061,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl03_Valves_01"
       ],
-      "caption": "Fit the stem seal over the valve stem for C3 IN2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C3 IN2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-091",
@@ -900,8 +1071,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl03_Valves_03"
       ],
-      "caption": "Place the valve spring around the stem for C3 IN2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C3 IN2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-092",
@@ -909,8 +1081,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl03_Valves_02"
       ],
-      "caption": "Place the retainer over the top of the spring for C3 IN2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C3 IN2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-093",
@@ -919,8 +1092,9 @@
         "407_Valve_Keeper_Half_Cyl03_Valves_02",
         "407_Valve_Keeper_Half_Cyl03_Valves_04"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C3 IN2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C3 IN2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-094",
@@ -928,8 +1102,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl03_Valves_03"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C3 EX1.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C3 EX1."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-095",
@@ -937,8 +1112,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl03_Valves_04"
       ],
-      "caption": "Fit the stem seal over the valve stem for C3 EX1, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C3 EX1, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-096",
@@ -946,8 +1122,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl03_Valves_02"
       ],
-      "caption": "Place the valve spring around the stem for C3 EX1, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C3 EX1, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-097",
@@ -955,8 +1132,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl03_Valves_04"
       ],
-      "caption": "Place the retainer over the top of the spring for C3 EX1. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C3 EX1. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-098",
@@ -965,8 +1143,9 @@
         "407_Valve_Keeper_Half_Cyl03_Valves_05",
         "407_Valve_Keeper_Half_Cyl03_Valves_07"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C3 EX1, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C3 EX1, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-099",
@@ -974,8 +1153,9 @@
       "partIds": [
         "402_Valve_Spring_Seat_Cyl03_Valves_02"
       ],
-      "caption": "With the loose head upright, place the spring seat around the valve guide for C3 EX2.",
-      "narration": "With the loose head upright, place the spring seat around the valve guide for C3 EX2."
+      "caption": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "narration": "Fit the spring seat, the thin ring, around the raised valve-guide tube.",
+      "voiceId": "valve-402"
     },
     {
       "id": "chapter-4-cue-100",
@@ -983,8 +1163,9 @@
       "partIds": [
         "403_Valve_Stem_Seal_Cyl03_Valves_03"
       ],
-      "caption": "Fit the stem seal over the valve stem for C3 EX2, inside the spring seat.",
-      "narration": "Fit the stem seal over the valve stem for C3 EX2, inside the spring seat."
+      "caption": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "narration": "Slide the small stem seal over the valve stem. It rests inside the spring seat.",
+      "voiceId": "valve-403"
     },
     {
       "id": "chapter-4-cue-101",
@@ -992,8 +1173,9 @@
       "partIds": [
         "405_Valve_Spring_Cyl03_Valves_01"
       ],
-      "caption": "Place the valve spring around the stem for C3 EX2, resting it on the spring seat.",
-      "narration": "Place the valve spring around the stem for C3 EX2, resting it on the spring seat."
+      "caption": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "narration": "Slide the spring over the valve stem. Its lower end rests on the spring seat.",
+      "voiceId": "valve-405"
     },
     {
       "id": "chapter-4-cue-102",
@@ -1001,8 +1183,9 @@
       "partIds": [
         "406_Valve_Spring_Retainer_Cyl03_Valves_03"
       ],
-      "caption": "Place the retainer over the top of the spring for C3 EX2. The model uses its fitted spring position.",
-      "narration": "Place the retainer over the top of the spring for C3 EX2. The model uses its fitted spring position."
+      "caption": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "narration": "Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.",
+      "voiceId": "valve-406"
     },
     {
       "id": "chapter-4-cue-103",
@@ -1011,8 +1194,9 @@
         "407_Valve_Keeper_Half_Cyl03_Valves_06",
         "407_Valve_Keeper_Half_Cyl03_Valves_08"
       ],
-      "caption": "Fit both keeper halves around the stem groove for C3 EX2, inside the retainer.",
-      "narration": "Fit both keeper halves around the stem groove for C3 EX2, inside the retainer."
+      "caption": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "narration": "Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.",
+      "voiceId": "valve-407"
     },
     {
       "id": "chapter-4-cue-104",
@@ -1020,8 +1204,9 @@
       "partIds": [
         "480_Complete_Cylinder_Head"
       ],
-      "caption": "Turn the engine upright. Pick up the complete cylinder-head unit from the bench and align it with the top face of the three-cylinder block.",
-      "narration": "Turn the engine upright. Pick up the complete cylinder-head unit from the bench and align it with the top face of the three-cylinder block."
+      "caption": "Move the completed cylinder head onto the top of the cylinder block. Line up its three chambers with the three cylinder holes.",
+      "narration": "Move the completed cylinder head onto the top of the cylinder block. Line up its three chambers with the three cylinder holes.",
+      "voiceId": ""
     },
     {
       "id": "chapter-4-cue-105",
@@ -1036,8 +1221,9 @@
         "490_Bolt_ISO_4162_M8_x_80_Fasteners_07",
         "490_Bolt_ISO_4162_M8_x_80_Fasteners_08"
       ],
-      "caption": "Install all eight cylinder-head bolts in the matching holes through the head.",
-      "narration": "Install all eight cylinder-head bolts in the matching holes through the head."
+      "caption": "Fit the eight long head bolts through the head and into the block below it.",
+      "narration": "Fit the eight long head bolts through the head and into the block below it.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-106",
@@ -1052,18 +1238,29 @@
         "501_Camshaft_Needle_Bearing_25x29x8_07",
         "501_Camshaft_Needle_Bearing_25x29x8_08"
       ],
-      "caption": "Fit the eight camshaft needle bearings into the supports along the top of the head.",
-      "narration": "Fit the eight camshaft needle bearings into the supports along the top of the head."
+      "caption": "Fit the eight camshaft needle bearings into the supports along the top of the cylinder head.",
+      "narration": "Fit the eight camshaft needle bearings into the supports along the top of the cylinder head.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-107",
       "chapterId": "chapter-5",
       "partIds": [
-        "502_Exhaust_Camshaft_01",
+        "502_Exhaust_Camshaft_01"
+      ],
+      "caption": "Place the exhaust camshaft in the bearings over the exhaust valves.",
+      "narration": "Lay the exhaust camshaft in its bearings above the exhaust-valve row.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-5-cue-177",
+      "chapterId": "chapter-5",
+      "partIds": [
         "502_Intake_Camshaft_01"
       ],
-      "caption": "Fit the intake and exhaust camshafts into their respective bearing supports on the head.",
-      "narration": "Fit the intake and exhaust camshafts into their respective bearing supports on the head."
+      "caption": "Place the intake camshaft in the bearings over the intake valves.",
+      "narration": "Lay the intake camshaft in its bearings above the intake-valve row.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-108",
@@ -1071,8 +1268,9 @@
       "partIds": [
         "501_Front_Engine_Cover_01"
       ],
-      "caption": "Place the front engine cover on the timing-drive end of the engine.",
-      "narration": "Place the front engine cover on the timing-drive end of the engine."
+      "caption": "Fit the front engine cover at the timing-belt end of the block. This is the end opposite the flywheel.",
+      "narration": "Fit the front engine cover at the timing-belt end of the block. This is the end opposite the flywheel.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-109",
@@ -1081,8 +1279,9 @@
         "503_Camshaft_Pulley_Key_01",
         "503_Camshaft_Pulley_Key_02"
       ],
-      "caption": "Insert the two pulley keys into the keyways at the ends of the camshafts.",
-      "narration": "Insert the two pulley keys into the keyways at the ends of the camshafts."
+      "caption": "Fit a small pulley key into the slot at the end of each camshaft. The key keeps the pulley hub from turning on its shaft.",
+      "narration": "Fit a small pulley key into the slot at the end of each camshaft. The key keeps the pulley hub from turning on its shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-110",
@@ -1091,8 +1290,9 @@
         "504_Camshaft_Pulley_Hub_01",
         "504_Camshaft_Pulley_Hub_02"
       ],
-      "caption": "Slide each camshaft pulley hub onto its keyed camshaft end.",
-      "narration": "Slide each camshaft pulley hub onto its keyed camshaft end."
+      "caption": "Slide each pulley hub onto its camshaft end. Line up the slot inside the hub with the key you just fitted.",
+      "narration": "Slide each pulley hub onto its camshaft end. Line up the slot inside the hub with the key you just fitted.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-111",
@@ -1101,8 +1301,9 @@
         "507_Camshaft_Pulley_Washer_01",
         "507_Camshaft_Pulley_Washer_02"
       ],
-      "caption": "Place each camshaft washer inside its pulley hub before fitting the hub bolt or outer timing pulley.",
-      "narration": "Place each camshaft washer inside its pulley hub before fitting the hub bolt or outer timing pulley."
+      "caption": "Place a washer inside each camshaft pulley hub. These washers must go in before the hub bolts or outer pulleys.",
+      "narration": "Place a washer inside each camshaft pulley hub. These washers must go in before the hub bolts or outer pulleys.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-112",
@@ -1111,8 +1312,9 @@
         "590_Bolt_ISO_4162_M12_x_45_Fasteners_01",
         "590_Bolt_ISO_4162_M12_x_45_Fasteners_02"
       ],
-      "caption": "Install the two bolts through the seated washers to secure the camshaft pulley hubs.",
-      "narration": "Install the two bolts through the seated washers to secure the camshaft pulley hubs."
+      "caption": "Fit a bolt through each seated washer to secure the two camshaft pulley hubs.",
+      "narration": "Fit a bolt through each seated washer to secure the two camshaft pulley hubs.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-113",
@@ -1120,19 +1322,30 @@
       "partIds": [
         "505_Crankshaft_Pulley_Key_01"
       ],
-      "caption": "Insert the crankshaft pulley key into the crankshaft end keyway.",
-      "narration": "Insert the crankshaft pulley key into the crankshaft end keyway."
+      "caption": "Fit the crankshaft pulley key into the slot at the timing-belt end of the crankshaft.",
+      "narration": "Fit the crankshaft pulley key into the slot at the timing-belt end of the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-114",
       "chapterId": "chapter-5",
       "partIds": [
         "506_Camshaft_Timing_Pulley_01",
-        "506_Camshaft_Timing_Pulley_02",
+        "506_Camshaft_Timing_Pulley_02"
+      ],
+      "caption": "Fit the camshaft timing pulleys onto their secured hubs.",
+      "narration": "Fit each camshaft timing pulley onto its secured hub.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-5-cue-178",
+      "chapterId": "chapter-5",
+      "partIds": [
         "506_Crankshaft_Pulley_01"
       ],
-      "caption": "Fit the outer camshaft timing pulleys onto the secured hubs, and the crankshaft pulley onto its keyed shaft.",
-      "narration": "Fit the outer camshaft timing pulleys onto the secured hubs, and the crankshaft pulley onto its keyed shaft."
+      "caption": "Fit the crankshaft pulley onto its keyed shaft end.",
+      "narration": "Fit the crankshaft pulley onto the keyed end of the crankshaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-115",
@@ -1140,8 +1353,9 @@
       "partIds": [
         "507_Crankshaft_Pulley_Washer_01"
       ],
-      "caption": "Place the crankshaft pulley washer over the crankshaft end, against the pulley.",
-      "narration": "Place the crankshaft pulley washer over the crankshaft end, against the pulley."
+      "caption": "Place the crankshaft pulley washer over the shaft end, against the outer face of the pulley.",
+      "narration": "Place the crankshaft pulley washer over the shaft end, against the outer face of the pulley.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-116",
@@ -1156,11 +1370,21 @@
         "590_Bolt_ISO_4162_M8_x_35_Fasteners_07",
         "590_Bolt_ISO_4162_M8_x_35_Fasteners_08",
         "590_Bolt_ISO_4162_M8_x_35_Fasteners_09",
-        "590_Bolt_ISO_4162_M8_x_35_Fasteners_10",
+        "590_Bolt_ISO_4162_M8_x_35_Fasteners_10"
+      ],
+      "caption": "Fit the outer camshaft-pulley bolts.",
+      "narration": "Fit the outer pulley bolts into their matching camshaft-pulley holes.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-5-cue-179",
+      "chapterId": "chapter-5",
+      "partIds": [
         "590_Nut_ISO_4035_M22_Fasteners_01"
       ],
-      "caption": "Install the outer pulley fasteners in their matching holes and on the crankshaft end.",
-      "narration": "Install the outer pulley fasteners in their matching holes and on the crankshaft end."
+      "caption": "Fit the large nut on the crankshaft pulley end.",
+      "narration": "Fit the large M22 nut onto the crankshaft pulley end.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-117",
@@ -1168,8 +1392,9 @@
       "partIds": [
         "508_Timing_Idler_Mounting_Plate_01"
       ],
-      "caption": "Fit the timing-idler mounting plate beside the timing pulleys.",
-      "narration": "Fit the timing-idler mounting plate beside the timing pulleys."
+      "caption": "Fit the timing-idler mounting plate beside the timing pulleys. It supports the two small belt-guide pulleys.",
+      "narration": "Fit the timing-idler mounting plate beside the timing pulleys. It supports the two small belt-guide pulleys.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-118",
@@ -1180,8 +1405,9 @@
         "590_Bolt_ISO_4762_M8_x_20_Fasteners_03",
         "590_Bolt_ISO_4762_M8_x_20_Fasteners_04"
       ],
-      "caption": "Install the four screws securing the timing-idler mounting plate.",
-      "narration": "Install the four screws securing the timing-idler mounting plate."
+      "caption": "Fit the four screws through the timing-idler mounting plate.",
+      "narration": "Fit the four screws through the timing-idler mounting plate.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-119",
@@ -1190,8 +1416,9 @@
         "509_Timing_Idler_Shaft_01",
         "509_Timing_Idler_Shaft_02"
       ],
-      "caption": "Fit the two timing-idler shafts into the mounting plate.",
-      "narration": "Fit the two timing-idler shafts into the mounting plate."
+      "caption": "Fit the two idler shafts into the mounting plate. Each shaft will carry one small belt-guide pulley.",
+      "narration": "Fit the two idler shafts into the mounting plate. Each shaft will carry one small belt-guide pulley.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-120",
@@ -1200,8 +1427,9 @@
         "511_Idler_Shaft_Circlip_01",
         "511_Idler_Shaft_Circlip_04"
       ],
-      "caption": "Fit the two inner shaft circlips, one on each timing-idler shaft, in the grooves nearest the mounting plate.",
-      "narration": "Fit the two inner shaft circlips, one on each timing-idler shaft, in the grooves nearest the mounting plate."
+      "caption": "Fit one inner circlip onto each idler shaft, in the groove closest to the mounting plate. Fit these before the idler units.",
+      "narration": "Fit one inner circlip onto each idler shaft, in the groove closest to the mounting plate. Fit these before the idler units.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-121",
@@ -1209,8 +1437,9 @@
       "partIds": [
         "511_Timing_Idler_Pulley_01"
       ],
-      "caption": "Start timing idler 1 on the bench. Place its pulley before inserting the bearings.",
-      "narration": "Start timing idler 1 on the bench. Place its pulley before inserting the bearings."
+      "caption": "Start timing idler 1 in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "narration": "Start timing idler 1 in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-122",
@@ -1219,8 +1448,9 @@
         "510_Idler_Ball_Bearing_6203_01",
         "510_Idler_Ball_Bearing_6203_02"
       ],
-      "caption": "Fit both ball bearings into the bore of timing idler 1.",
-      "narration": "Fit both ball bearings into the bore of timing idler 1."
+      "caption": "Fit both ball bearings into the centre hole of timing idler 1.",
+      "narration": "Fit both ball bearings into the centre hole of timing idler 1.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-123",
@@ -1229,8 +1459,9 @@
         "511_Idler_Bore_Circlip_01",
         "511_Idler_Bore_Circlip_02"
       ],
-      "caption": "Fit both bore circlips into timing idler 1 to retain its bearings.",
-      "narration": "Fit both bore circlips into timing idler 1 to retain its bearings."
+      "caption": "Fit the two retaining circlips into the grooves inside timing idler 1. They hold its bearings in place.",
+      "narration": "Fit the two retaining circlips into the grooves inside timing idler 1. They hold its bearings in place.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-124",
@@ -1238,8 +1469,9 @@
       "partIds": [
         "511_Timing_Idler_Pulley_02"
       ],
-      "caption": "Start timing idler 2 on the bench. Place its pulley before inserting the bearings.",
-      "narration": "Start timing idler 2 on the bench. Place its pulley before inserting the bearings."
+      "caption": "Start timing idler 2 in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "narration": "Start timing idler 2 in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-125",
@@ -1248,8 +1480,9 @@
         "510_Idler_Ball_Bearing_6203_03",
         "510_Idler_Ball_Bearing_6203_04"
       ],
-      "caption": "Fit both ball bearings into the bore of timing idler 2.",
-      "narration": "Fit both ball bearings into the bore of timing idler 2."
+      "caption": "Fit both ball bearings into the centre hole of timing idler 2.",
+      "narration": "Fit both ball bearings into the centre hole of timing idler 2.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-126",
@@ -1258,8 +1491,9 @@
         "511_Idler_Bore_Circlip_03",
         "511_Idler_Bore_Circlip_04"
       ],
-      "caption": "Fit both bore circlips into timing idler 2 to retain its bearings.",
-      "narration": "Fit both bore circlips into timing idler 2 to retain its bearings."
+      "caption": "Fit the two retaining circlips into the grooves inside timing idler 2. They hold its bearings in place.",
+      "narration": "Fit the two retaining circlips into the grooves inside timing idler 2. They hold its bearings in place.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-127",
@@ -1268,8 +1502,9 @@
         "530_Timing_Idler_Unit_01",
         "530_Timing_Idler_Unit_02"
       ],
-      "caption": "Slide both completed timing-idler units onto their matching shafts, against the installed inner shaft circlips.",
-      "narration": "Slide both completed timing-idler units onto their matching shafts, against the installed inner shaft circlips."
+      "caption": "Slide each complete timing-idler unit onto its matching shaft, until it reaches the inner circlip already on the shaft.",
+      "narration": "Slide each complete timing-idler unit onto its matching shaft, until it reaches the inner circlip already on the shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-128",
@@ -1278,8 +1513,9 @@
         "511_Idler_Shaft_Circlip_02",
         "511_Idler_Shaft_Circlip_03"
       ],
-      "caption": "Fit the two outer shaft circlips into the exposed grooves to retain the installed timing idlers.",
-      "narration": "Fit the two outer shaft circlips into the exposed grooves to retain the installed timing idlers."
+      "caption": "Fit an outer circlip into the exposed groove on each shaft. These clips stop the complete idlers sliding off.",
+      "narration": "Fit an outer circlip into the exposed groove on each shaft. These clips stop the complete idlers sliding off.",
+      "voiceId": ""
     },
     {
       "id": "chapter-5-cue-129",
@@ -1287,8 +1523,9 @@
       "partIds": [
         "512_Timing_Belt_01"
       ],
-      "caption": "Route the timing belt around the crankshaft pulley, both camshaft pulleys and the timing idlers.",
-      "narration": "Route the timing belt around the crankshaft pulley, both camshaft pulleys and the timing idlers."
+      "caption": "Fit the timing belt around the crankshaft pulley, the two camshaft pulleys, and the two timing idlers.",
+      "narration": "Fit the timing belt around the crankshaft pulley, the two camshaft pulleys, and the two timing idlers. The timing belt links the crankshaft and camshafts.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-130",
@@ -1296,8 +1533,9 @@
       "partIds": [
         "601_Cylinder_Head_Cover_01"
       ],
-      "caption": "Place the cylinder-head cover over the camshafts on top of the head.",
-      "narration": "Place the cylinder-head cover over the camshafts on top of the head."
+      "caption": "Fit the cylinder-head cover over the camshafts on top of the head.",
+      "narration": "Fit the cylinder-head cover over the camshafts on top of the head.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-131",
@@ -1318,8 +1556,9 @@
         "690_Bolt_ISO_4162_M8_x_80_Fasteners_13",
         "690_Bolt_ISO_4162_M8_x_80_Fasteners_14"
       ],
-      "caption": "Install the cylinder-head cover bolts around the cover.",
-      "narration": "Install the cylinder-head cover bolts around the cover."
+      "caption": "Fit the cover bolts into the holes around the edge of the cylinder-head cover.",
+      "narration": "Fit the cover bolts into the holes around the edge of the cylinder-head cover.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-132",
@@ -1329,8 +1568,9 @@
         "602_Fuel_Injector_02",
         "602_Fuel_Injector_03"
       ],
-      "caption": "Fit the three fuel injectors into their matching cylinder-head positions.",
-      "narration": "Fit the three fuel injectors into their matching cylinder-head positions."
+      "caption": "Fit one fuel injector into each of the three injector openings in the cylinder head.",
+      "narration": "Fit one fuel injector into each of the three injector openings in the cylinder head.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-133",
@@ -1338,8 +1578,9 @@
       "partIds": [
         "603_Fuel_Rail_01"
       ],
-      "caption": "Place the fuel rail over the tops of the three injectors.",
-      "narration": "Place the fuel rail over the tops of the three injectors."
+      "caption": "Place the fuel rail across the tops of the three injectors. Its three connections line up with them.",
+      "narration": "Place the fuel rail across the tops of the three injectors. Its three connections line up with them.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-134",
@@ -1348,8 +1589,9 @@
         "690_Bolt_ISO_4762_M6_x_10_Fasteners_01",
         "690_Bolt_ISO_4762_M6_x_10_Fasteners_02"
       ],
-      "caption": "Install the two screws securing the fuel rail.",
-      "narration": "Install the two screws securing the fuel rail."
+      "caption": "Fit the two screws that hold the fuel rail in place.",
+      "narration": "Fit the two screws that hold the fuel rail in place.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-135",
@@ -1357,8 +1599,9 @@
       "partIds": [
         "604_Fuel_Return_Line_01"
       ],
-      "caption": "Connect the fuel return line to its matching fuel-system connection.",
-      "narration": "Connect the fuel return line to its matching fuel-system connection."
+      "caption": "Fit the fuel return line onto its fuel-system connection.",
+      "narration": "Fit the fuel return line onto its fuel-system connection.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-136",
@@ -1366,8 +1609,9 @@
       "partIds": [
         "605_Crankcase_Breather_Housing_01"
       ],
-      "caption": "Place the crankcase breather housing against its mounting face.",
-      "narration": "Place the crankcase breather housing against its mounting face."
+      "caption": "Fit the crankcase breather housing onto its mounting face. The breather lets gas leave the crankcase.",
+      "narration": "Fit the crankcase breather housing onto its mounting face. The breather lets gas leave the crankcase.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-137",
@@ -1376,8 +1620,9 @@
         "690_Bolt_ISO_4762_M8_x_20_Fasteners_01",
         "690_Bolt_ISO_4762_M8_x_20_Fasteners_02"
       ],
-      "caption": "Install the two screws securing the breather housing.",
-      "narration": "Install the two screws securing the breather housing."
+      "caption": "Fit the two screws through the breather housing.",
+      "narration": "Fit the two screws through the breather housing.",
+      "voiceId": ""
     },
     {
       "id": "chapter-6-cue-138",
@@ -1385,8 +1630,9 @@
       "partIds": [
         "606_Breather_Hose_01"
       ],
-      "caption": "Connect the breather hose between its matching ports.",
-      "narration": "Connect the breather hose between its matching ports."
+      "caption": "Connect the breather hose between its two matching ports.",
+      "narration": "Connect the breather hose between its two matching ports.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-139",
@@ -1394,8 +1640,9 @@
       "partIds": [
         "701_Turbocharger_Housing_and_Exhaust_Manifold_01"
       ],
-      "caption": "Fit the combined exhaust manifold and turbocharger housing to the exhaust side of the cylinder head.",
-      "narration": "Fit the combined exhaust manifold and turbocharger housing to the exhaust side of the cylinder head."
+      "caption": "Fit the combined exhaust-manifold and turbocharger housing to the exhaust side of the cylinder head.",
+      "narration": "Fit the combined exhaust-manifold and turbocharger housing to the exhaust side of the cylinder head.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-140",
@@ -1406,8 +1653,9 @@
         "790_Bolt_ISO_4762_M6_x_10_Fasteners_03",
         "790_Bolt_ISO_4762_M6_x_10_Fasteners_04"
       ],
-      "caption": "Install the four screws securing the exhaust-manifold and turbocharger housing.",
-      "narration": "Install the four screws securing the exhaust-manifold and turbocharger housing."
+      "caption": "Fit the four screws through the exhaust-manifold mounting holes.",
+      "narration": "Fit the four screws through the exhaust-manifold mounting holes.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-141",
@@ -1416,8 +1664,9 @@
         "703_Turbo_Shaft_Bearing_10x15x3_01",
         "703_Turbo_Shaft_Bearing_10x15x3_02"
       ],
-      "caption": "Fit the two turbo-shaft bearings into the turbocharger housing.",
-      "narration": "Fit the two turbo-shaft bearings into the turbocharger housing."
+      "caption": "Fit the two turbo-shaft bearings inside the turbocharger housing.",
+      "narration": "Fit the two turbo-shaft bearings inside the turbocharger housing.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-142",
@@ -1425,8 +1674,9 @@
       "partIds": [
         "702_Turbo_Rotor_Shaft_01"
       ],
-      "caption": "Slide the turbo rotor shaft through the two bearing positions.",
-      "narration": "Slide the turbo rotor shaft through the two bearing positions."
+      "caption": "Slide the turbo rotor shaft through the two bearings inside the housing.",
+      "narration": "Slide the turbo rotor shaft through the two bearings inside the housing.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-143",
@@ -1435,18 +1685,29 @@
         "703_Turbo_Shaft_Circlip_01",
         "703_Turbo_Shaft_Circlip_02"
       ],
-      "caption": "Fit the two circlips into the retaining grooves on the turbo shaft.",
-      "narration": "Fit the two circlips into the retaining grooves on the turbo shaft."
+      "caption": "Fit the two small retaining circlips into their grooves on the turbo shaft.",
+      "narration": "Fit the two small retaining circlips into their grooves on the turbo shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-144",
       "chapterId": "chapter-7",
       "partIds": [
-        "704_Turbo_Compressor_Wheel_01",
+        "704_Turbo_Compressor_Wheel_01"
+      ],
+      "caption": "Fit the compressor wheel onto the air-intake end of the turbo shaft.",
+      "narration": "Fit the compressor wheel onto the air-intake end of the turbo shaft.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-7-cue-180",
+      "chapterId": "chapter-7",
+      "partIds": [
         "704_Turbo_Turbine_Wheel_01"
       ],
-      "caption": "Fit the compressor wheel and turbine wheel onto their respective ends of the turbo shaft.",
-      "narration": "Fit the compressor wheel and turbine wheel onto their respective ends of the turbo shaft."
+      "caption": "Fit the turbine wheel onto the exhaust end of the turbo shaft.",
+      "narration": "Fit the turbine wheel onto the exhaust end of the turbo shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-145",
@@ -1455,8 +1716,9 @@
         "790_Bolt_ISO_4762_M4_x_12_Fasteners_01",
         "790_Bolt_ISO_4762_M4_x_12_Fasteners_02"
       ],
-      "caption": "Install the two M4 turbo-wheel fasteners in their matching positions.",
-      "narration": "Install the two M4 turbo-wheel fasteners in their matching positions."
+      "caption": "Fit the two M4 fasteners that hold the turbo wheels on the shaft.",
+      "narration": "Fit the two M4 fasteners that hold the turbo wheels on the shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-146",
@@ -1464,8 +1726,9 @@
       "partIds": [
         "706_Exhaust_Outlet_and_Catalyst_Housing_01"
       ],
-      "caption": "Fit the exhaust outlet and catalyst housing to the turbine outlet.",
-      "narration": "Fit the exhaust outlet and catalyst housing to the turbine outlet."
+      "caption": "Fit the exhaust outlet and catalyst housing to the exhaust side of the turbocharger.",
+      "narration": "Fit the exhaust outlet and catalyst housing to the exhaust side of the turbocharger.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-147",
@@ -1473,8 +1736,9 @@
       "partIds": [
         "705_Turbo_Outlet_Band_Clamp_01"
       ],
-      "caption": "Place the band clamp around the exhaust-outlet joint.",
-      "narration": "Place the band clamp around the exhaust-outlet joint."
+      "caption": "Place the band clamp around the joint between the turbocharger and the exhaust outlet. Fit the clamp before its bolt.",
+      "narration": "Place the band clamp around the joint between the turbocharger and the exhaust outlet. Fit the clamp before its bolt.",
+      "voiceId": ""
     },
     {
       "id": "chapter-7-cue-148",
@@ -1482,8 +1746,9 @@
       "partIds": [
         "790_Bolt_ISO_4762_M8_x_12_Fasteners_01"
       ],
-      "caption": "Install the M8 bolt after the turbo outlet clamp is seated.",
-      "narration": "Install the M8 bolt after the turbo outlet clamp is seated."
+      "caption": "Fit the M8 bolt into the turbo outlet clamp after the clamp is in place.",
+      "narration": "Fit the M8 bolt into the turbo outlet clamp after the clamp is in place.",
+      "voiceId": ""
     },
     {
       "id": "chapter-8-cue-149",
@@ -1491,18 +1756,29 @@
       "partIds": [
         "801_Intake_Manifold_01"
       ],
-      "caption": "Fit the intake manifold to the intake side of the cylinder head.",
-      "narration": "Fit the intake manifold to the intake side of the cylinder head."
+      "caption": "Fit the intake manifold to the intake side of the cylinder head. Its openings line up with the intake ports.",
+      "narration": "Fit the intake manifold to the intake side of the cylinder head. Its openings line up with the intake ports.",
+      "voiceId": ""
     },
     {
       "id": "chapter-8-cue-150",
       "chapterId": "chapter-8",
       "partIds": [
-        "802_Intake_Pipe_Fitting_01",
+        "802_Intake_Pipe_Fitting_01"
+      ],
+      "caption": "Fit the intake pipe connection to its matching opening.",
+      "narration": "Fit the intake pipe connection into its matching intake opening.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-8-cue-181",
+      "chapterId": "chapter-8",
+      "partIds": [
         "802_Intake_Pipe_Union_01"
       ],
-      "caption": "Connect the intake pipe fitting and union to their matching intake connections.",
-      "narration": "Connect the intake pipe fitting and union to their matching intake connections."
+      "caption": "Fit the intake pipe union to complete the connection.",
+      "narration": "Fit the intake pipe union at the next matching intake opening.",
+      "voiceId": ""
     },
     {
       "id": "chapter-8-cue-151",
@@ -1510,8 +1786,9 @@
       "partIds": [
         "803_External_Service_Tube_01"
       ],
-      "caption": "Connect the external service tube along its matching route on the engine.",
-      "narration": "Connect the external service tube along its matching route on the engine."
+      "caption": "Fit the external service tube between its matching connections along the engine.",
+      "narration": "Fit the external service tube between its matching connections along the engine.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-152",
@@ -1519,8 +1796,9 @@
       "partIds": [
         "901_Accessory_Upper_Mounting_Bracket_01"
       ],
-      "caption": "Fit the upper accessory mounting bracket to the engine first.",
-      "narration": "Fit the upper accessory mounting bracket to the engine first."
+      "caption": "Fit the upper accessory mounting bracket to the engine first. It is the support above the lower bracket.",
+      "narration": "Fit the upper accessory mounting bracket to the engine first. It is the support above the lower bracket.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-153",
@@ -1528,28 +1806,49 @@
       "partIds": [
         "901_Accessory_Lower_Mounting_Bracket_01"
       ],
-      "caption": "Fit the lower accessory mounting bracket below the upper bracket.",
-      "narration": "Fit the lower accessory mounting bracket below the upper bracket."
+      "caption": "Fit the lower accessory mounting bracket below the upper bracket you just placed.",
+      "narration": "Fit the lower accessory mounting bracket below the upper bracket you just placed.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-154",
       "chapterId": "chapter-9",
       "partIds": [
-        "902_Accessory_Mounting_Spacer_A_01",
+        "902_Accessory_Mounting_Spacer_A_01"
+      ],
+      "caption": "Fit accessory mounting spacer A into its bracket position.",
+      "narration": "Fit spacer A into its matching accessory bracket position.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-9-cue-182",
+      "chapterId": "chapter-9",
+      "partIds": [
         "902_Accessory_Mounting_Spacer_B_01"
       ],
-      "caption": "Place accessory spacers A and B into their matching bracket positions.",
-      "narration": "Place accessory spacers A and B into their matching bracket positions."
+      "caption": "Fit accessory mounting spacer B into its bracket position.",
+      "narration": "Fit spacer B into its matching accessory bracket position.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-155",
       "chapterId": "chapter-9",
       "partIds": [
-        "903_Alternator_01",
+        "903_Alternator_01"
+      ],
+      "caption": "Fit the alternator onto its mounting supports.",
+      "narration": "Fit the alternator onto its matching mounting supports.",
+      "voiceId": ""
+    },
+    {
+      "id": "chapter-9-cue-183",
+      "chapterId": "chapter-9",
+      "partIds": [
         "904_Starter_Motor_01"
       ],
-      "caption": "Mount the alternator and starter motor onto their matching supports.",
-      "narration": "Mount the alternator and starter motor onto their matching supports."
+      "caption": "Fit the starter motor onto its mounting supports.",
+      "narration": "Fit the starter motor onto its matching mounting supports.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-156",
@@ -1557,8 +1856,9 @@
       "partIds": [
         "905_Alternator_Pulley_01"
       ],
-      "caption": "Fit the alternator pulley onto the alternator shaft.",
-      "narration": "Fit the alternator pulley onto the alternator shaft."
+      "caption": "Fit the alternator pulley onto the end of the alternator shaft.",
+      "narration": "Fit the alternator pulley onto the end of the alternator shaft.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-157",
@@ -1566,8 +1866,9 @@
       "partIds": [
         "906_Accessory_Idler_Shaft_01"
       ],
-      "caption": "Fit the accessory-idler shaft into its mounting support.",
-      "narration": "Fit the accessory-idler shaft into its mounting support."
+      "caption": "Fit the accessory-idler shaft into its support. This shaft carries the small accessory-belt guide pulley.",
+      "narration": "Fit the accessory-idler shaft into its support. This shaft carries the small accessory-belt guide pulley.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-158",
@@ -1575,8 +1876,9 @@
       "partIds": [
         "907_Idler_Shaft_Circlip_02"
       ],
-      "caption": "Fit the inner shaft circlip in the groove nearest the accessory-idler mounting support.",
-      "narration": "Fit the inner shaft circlip in the groove nearest the accessory-idler mounting support."
+      "caption": "Fit the inner shaft circlip into the groove nearest the support. It goes on before the complete accessory idler.",
+      "narration": "Fit the inner shaft circlip into the groove nearest the support. It goes on before the complete accessory idler.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-159",
@@ -1584,8 +1886,9 @@
       "partIds": [
         "907_Accessory_Idler_Pulley_01"
       ],
-      "caption": "Start the accessory idler on the bench. Place its pulley before inserting the bearings.",
-      "narration": "Start the accessory idler on the bench. Place its pulley before inserting the bearings."
+      "caption": "Start the accessory idler in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "narration": "Start the accessory idler in its separate work area. Place the small pulley with its centre hole ready for the bearings.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-160",
@@ -1594,8 +1897,9 @@
         "907_Idler_Ball_Bearing_6203_01",
         "907_Idler_Ball_Bearing_6203_02"
       ],
-      "caption": "Fit both ball bearings into the accessory-idler pulley bore.",
-      "narration": "Fit both ball bearings into the accessory-idler pulley bore."
+      "caption": "Fit both ball bearings into the centre hole of the accessory-idler pulley.",
+      "narration": "Fit both ball bearings into the centre hole of the accessory-idler pulley.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-161",
@@ -1604,8 +1908,9 @@
         "907_Idler_Bore_Circlip_01",
         "907_Idler_Bore_Circlip_02"
       ],
-      "caption": "Fit the two bore circlips into the accessory idler to retain its bearings.",
-      "narration": "Fit the two bore circlips into the accessory idler to retain its bearings."
+      "caption": "Fit both retaining circlips into the grooves inside the accessory idler. They hold its bearings in place.",
+      "narration": "Fit both retaining circlips into the grooves inside the accessory idler. They hold its bearings in place.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-162",
@@ -1613,8 +1918,9 @@
       "partIds": [
         "909_Accessory_Idler_Unit"
       ],
-      "caption": "Slide the complete accessory-idler unit onto the shaft, against the installed inner shaft circlip.",
-      "narration": "Slide the complete accessory-idler unit onto the shaft, against the installed inner shaft circlip."
+      "caption": "Slide the complete accessory idler onto its shaft until it meets the inner circlip.",
+      "narration": "Slide the complete accessory idler onto its shaft until it meets the inner circlip.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-163",
@@ -1622,8 +1928,9 @@
       "partIds": [
         "907_Idler_Shaft_Circlip_01"
       ],
-      "caption": "Fit the outer shaft circlip into the exposed groove to retain the accessory idler.",
-      "narration": "Fit the outer shaft circlip into the exposed groove to retain the accessory idler."
+      "caption": "Fit the outer shaft circlip into the exposed groove to stop the accessory idler sliding off.",
+      "narration": "Fit the outer shaft circlip into the exposed groove to stop the accessory idler sliding off.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-164",
@@ -1631,8 +1938,9 @@
       "partIds": [
         "908_Motor_Unit_GSwirl_01"
       ],
-      "caption": "Mount the complete motor unit onto its supports. Its internal components remain one assembly item.",
-      "narration": "Mount the complete motor unit onto its supports. Its internal components remain one assembly item."
+      "caption": "Fit the complete motor unit onto its supports. Its internal parts stay together as one assembly item.",
+      "narration": "Fit the complete motor unit onto its supports. Its internal parts stay together as one assembly item.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-165",
@@ -1641,8 +1949,9 @@
         "990_Bolt_07160_06x90_Fasteners_01",
         "990_Bolt_07160_06x90_Fasteners_02"
       ],
-      "caption": "Install both motor mounting bolts through the matching supports.",
-      "narration": "Install both motor mounting bolts through the matching supports."
+      "caption": "Fit the two motor mounting bolts through the supports.",
+      "narration": "Fit the two motor mounting bolts through the supports.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-166",
@@ -1651,8 +1960,9 @@
         "990_Nut_07210_06_Fasteners_01",
         "990_Nut_07210_06_Fasteners_02"
       ],
-      "caption": "Fit both motor mounting nuts onto the installed bolts.",
-      "narration": "Fit both motor mounting nuts onto the installed bolts."
+      "caption": "Fit the two motor mounting nuts onto the bolts you just placed.",
+      "narration": "Fit the two motor mounting nuts onto the bolts you just placed.",
+      "voiceId": ""
     },
     {
       "id": "chapter-9-cue-167",
@@ -1660,8 +1970,9 @@
       "partIds": [
         "910_Accessory_Drive_Belt_01"
       ],
-      "caption": "Route the accessory drive belt around its matching pulleys to complete the engine.",
-      "narration": "Route the accessory drive belt around its matching pulleys to complete the engine."
+      "caption": "Fit the accessory drive belt around its matching pulleys to finish the engine.",
+      "narration": "Fit the accessory drive belt around its matching pulleys to finish the engine. The engine assembly is complete.",
+      "voiceId": ""
     }
   ],
   "details": [

@@ -14,7 +14,7 @@ namespace EngineAssembly.Editor
             if(!Application.isBatchMode || !Application.dataPath.Replace('\\','/').EndsWith("/Tools/Verification/UnityProject/Assets"))
                 throw new System.InvalidOperationException("This entry point is for the isolated verification project.");
             Create();
-            EditorBuildSettings.scenes=new[]{ScenePath,AssemblyWorkshopBuilder.ScenePath,MobileAssemblyBuilder.ScenePath,MobileEngineDisplayBuilder.ScenePath}.Where(System.IO.File.Exists).Select(p=>new EditorBuildSettingsScene(p,true)).ToArray();
+            EditorBuildSettings.scenes=new[]{ScenePath,AssemblyWorkshopBuilder.ScenePath,MobileAssemblyBuilder.ScenePath,MobileEngineDisplayBuilder.ScenePath,SpatialFallbackSceneBuilder.AssemblyPath,SpatialFallbackSceneBuilder.DisplayPath,SpatialFallbackSceneBuilder.RepairPath}.Where(System.IO.File.Exists).Select(p=>new EditorBuildSettingsScene(p,true)).ToArray();
         }
         [MenuItem("Tools/Engine Assembly/Create Main Menu")]
         public static void Create()
@@ -56,7 +56,7 @@ namespace EngineAssembly.Editor
                 }
                 finally { SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true); }
             }
-            var paths=new[]{ScenePath,AssemblyWorkshopBuilder.ScenePath,MobileAssemblyBuilder.ScenePath,MobileEngineDisplayBuilder.ScenePath}.Where(System.IO.File.Exists).ToArray();
+            var paths=new[]{ScenePath,AssemblyWorkshopBuilder.ScenePath,MobileAssemblyBuilder.ScenePath,MobileEngineDisplayBuilder.ScenePath,SpatialFallbackSceneBuilder.AssemblyPath,SpatialFallbackSceneBuilder.DisplayPath,SpatialFallbackSceneBuilder.RepairPath}.Where(System.IO.File.Exists).ToArray();
             var settings=paths.Select(p=>new EditorBuildSettingsScene(p,true)).Concat(EditorBuildSettings.scenes.Where(s=>!paths.Contains(s.path))).ToArray();
             EditorBuildSettings.scenes=settings;AssetDatabase.SaveAssets();Debug.Log("MAIN MENU READY: desktop and mobile prototype routes enabled.");
         }

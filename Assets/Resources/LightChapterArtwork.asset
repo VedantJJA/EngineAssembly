@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30bf83dfee39c2344944e96b4e70b380, type: 3}
+  m_Name: LightChapterArtwork
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.AssemblyChapterArtwork
+  cards:
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-1
+    image: {fileID: 2800000, guid: 34730471b9ed3ff4caebb7418658cf5c, type: 3}
+    replaces: {fileID: 2800000, guid: 67c3a1a6d33177345a10150f4fec8578, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-2
+    image: {fileID: 2800000, guid: 4c994fb13ed3dae449a6a633845ee7a9, type: 3}
+    replaces: {fileID: 2800000, guid: c05d464c3696bb145ba98469c22727fd, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-3
+    image: {fileID: 2800000, guid: 23aea89b9128f884095dafa227579ccb, type: 3}
+    replaces: {fileID: 2800000, guid: 56eeca086283e43439ea85061f691468, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-4
+    image: {fileID: 2800000, guid: 1d89dea207896c54ea7892862a24747f, type: 3}
+    replaces: {fileID: 2800000, guid: 05da42553fbe68f4e88c2e802bd28159, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-5
+    image: {fileID: 2800000, guid: 9658e259e7ac9d841b276b36d75b1d0f, type: 3}
+    replaces: {fileID: 2800000, guid: a5dfe8733bfaa5b4784dd24949c6222f, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-6
+    image: {fileID: 2800000, guid: c601a78bc5ce53948b9e35d5ddefb672, type: 3}
+    replaces: {fileID: 2800000, guid: ff08eb2fc5a60ec42a1612be114abe3c, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-7
+    image: {fileID: 2800000, guid: c4c267f66a3d39e45b51158ac4f143dc, type: 3}
+    replaces: {fileID: 2800000, guid: a0ab395958828b0439c77c54a14aa154, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-8
+    image: {fileID: 2800000, guid: 1d51a869ae13e484783798f885adf91e, type: 3}
+    replaces: {fileID: 2800000, guid: 80f3a55e2a3a47f43a0620d58d6aba12, type: 3}
+  - recipeTitle: Three-cylinder engine workshop
+    chapterId: chapter-9
+    image: {fileID: 2800000, guid: 5037101fcb8dee146a52c08cdba2aab7, type: 3}
+    replaces: {fileID: 2800000, guid: 2447905aa1d30c94885d910461df4bde, type: 3}

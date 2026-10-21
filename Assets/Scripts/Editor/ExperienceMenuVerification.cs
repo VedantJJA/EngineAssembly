@@ -43,9 +43,9 @@ namespace EngineAssembly.Editor
             menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Capture(menu,"experience-cards");
             Assert(menu.GetComponentsInChildren<WorkshopCard>().Count(c=>c.GetComponentsInChildren<TextMeshProUGUI>().Any(t=>t.text.Contains(" / ")))==4,"All four experience cards are displayed");
-            Assert(!Card(menu,"04 / ANDROID + QUEST").interactable,"Mobile and Quest repair is clearly a pending scene");
+            Assert(Card(menu,"04 / QUEST 2").interactable,"Quest repair fallback card is available");
             Card(menu,"01 / WINDOWS").clicked();yield return null;yield return null;yield return null;
-            Assert(FindAnyObjectByType<PlayerAssemblyController>() && AssemblyManager.Instance.AssemblyParts.Count==AssemblyManager.Instance.Recipe.parts.Count,"Windows card loads the complete desktop workshop");
+            Assert(FindAnyObjectByType<PlayerAssemblyController>() && AssemblyManager.Instance.Recipe.parts.All(d=>AssemblyManager.Instance.FindPart(d.id)?.Definition!=null),"Windows card loads every playable component and carrier in the desktop workshop");
             ExperienceMenu.GoHome();yield return null;yield return null;
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Card(menu,"03 / ANDROID").clicked();yield return null;yield return null;yield return null;
@@ -54,6 +54,10 @@ namespace EngineAssembly.Editor
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Card(menu,"02 / ANDROID").clicked();yield return null;yield return null;yield return null;
             Assert(FindAnyObjectByType<MobileEngineDisplay>(),"Android display card routes to its separate timeline scene");
+            ExperienceMenu.GoHome();yield return null;yield return null;
+            menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
+            Card(menu,"04 / QUEST 2").clicked();yield return null;yield return null;yield return null;yield return null;
+            Assert(AssemblyManager.Instance.RepairActive && FindAnyObjectByType<RepairVRFallback>().Ready,"Quest card opens the playable repair fallback scene");
             ExperienceMenu.GoHome();yield return null;yield return null;
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Options);yield return null;
             Card(menu,"EASY").clicked();yield return null;Assert(PlayerPrefs.GetInt("Assembly.SnapDifficulty")==2,"Main menu options save snap difficulty");

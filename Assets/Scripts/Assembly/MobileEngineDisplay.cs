@@ -16,7 +16,7 @@ namespace EngineAssembly
         [SerializeField] Transform engineRoot;
         [SerializeField] Camera viewCamera;
         [SerializeField] TextAsset recipeAsset;
-        sealed class Visual { public PartDefinition definition;public Transform transform;public MeshRenderer renderer;public MeshCollider collider; }
+        sealed class Visual { public PartDefinition definition;public Transform transform;public MeshRenderer renderer;public MeshCollider collider;public Vector3 insertionOffset; }
         readonly Dictionary<string,Visual> visuals=new Dictionary<string,Visual>();
         readonly Dictionary<string,Transform> groups=new Dictionary<string,Transform>();
         readonly Dictionary<string,int> indices=new Dictionary<string,int>();
@@ -28,7 +28,7 @@ namespace EngineAssembly
         AssemblyTimelineScrubber scrubber;
         TMP_FontAsset heading,body;
         Quaternion initialRotation;
-        Vector3 focus,pan;
+        Vector3 focus,pan,initialPosition;
         float radius,zoom=1,position;
         bool playing,ready,pointerActive,dragging,multiTouch,panAllowed;
         Vector2 lastPointer,startPointer,multiCenter;
@@ -36,6 +36,8 @@ namespace EngineAssembly
         Vector2Int lastSize;Rect lastSafe;
         string selectedId;
         public bool Ready=>ready;
+        public Vector3 WorldFocus=>engineRoot.TransformPoint(focus);
+        public float PresentationRadius=>radius;
         public float TimelinePosition=>position;
         public int StepCount=>timeline?.Count??0;
         public int VisiblePartCount=>visuals.Values.Count(v=>v.renderer.enabled);
@@ -43,10 +45,14 @@ namespace EngineAssembly
         public Camera ViewCamera=>viewCamera;
         public Transform EngineRoot=>engineRoot;
         public AssemblyRecipe Recipe=>recipe;
-        static readonly Color Ink=new Color(.035f,.052f,.075f),Panel=new Color(.065f,.105f,.14f),Mint=new Color(.45f,.94f,.74f),Muted=new Color(.61f,.71f,.79f);
+        static readonly Color Ink=WorkshopTheme.Background,Panel=WorkshopTheme.Surface,Mint=WorkshopTheme.Accent,Muted=WorkshopTheme.Muted;
+        SpatialExperienceRig spatialRig;
         public void Configure(Transform root,Camera camera,TextAsset asset){engineRoot=root;viewCamera=camera;recipeAsset=asset;}
         void Start()
         {
+            engineRoot.localScale*=.6f;
+            spatialRig=SpatialExperienceRig.Ensure(gameObject,engineRoot,viewCamera);viewCamera.backgroundColor=Ink;
+            spatialRig.CameraChanged+=SetPresentationCamera;
             recipe=AssemblyRecipeStore.Parse(recipeAsset.text);timeline=EngineLearningContent.Timeline(recipe);
             for(int i=0;i<timeline.Count;i++)indices[timeline[i].id]=i;
             foreach(var group in recipe.subAssemblies)
@@ -62,10 +68,25 @@ namespace EngineAssembly
                 filter.transform.localScale=new Vector3(scale.x/engineRoot.lossyScale.x,scale.y/engineRoot.lossyScale.y,scale.z/engineRoot.lossyScale.z);
                 filter.transform.SetLocalPositionAndRotation(d.targetPosition,d.targetRotation);
                 var collider=filter.GetComponent<MeshCollider>();if(!collider)collider=filter.gameObject.AddComponent<MeshCollider>();collider.sharedMesh=filter.sharedMesh;
-                visuals[d.id]=new Visual{definition=d,transform=filter.transform,renderer=renderer,collider=collider};
+                visuals[d.id]=new Visual{definition=d,transform=filter.transform,renderer=renderer,collider=collider,
+                    insertionOffset=AssemblyMotion.DisplayInsertionOffset(d,filter.sharedMesh.bounds,filter.transform.localScale)};
             }
             if(visuals.Count!=recipe.parts.Count-recipe.subAssemblies.Count)throw new InvalidOperationException("Display recipe does not cover the visual model.");
-            initialRotation=engineRoot.rotation;CreateUI();ready=true;SetTimeline(1);
+            foreach(var visual in visuals.Values.Where(v=>v.definition.order==403))
+            {
+                string station=visual.definition.displayName.Split('·').Last().Trim().Replace(" IN"," intake valve ").Replace(" EX"," exhaust valve ");
+                var valve=visuals.Values.FirstOrDefault(v=>v.definition.order==402 && v.definition.displayName.Equals(station,StringComparison.OrdinalIgnoreCase));
+                if(valve==null)continue;
+                var shape=valve.transform.GetComponent<MeshFilter>().sharedMesh.bounds;
+                var axis=valve.definition.targetRotation*AssemblyMotion.ShapeAxis(shape,valve.transform.localScale,false);if(Vector3.Dot(axis,Vector3.up)<0)axis=-axis;
+                if(visual.definition.id.Contains("Keeper"))
+                {
+                    var offset=visual.definition.targetPosition-valve.definition.targetPosition;var radial=offset-Vector3.Project(offset,axis);
+                    if(radial.sqrMagnitude>.000001f)axis=radial.normalized;
+                }
+                visual.insertionOffset=axis.normalized*visual.insertionOffset.magnitude;
+            }
+            initialRotation=engineRoot.localRotation;initialPosition=engineRoot.localPosition;CreateUI();ready=true;SetTimeline(1);
             if(VisiblePartCount>0){var bounds=BoundsOfVisible();focus=engineRoot.InverseTransformPoint(bounds.center);radius=Mathf.Max(.25f,bounds.extents.magnitude);}
             UpdateViewport();Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         }
@@ -80,15 +101,16 @@ namespace EngineAssembly
             foreach(var group in recipe.subAssemblies)
             {
                 var carrier=recipe.parts.First(p=>p.id==group.rootPartId);float t=Mathf.SmoothStep(0,1,PartProgress(carrier.id));
-                var transform=groups[group.id];transform.localPosition=Vector3.Lerp(group.benchPosition,carrier.targetPosition,t);
-                transform.localRotation=Quaternion.Slerp(Quaternion.identity,carrier.targetRotation,t);
+                var transform=groups[group.id];
+                transform.localPosition=t<=0?group.benchPosition:carrier.targetPosition+Vector3.up*Mathf.Clamp(group.focusRadius*.3f,.025f,.18f)*(1-t);
+                transform.localRotation=t<=0?Quaternion.identity:carrier.targetRotation;
             }
             foreach(var visual in visuals.Values)
             {
                 float t=PartProgress(visual.definition.id);bool visible=t>0;
                 visual.renderer.enabled=visible;visual.collider.enabled=visible;
-                var approach=visual.definition.orientation==AssemblyOrientation.UpsideDown?Vector3.down:Vector3.up;
-                visual.transform.localPosition=visual.definition.targetPosition+approach*(1-Mathf.SmoothStep(0,1,t))*.5f;
+                visual.transform.localPosition=visual.definition.targetPosition+visual.insertionOffset*(1-Mathf.SmoothStep(0,1,t));
+                visual.transform.localRotation=visual.definition.targetRotation;
             }
             int done=Mathf.FloorToInt(position*timeline.Count+.00001f);int index=Mathf.Clamp(done,0,timeline.Count-1);var current=timeline[index];
             progress.text=done+" / "+timeline.Count+"   ·   "+recipe.chapters.First(c=>c.id==current.chapterId).title;
@@ -100,7 +122,7 @@ namespace EngineAssembly
         void ShowInstruction(PartDefinition current)
         {
             title.text=position>=1?"Complete engine":"ASSEMBLY SEQUENCE";
-            description.text=position>=1?"Tap a visible component to learn what it does. Drag the timeline backwards to take the engine apart.":EngineLearningContent.ForPart(current).caption;
+            description.text=position>=1?"Tap a component to learn its purpose. Slide the timeline to assemble or take apart the engine.":AssemblyCaptionPresenter.AccessibleCaption(EngineLearningContent.ForPart(current).caption);
             partMeta.text=position>=1?(recipe.parts.Count-recipe.subAssemblies.Count)+" physical components · "+recipe.subAssemblies.Count+" completed subassemblies":current.displayName;
         }
         public bool SelectPart(string id)
@@ -121,25 +143,29 @@ namespace EngineAssembly
         }
         public void RotateModel(Vector2 delta)
         {
-            if(!ready)return;Vector3 center=engineRoot.TransformPoint(focus);
+            if(!ready || !MobileARSession.CanInteract(gameObject))return;Vector3 center=engineRoot.TransformPoint(focus);
             engineRoot.RotateAround(center,viewCamera.transform.up,-delta.x*.25f);engineRoot.RotateAround(center,viewCamera.transform.right,delta.y*.25f);
+            if(spatialRig.IsTracked)GetComponent<MobileARSession>().KeepAboveWorkbench(engineRoot);
         }
         public void PanModel(Vector2 delta)
         {
-            if(!ready)return;float distance=Vector3.Distance(viewCamera.transform.position,engineRoot.TransformPoint(focus));
+            if(!ready || !MobileARSession.CanInteract(gameObject))return;float distance=Vector3.Distance(viewCamera.transform.position,engineRoot.TransformPoint(focus));
             float metres=2*distance*Mathf.Tan(viewCamera.fieldOfView*Mathf.Deg2Rad*.5f)/Mathf.Max(1,viewCamera.pixelHeight);
             var shift=(viewCamera.transform.right*delta.x+viewCamera.transform.up*delta.y)*metres;
             if((pan+shift).magnitude>radius*3)return;pan+=shift;engineRoot.position+=shift;
+            if(spatialRig.IsTracked)GetComponent<MobileARSession>().KeepAboveWorkbench(engineRoot);
         }
-        public void ZoomModel(float ratio){if(!ready)return;zoom=Mathf.Clamp(zoom*ratio,.45f,5);UpdateCamera();}
-        public void ResetView(){engineRoot.SetPositionAndRotation(Vector3.zero,initialRotation);pan=Vector3.zero;zoom=1;UpdateCamera();}
+        public void ZoomModel(float ratio){if(!ready || !MobileARSession.CanInteract(gameObject))return;if(spatialRig.IsTracked){GetComponent<MobileARSession>().Zoom(ratio,WorldFocus);return;}zoom=Mathf.Clamp(zoom*ratio,.45f,5);UpdateCamera();}
+        public void ResetView(){if(spatialRig.IsTracked){GetComponent<MobileARSession>().ResetActiveBuild();pan=Vector3.zero;return;}engineRoot.SetLocalPositionAndRotation(initialPosition,initialRotation);pan=Vector3.zero;zoom=1;UpdateCamera();}
+        void SetPresentationCamera(Camera camera){viewCamera=camera;if(ready)UpdateViewport();}
+        void OnDestroy(){if(spatialRig)spatialRig.CameraChanged-=SetPresentationCamera;}
         public void TogglePlayback(){playing=!playing;if(playing && position>=1)SetTimeline(0);UpdatePlaybackLabel();}
         void UpdatePlaybackLabel(){if(playLabel)playLabel.text=playing?"PAUSE":"PLAY TIMELAPSE";}
         void Update()
         {
             if(!ready)return;
             if(lastSize!=new Vector2Int(Screen.width,Screen.height) || lastSafe!=Screen.safeArea)UpdateViewport();
-            if(playing)SetTimeline(position+Time.unscaledDeltaTime/90);if(position>=1 && playing){playing=false;UpdatePlaybackLabel();}
+            if(playing && MobileARSession.CanInteract(gameObject))SetTimeline(position+Time.unscaledDeltaTime/90);if(position>=1 && playing){playing=false;UpdatePlaybackLabel();}
             ReadPointer();if(InputHelper.IsKeyDown(KeyCode.Escape))ExperienceMenu.GoHome();
         }
         Bounds BoundsOfVisible(){var rs=visuals.Values.Where(v=>v.renderer.enabled).Select(v=>v.renderer).ToArray();var b=rs[0].bounds;foreach(var r in rs)b.Encapsulate(r.bounds);return b;}
@@ -148,17 +174,20 @@ namespace EngineAssembly
             lastSize=new Vector2Int(Screen.width,Screen.height);lastSafe=Screen.safeArea;
             canvas.GetComponent<UnityEngine.UI.CanvasScaler>().referenceResolution=Screen.width>Screen.height?new Vector2(1920,1080):new Vector2(1080,1920);
             safe.anchorMin=lastSafe.min/new Vector2(Screen.width,Screen.height);safe.anchorMax=lastSafe.max/new Vector2(Screen.width,Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;Canvas.ForceUpdateCanvases();
+            if(spatialRig.IsTracked)return;
             float bottom=lastSafe.yMin+370*canvas.scaleFactor,top=lastSafe.yMax-150*canvas.scaleFactor;
             viewCamera.pixelRect=new Rect(lastSafe.xMin,bottom,lastSafe.width,Mathf.Max(100,top-bottom));UpdateCamera();
         }
         void UpdateCamera()
         {
+            if(spatialRig && spatialRig.IsTracked)return;
             float vertical=viewCamera.fieldOfView*Mathf.Deg2Rad*.5f,horizontal=Mathf.Atan(Mathf.Tan(vertical)*viewCamera.aspect);
             float distance=radius/Mathf.Sin(Mathf.Min(vertical,horizontal))*1.18f/zoom;
             viewCamera.transform.SetPositionAndRotation(engineRoot.TransformPoint(focus)-pan+Vector3.back*distance,Quaternion.identity);
         }
         void ReadPointer()
         {
+            if(!MobileARSession.CanInteract(gameObject)){pointerActive=multiTouch=dragging=false;return;}
             Vector2 point=default;bool down=false,pressed=false,up=false;
 #if ENABLE_INPUT_SYSTEM
             if(Touchscreen.current!=null)
@@ -217,7 +246,7 @@ namespace EngineAssembly
             partMeta=Label(info,"",15,false,new Vector2(20,8),new Vector2(-20,39));partMeta.rectTransform.anchorMax=new Vector2(1,0);partMeta.rectTransform.offsetMin=new Vector2(20,8);partMeta.rectTransform.offsetMax=new Vector2(-20,39);partMeta.color=Muted;partMeta.textWrappingMode=TextWrappingModes.NoWrap;partMeta.overflowMode=TextOverflowModes.Ellipsis;
             Card(info,"×",()=>{selectedId=null;SetTimeline(position);},Vector2.one,Vector2.one,new Vector2(-64,-53),new Vector2(-12,-8));
             progress=Label(footer,"",18,false,new Vector2(24,94),new Vector2(-24,130));progress.rectTransform.anchorMax=new Vector2(1,0);progress.rectTransform.offsetMin=new Vector2(24,94);progress.rectTransform.offsetMax=new Vector2(-24,130);progress.color=Mint;
-            var rail=Box("Assembly timeline slider",footer,new Color(.12f,.19f,.24f));Anchor(rail,Vector2.zero,Vector2.right,new Vector2(32,62),new Vector2(-32,86));
+            var rail=Box("Assembly timeline slider",footer,WorkshopTheme.Border);Anchor(rail,Vector2.zero,Vector2.right,new Vector2(32,62),new Vector2(-32,86));
             var fill=Box("Timeline fill",rail,Mint);Anchor(fill,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero);fill.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;
             var thumb=Box("Timeline handle",rail,Color.white);Anchor(thumb,new Vector2(0,.5f),new Vector2(0,.5f),new Vector2(-15,-21),new Vector2(15,21));thumb.GetComponent<UnityEngine.UI.Image>().raycastTarget=false;
             // Expand only the rail's hit area using transparent graphic padding.
@@ -230,15 +259,15 @@ namespace EngineAssembly
         }
         RectTransform Card(Transform parent,string text,Action action,Vector2 min,Vector2 max,Vector2 low,Vector2 high)
         {
-            var rect=Box(text+" card",parent,Panel);Anchor(rect,min,max,low,high);var card=rect.gameObject.AddComponent<WorkshopCard>();card.normal=Panel;card.highlight=new Color(.1f,.24f,.25f);card.clicked=action;
+            var rect=Box(text+" card",parent,WorkshopTheme.AccentWash);Anchor(rect,min,max,low,high);var card=rect.gameObject.AddComponent<WorkshopCard>();card.normal=WorkshopTheme.AccentWash;card.highlight=WorkshopTheme.Hover;card.clicked=action;
             var label=Label(rect,text,17,true,new Vector2(4,2),new Vector2(-4,-2));label.alignment=TextAlignmentOptions.Center;return rect;
         }
         TextMeshProUGUI Label(Transform parent,string text,float size,bool bold,Vector2 low,Vector2 high)
         {
-            var rect=Rect("Label",parent);Anchor(rect,Vector2.zero,Vector2.one,low,high);var label=rect.gameObject.AddComponent<TextMeshProUGUI>();label.font=bold?heading:body;label.text=text;label.fontSize=size;label.color=Color.white;label.raycastTarget=false;label.textWrappingMode=TextWrappingModes.Normal;return label;
+            var rect=Rect("Label",parent);Anchor(rect,Vector2.zero,Vector2.one,low,high);var label=rect.gameObject.AddComponent<TextMeshProUGUI>();label.font=bold?heading:body;label.text=text;label.fontSize=size;label.color=new Color(.08f,.14f,.2f);label.raycastTarget=false;label.textWrappingMode=TextWrappingModes.Normal;return label;
         }
         static RectTransform Rect(string name,Transform parent){var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);return rect;}
-        static RectTransform Box(string name,Transform parent,Color color){var rect=Rect(name,parent);rect.gameObject.AddComponent<UnityEngine.UI.Image>().color=color;return rect;}
+        static RectTransform Box(string name,Transform parent,Color color){var rect=Rect(name,parent);var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=color;WorkshopUIArt.Card(image);return rect;}
         static void Anchor(RectTransform rect,Vector2 min,Vector2 max,Vector2 low,Vector2 high){rect.anchorMin=min;rect.anchorMax=max;rect.offsetMin=low;rect.offsetMax=high;}
     }
 }

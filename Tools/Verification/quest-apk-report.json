@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "apk": "C:\\Users\\Vedant\\EngineAssembly\\Builds\\Quest\\EngineAssembly-Quest2.apk",
+  "checks": [
+    "Quest APK exists",
+    "Quest has a separate application identifier from the phone build",
+    "Quest build targets Android API 29 or newer",
+    "Quest launcher includes the VR category",
+    "Manifest explicitly supports Quest 2",
+    "Quest manifest declares headset tracking",
+    "Quest APK passes archive integrity checks",
+    "Quest native libraries use ARM64",
+    "OpenXR loader is packaged",
+    "Unity OpenXR native runtime is packaged",
+    "Quest player uses IL2CPP",
+    "MainMenu is registered in the Quest player",
+    "RepairVRFallback is registered in the Quest player",
+    "AssemblyWorkshop is registered in the Quest player",
+    "Quest development APK signature verifies"
+  ],
+  "error": "",
+  "bytes": 176969868,
+  "sha256": "4ff0cf8bf7f17d8acf25fc3380e6d90ff34dd68c91bf62c4c40081a68a9eb08a"
+}

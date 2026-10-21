@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "apk": "C:\\Users\\Vedant\\EngineAssembly\\Builds\\Android\\EngineAssembly-AR.apk",
+  "checks": [
+    "Android APK exists",
+    "APK uses the engine project's Android identifier",
+    "Minimum Android version satisfies Vuforia's API 29 requirement",
+    "Phone APK does not require headset tracking hardware",
+    "Phone APK keeps its ordinary Android launcher category",
+    "camera hardware is optional in the final merged manifest",
+    "camera.autofocus hardware is optional in the final merged manifest",
+    "camera.any hardware is optional in the final merged manifest",
+    "camera.ar hardware is optional in the final merged manifest",
+    "Camera permission is packaged",
+    "ARCore remains optional after manifest merging",
+    "Unity's Android activity is preserved",
+    "APK archive passes CRC integrity checks",
+    "All packaged native libraries use ARM64",
+    "libVuforiaEngine.so is packaged as a native ELF library",
+    "libVuforiaUnityPlayer.so is packaged as a native ELF library",
+    "libarcore_sdk_c.so is packaged as a native ELF library",
+    "libil2cpp.so is packaged as a native ELF library",
+    "MainMenu is registered in the built player",
+    "MobileAssemblyAR is registered in the built player",
+    "MobileDisplayAR is registered in the built player",
+    "MobileAssemblyARFallback is registered in the built player",
+    "MobileDisplayARFallback is registered in the built player",
+    "Development APK signature verifies"
+  ],
+  "error": "",
+  "bytes": 143186993,
+  "sha256": "472ca35780ab2aa8c746207820852497e12c7a30058a31836497ce152caa7ae5"
+}

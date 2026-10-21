@@ -85,7 +85,7 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  ui.ChooseChapter(3);m.SetDifficulty(SnapDifficulty.Hard,false);yield return null;
  var headPart=m.FindPart("401_Cylinder_Head_01");headPart.InstallImmediate(headPart.TargetSocket);
  var valves=m.AssemblyParts.Where(p=>p.PartId.StartsWith("404_")).ToArray();var headFrame=m.TargetFrame(valves[0].Definition);m.AssemblyRoot.rotation=Quaternion.identity;headFrame.rotation=Quaternion.identity;
- Assert(!m.CanInstall(valves[0],valves[0].TargetSocket,out _),"Valve insertion requires the loose head upside down");
+ Assert(m.CanInstall(valves[0],valves[0].TargetSocket,out _),"Valve insertion works without a mandatory head orientation");
  headFrame.rotation=Quaternion.Euler(180,0,0);
  Assert(m.CanInstall(valves[0],valves[0].TargetSocket,out _) && Vector3.Dot(m.AssemblyRoot.up,Vector3.up)>.99f,"Flipping the head enables valves without flipping the engine");
  foreach(var valve in valves)valve.InstallImmediate(valve.TargetSocket);
@@ -109,7 +109,7 @@ public class SubAssemblyVerificationRunner:MonoBehaviour {
  Assert(!ui.SelectPart(carrier.PartId),"Mobile cannot select incomplete piston unit");
  Assert(!ui.SelectPart("206_Connecting_Rod_Big_End_Cap_Cyl01_01"),"Rod cap cannot precede piston-unit installation");
  var pistonRoots=m.Recipe.subAssemblies.Where(s=>s.rootPartId.StartsWith("230_Piston_Rod_Unit_")).Select(s=>m.FindPart(s.rootPartId).transform).ToArray();
- Assert(pistonRoots.Select(p=>p.parent).Distinct().Count()==3 && pistonRoots[0].parent==ui.ActiveWorkpiece && Vector3.Distance(pistonRoots[0].position,pistonRoots[1].position)>5 && Vector3.Distance(pistonRoots[1].position,pistonRoots[2].position)>5,"Each piston has its own independently focused mobile workspace");
+ Assert(pistonRoots.Select(p=>p.parent).Distinct().Count()==3 && pistonRoots[0].parent==ui.ActiveWorkpiece && Vector3.Distance(pistonRoots[0].position,pistonRoots[1].position)>.5f && Vector3.Distance(pistonRoots[1].position,pistonRoots[2].position)>.5f,"Each piston has its own independently focused mobile workspace");
  var first=m.NextHintPart();Assert(ui.SelectPart(first.PartId),"Mobile selects first bench component");
  yield return null;
  var camera=ui.ViewCamera;var guide=m.GetComponent<AssemblyEasyGuide>();

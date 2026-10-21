@@ -20,17 +20,17 @@ namespace EngineAssembly
         }
         readonly List<Step> steps=new List<Step>
         {
-            new Step("512_Timing_Belt_01",false,"Remove the timing belt to expose the idler. Pick it up, then press G to set it aside."),
-            new Step("511_Idler_Shaft_Circlip_02",false,"Remove the outer shaft circlip from timing idler 1. Press G to set it aside; leave the inner shaft clip fitted."),
+            new Step("512_Timing_Belt_01",false,"Find the toothed timing belt around the pulleys at the timing end. Pick up the belt and press G to set it on the parts table."),
+            new Step("511_Idler_Shaft_Circlip_02",false,"Find timing idler 1, the small guide pulley. Remove the split retaining ring at its exposed shaft end and press G. Leave the ring behind the pulley fitted."),
             new Step(UnitId,false,"Pull timing idler 1 off its shaft as a complete unit. Press G to put it on the small work platform."),
-            new Step("511_Idler_Bore_Circlip_01",false,"At the small platform, remove the first bore circlip retaining the idler bearings. Press G to set it aside."),
-            new Step("511_Idler_Bore_Circlip_02",false,"Remove the second bore circlip from the idler and press G to set it aside."),
+            new Step("511_Idler_Bore_Circlip_01",false,"At the small platform, find the split ring inside the pulley opening. Remove the first labelled ring and press G. These two rings hold the bearings inside the pulley."),
+            new Step("511_Idler_Bore_Circlip_02",false,"Remove the second labelled ring from the pulley opening and press G. Both bearing-retaining rings are now on the parts table."),
             new Step("510_Idler_Ball_Bearing_6203_02",false,"Remove the outer idler bearing to reach the faulty inner bearing. Press G to set it aside for reuse."),
             new Step(FaultyId,false,"Remove the faulty inner idler bearing. Press G to discard it from this repair; use the new replacement bearing next."),
-            new Step(ReplacementId,true,"Pick up the new replacement bearing from the parts table and fit it into the vacant inner bearing seat in the idler."),
+            new Step(ReplacementId,true,"Pick up the part labelled New replacement · timing idler bearing from the table. Fit it into the empty inner bearing position inside the pulley."),
             new Step("510_Idler_Ball_Bearing_6203_02",true,"Refit the original outer bearing into the remaining idler bearing seat."),
-            new Step("511_Idler_Bore_Circlip_01",true,"Refit the first bore circlip to retain the bearings."),
-            new Step("511_Idler_Bore_Circlip_02",true,"Refit the second bore circlip. The idler is complete again."),
+            new Step("511_Idler_Bore_Circlip_01",true,"Return the first labelled split ring to its groove inside the pulley opening. It keeps the bearing from sliding out."),
+            new Step("511_Idler_Bore_Circlip_02",true,"Return the second labelled split ring to the other groove. Both bearings are retained, and the idler unit is complete again."),
             new Step(UnitId,true,"Pick up the rebuilt timing idler and fit it back onto its shaft, against the retained inner shaft circlip."),
             new Step("511_Idler_Shaft_Circlip_02",true,"Refit the outer shaft circlip to secure the rebuilt idler."),
             new Step("512_Timing_Belt_01",true,"Refit the timing belt around its original pulleys and idlers to complete the repair.")
@@ -115,6 +115,7 @@ namespace EngineAssembly
         }
         public Vector3 RemovalDestination(AssemblyPart part)
         {
+            if(part && part.PartId!=UnitId && manager.TryGetComponent<WorkshopSupplyLayout>(out var supplies))return supplies.RepairDestination;
             var platform=part && part.PartId==UnitId?GameObject.Find("Portable Work Platform"):manager.TrayFrame.gameObject;
             var surface=platform?platform.GetComponent<Renderer>():null;
             return surface?new Vector3(surface.bounds.center.x,surface.bounds.max.y+.25f,surface.bounds.center.z):manager.TrayFrame.position;
@@ -128,6 +129,7 @@ namespace EngineAssembly
         }
         void StageOnTable(AssemblyPart part,int index)
         {
+            if(manager.TryGetComponent<WorkshopSupplyLayout>(out var supplies)){supplies.StageRepairPart(part);return;}
             var renderer=manager.TrayFrame.GetComponent<Renderer>();
             var bounds=renderer?renderer.bounds:new Bounds(manager.TrayFrame.position,new Vector3(4,1,3));
             var size=AssemblyHeldView.WorldBounds(part).size;float width=Mathf.Max(.3f,size.x+.18f),depth=Mathf.Max(.3f,size.z+.18f);

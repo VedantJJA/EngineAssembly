@@ -1,7 +1,9 @@
 """Author game captions, part cards and a plain narration script from the CAD recipe."""
 import json
+import re
 from pathlib import Path
 from collections import OrderedDict
+from beginner_instructions import CAPTIONS, EXPLANATIONS
 
 root = Path(__file__).resolve().parents[2]
 recipe = json.loads((root/'Assets/AssemblyRecipes/three-cylinder.json').read_text(encoding='utf-8-sig'))
@@ -102,9 +104,10 @@ directions = {
 915: 'Fit both motor mounting nuts onto the installed bolts.',
 916: 'Route the accessory drive belt around its matching pulleys to complete the engine.',
 }
+directions.update(CAPTIONS)
 for cyl in (2,3):
     for offset in range(9):
-        directions[201+(cyl-1)*10+offset] = directions[201+offset].replace('cylinder 1', f'cylinder {cyl}').replace('Cylinder 1', f'Cylinder {cyl}')
+        directions[201+(cyl-1)*10+offset] = directions[201+offset].replace('piston 1', f'piston {cyl}').replace('cylinder 1', f'cylinder {cyl}').replace('Cylinder 1', f'Cylinder {cyl}')
 directions[211]=directions[211].replace('the timing-drive end','the centre of the block')
 directions[221]=directions[221].replace('the timing-drive end','the flywheel end')
 
@@ -120,20 +123,30 @@ for chapter in recipe['chapters']:
             groups.setdefault(key,[]).append(p)
     for key,group in groups.items():
         p=group[0]
+        voice_id=''
         if p['order']==403:
-            station=p['displayName'].split(' · ')[-1]
             roles={
-                '402': f'With the loose head upright, place the spring seat around the valve guide for {station}.',
-                '403': f'Fit the stem seal over the valve stem for {station}, inside the spring seat.',
-                '405': f'Place the valve spring around the stem for {station}, resting it on the spring seat.',
-                '406': f'Place the retainer over the top of the spring for {station}. The model uses its fitted spring position.',
-                '407': f'Fit both keeper halves around the stem groove for {station}, inside the retainer.',
+                '402': 'Fit the spring seat, the thin ring, around the raised valve-guide tube.',
+                '403': 'Slide the small stem seal over the valve stem. It rests inside the spring seat.',
+                '405': 'Slide the spring over the valve stem. Its lower end rests on the spring seat.',
+                '406': 'Place the cap-shaped retainer on top of the spring. The keepers will lock it to the stem.',
+                '407': 'Fit both tiny keeper halves into the groove near the top of the valve stem, on opposite sides. They lock the retainer in place.',
             }
             text=roles[p['id'][:3]]
+            voice_id='valve-'+p['id'][:3]
         else:
             assert p['order'] in directions, p['order']
             text=directions[p['order']]
-        steps.append(dict(id=f"{chapter['id']}-cue-{len(steps)+1:03}", chapterId=chapter['id'], partIds=[x['id'] for x in group], caption=text, narration=text))
+        extra=EXPLANATIONS.get(p['order'],'')
+        if p['order']==403:
+            extra=''
+        if 201<=p['order']<=229:
+            base_order=201+(p['order']-201)%10
+            voice_id='piston-'+str(base_order)
+            extra=EXPLANATIONS.get(base_order,'')
+        narration=(text+' '+extra).strip()
+        for short,spoken in [('C1','cylinder one'),('C2','cylinder two'),('C3','cylinder three')]:narration=narration.replace(short,spoken)
+        steps.append(dict(id=f"{chapter['id']}-cue-{len(steps)+1:03}", chapterId=chapter['id'], partIds=[x['id'] for x in group], caption=text, narration=narration, voiceId=voice_id))
 
 families=[
 ('Complete_Oil_Sump','A bench-built oil sump containing its baffle plate and four baffle screws, installed as one unit beneath the crankcase.'),
@@ -208,14 +221,22 @@ details=[]
 for p in parts:
     description=next((text for token,text in families if token in p['id']), 'A modelled engine component fitted at the position shown in the assembly sequence.')
     details.append(dict(partId=p['id'], title=p['displayName'], description=description))
-payload=dict(version=1, recipeTitle=recipe['title'], steps=steps, details=details)
+payload=dict(version=2, recipeTitle=recipe['title'], steps=steps, details=details)
 output=root/'Assets/Resources/EngineLearning.json'
 output.write_text(json.dumps(payload,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-script=['Welcome to Engine Lab. We will assemble a three-cylinder engine, one section at a time. Read each instruction and complete its parts before moving on.','']
+script=['Welcome to Engine Lab. You will build a three-cylinder engine one section at a time. Each instruction first names the part, then tells you where it fits. Read the part label before picking it up. Complete the current group before taking parts for the next group.',
+'The timing-belt end is the end with the belt pulleys. The flywheel end is the opposite end, where the large round flywheel disc fits. Cylinder one is nearest the timing-belt end, cylinder two is in the middle, and cylinder three is nearest the flywheel end.',
+'Some sections are built separately. These are called subassemblies: a piston and connecting rod, for example. Finish the separate unit, then move the whole unit into the engine. You can turn or raise a workpiece for a better view without changing its assembly order.',
+'On the computer, use Left and Right Arrow to choose a lift, and Up and Down Arrow to adjust its height. The white lift is selected. F lowers that workpiece below the floor, turns it, and brings it back. V shows a pointer to the next part or its fitting position. On a phone, choose the next part card and tap its visible target. Next Step demonstrates one installation for you.',
+'This is a learning sequence for the virtual model. No tightening torque, timing setting, or real workshop adjustment is specified.','']
 for chapter in recipe['chapters']:
     script += [chapter['title'].upper(),'']
-    for cue in (s for s in steps if s['chapterId']==chapter['id']):
-        script += [cue['narration'],'']
+    for index,cue in enumerate(s for s in steps if s['chapterId']==chapter['id']):
+        script += [f'Step {index+1}. '+cue['narration'],'']
 (root/'Docs/AssemblyNarration.txt').write_text('\n'.join(script),encoding='utf-8')
+repair_source=(root/'Assets/Scripts/Assembly/PCRepairChapter.cs').read_text(encoding='utf-8-sig')
+repair_lines=re.findall(r'new Step\([^,]+,(?:true|false),"([^"]+)"\)',repair_source)
+assert len(repair_lines)==14
+(root/'Docs/RepairNarration.txt').write_text('TIMING IDLER BEARING REPLACEMENT\n\nReplace one faulty bearing while keeping the reusable parts. A circlip is a small split retaining ring that fits in a groove. The shaft rings keep the pulley on its support; the bore rings keep the bearings inside the pulley. Follow the labelled parts in this order.\n\n'+'\n\n'.join(f'Step {i+1}. {line}' for i,line in enumerate(repair_lines))+'\n',encoding='utf-8')
 assert len([id for s in steps for id in s['partIds']])==len(parts)
 print(f'Authored {len(steps)} cues covering all {len(parts)} recipe items.')

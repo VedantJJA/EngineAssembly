@@ -17,6 +17,23 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MobileEngineDisplay.unity
     guid: 97685236ad61e064c9d57805415fcf0b
+  - enabled: 1
+    path: Assets/Scenes/MobileAssemblyARFallback.unity
+    guid: a5c727698f1d8a54ab9aafbe1c3f80aa
+  - enabled: 1
+    path: Assets/Scenes/MobileDisplayARFallback.unity
+    guid: 1f28df0d5180f944f8784d9753e88b9f
+  - enabled: 1
+    path: Assets/Scenes/RepairVRFallback.unity
+    guid: 53bf0f7372504f744a7b86696429ace7
+  - enabled: 1
+    path: Assets/Scenes/MobileAssemblyAR.unity
+    guid: 5329458041145c0459dab6ecd7167083
+  - enabled: 1
+    path: Assets/Scenes/MobileDisplayAR.unity
+    guid: 3a8d800ea55a5b24d95f1f690263a490
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 794f3894214c4fa47a3a5ba9f350cfcb, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: b5a2b1a747e225a4798e9e0cc9cc1d40, type: 2}

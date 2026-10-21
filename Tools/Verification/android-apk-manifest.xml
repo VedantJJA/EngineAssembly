@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    android:versionName="0.1.0"
+    android:installLocation="2"
+    android:compileSdkVersion="36"
+    android:compileSdkVersionCodename="16"
+    package="com.engineassembly.app"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16">
+
+    <uses-sdk
+        android:minSdkVersion="29"
+        android:targetSdkVersion="36" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+
+    <uses-permission
+        android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:glEsVersion="0x30000" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen.multitouch"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen.multitouch.distinct"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="false" />
+
+    <queries>
+
+        <package
+            android:name="com.google.ar.core" />
+
+        <package
+            android:name="com.android.vending" />
+
+        <intent>
+
+            <action
+                android:name="com.google.android.play.core.install.BIND_INSTALL_SERVICE" />
+        </intent>
+
+        <provider
+            android:authorities="org.khronos.openxr.runtime_broker;org.khronos.openxr.system_runtime_broker" />
+
+        <intent>
+
+            <action
+                android:name="org.khronos.openxr.OpenXRRuntimeService" />
+        </intent>
+
+        <intent>
+
+            <action
+                android:name="org.khronos.openxr.OpenXRApiLayerService" />
+        </intent>
+    </queries>
+
+    <uses-permission
+        android:name="org.khronos.openxr.permission.OPENXR" />
+
+    <uses-permission
+        android:name="org.khronos.openxr.permission.OPENXR_SYSTEM" />
+
+    <uses-permission
+        android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <permission
+        android:name="com.engineassembly.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="0x2" />
+
+    <uses-permission
+        android:name="com.engineassembly.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:label="@ref/0x7f0e0026"
+        android:icon="@ref/0x7f0c0000"
+        android:debuggable="true"
+        android:extractNativeLibs="true"
+        android:appCategory="0"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:enableOnBackInvokedCallback="true">
+
+        <meta-data
+            android:name="unity.splash-mode"
+            android:value="0" />
+
+        <meta-data
+            android:name="unity.splash-enable"
+            android:value="true" />
+
+        <meta-data
+            android:name="unity.requested-visible-insets"
+            android:value="" />
+
+        <meta-data
+            android:name="unity.system-bars-behavior"
+            android:value="ShowTransientBarsBySwipe" />
+
+        <meta-data
+            android:name="unity.render-outside-safearea"
+            android:value="true" />
+
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
+
+        <meta-data
+            android:name="unity.auto-report-fully-drawn"
+            android:value="true" />
+
+        <meta-data
+            android:name="unity.strip-engine-code"
+            android:value="true" />
+
+        <meta-data
+            android:name="unity.run-without-focus"
+            android:value="false" />
+
+        <meta-data
+            android:name="unity.auto-set-game-state"
+            android:value="true" />
+
+        <activity
+            android:theme="@ref/0x7f0f00a1"
+            android:name="com.unity3d.player.UnityPlayerGameActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:launchMode="2"
+            android:screenOrientation="13"
+            android:configChanges="0x40003fff"
+            android:hardwareAccelerated="false"
+            android:resizeableActivity="true">
+
+            <intent-filter>
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="unityplayer.UnityActivity"
+                android:value="true" />
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="game" />
+
+            <meta-data
+                android:name="WindowManagerPreference:FreeformWindowSize"
+                android:value="@ref/0x7f0e0002" />
+
+            <meta-data
+                android:name="WindowManagerPreference:FreeformWindowOrientation"
+                android:value="@ref/0x7f0e0000" />
+
+            <meta-data
+                android:name="notch_support"
+                android:value="true" />
+
+            <layout
+                android:minWidth="400px"
+                android:minHeight="300px" />
+        </activity>
+
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
+
+        <meta-data
+            android:name="com.google.ar.core.min_apk_version"
+            android:value="241930000" />
+
+        <activity
+            android:theme="@ref/0x103023a"
+            android:name="com.google.ar.core.InstallActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="1"
+            android:configChanges="0x4a0" />
+
+        <provider
+            android:name="com.vuforia.engine.app.VuforiaContentProvider"
+            android:exported="false"
+            android:authorities="com.engineassembly.app.vuforia.share"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@ref/0x7f110000" />
+        </provider>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            android:authorities="com.engineassembly.app.androidx-startup">
+
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+    </application>
+</manifest>

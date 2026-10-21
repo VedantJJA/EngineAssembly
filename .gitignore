@@ -145,3 +145,31 @@ Tools/Verification/*.rsp
 Tools/Verification/UnityProject/
 Tools/Verification/BeforeHeadGeometryFix/
 Tools/Colliders/settings.local.json
+Tools/Narration/Models/
+Tools/Narration/Voice/
+Backups/Narration/
+
+# Python tooling caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Disposable Unity verification workspaces and build intermediates
+Tools/Verification/Bee-before-AR-recovery/
+Tools/Verification/BeforeGarageIntegration/
+Tools/Verification/manifest-test/
+
+# Local narration run state; keep generator scripts and exported Assets/Audio
+Tools/Narration/*.pid
+Tools/Narration/job-status.json
+Tools/Narration/progress.json
+Tools/Narration/audio-verification.json
+Tools/Narration/unity-import-report.json
+
+# Unity's temporary scene recovery copies
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

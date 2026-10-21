@@ -1,0 +1,24 @@
+{
+  "licencePresent": true,
+  "agreementAccepted": true,
+  "minApi": 29,
+  "architecture": "ARM64",
+  "backend": "IL2CPP",
+  "graphics": [
+    "OpenGLES3"
+  ],
+  "delayedInit": true,
+  "arCore": "OPTIONAL",
+  "scenes": [
+    "Assets/Scenes/MainMenu.unity",
+    "Assets/Scenes/AssemblyWorkshop.unity",
+    "Assets/Scenes/MobileAssembly.unity",
+    "Assets/Scenes/MobileEngineDisplay.unity",
+    "Assets/Scenes/MobileAssemblyARFallback.unity",
+    "Assets/Scenes/MobileDisplayARFallback.unity",
+    "Assets/Scenes/RepairVRFallback.unity",
+    "Assets/Scenes/MobileAssemblyAR.unity",
+    "Assets/Scenes/MobileDisplayAR.unity"
+  ],
+  "androidId": "com.engineassembly.app"
+}

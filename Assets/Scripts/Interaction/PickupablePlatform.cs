@@ -14,6 +14,8 @@ namespace EngineAssembly
         public UnityEvent onPickedUp=new UnityEvent(),onReleased=new UnityEvent();
         public bool IsHeld { get; private set; }
         public bool IsFlipping { get; private set; }
+        public enum TurnPhase { None, Lowering, Turning, Raising }
+        public TurnPhase Phase { get; private set; }
         public bool CanPickUp=>allowPickup;
         public void SetPickupAllowed(bool allowed){if(!allowed)Release();allowPickup=allowed;}
         Rigidbody body;
@@ -23,6 +25,11 @@ namespace EngineAssembly
         Quaternion flipStart,flipEnd;
         Vector3 flipCenter,flipLocalCenter;
         float flipTime;
+        bool groundFlip;
+        Vector3 undergroundCenter,returnCenter;
+        readonly Dictionary<Collider,bool> flipColliders=new Dictionary<Collider,bool>();
+        readonly Dictionary<Rigidbody,bool> flipBodies=new Dictionary<Rigidbody,bool>();
+        const float TravelDuration=.55f,TurnDuration=.65f;
         void Awake() { body=GetComponent<Rigidbody>(); body.isKinematic=lockWhenReleased; }
         public bool BeginGrab()
         {
@@ -72,29 +79,77 @@ namespace EngineAssembly
         }
         public void Flip()
         {
+            Flip(GeometryCenter());
+        }
+        public void Flip(Vector3 center)
+        {
             if(IsFlipping)return;
-            flipCenter=GeometryCenter();flipLocalCenter=transform.InverseTransformPoint(flipCenter);
+            flipCenter=center;flipLocalCenter=transform.InverseTransformPoint(flipCenter);
             body.isKinematic=true;flipStart=transform.rotation;flipEnd=Quaternion.AngleAxis(180,transform.right)*flipStart;
             flipTime=0;IsFlipping=true;
+            groundFlip=false;Phase=TurnPhase.Turning;
+        }
+        public bool FlipThroughGround(Bounds bounds,float ground,float returnHeightOffset=0)
+        {
+            if(IsFlipping || IsHeld)return false;
+            Flip(bounds.center);returnCenter=flipCenter+Vector3.up*returnHeightOffset;groundFlip=true;Phase=TurnPhase.Lowering;
+            // A bounding sphere contains the complete workpiece through every
+            // intermediate rotation, not just its initial and final bounds.
+            undergroundCenter=new Vector3(flipCenter.x,ground-bounds.extents.magnitude-.12f,flipCenter.z);
+            foreach(var collider in GetComponentsInChildren<Collider>(true)){flipColliders[collider]=collider.enabled;collider.enabled=false;}
+            foreach(var other in GetComponentsInChildren<Rigidbody>(true)){flipBodies[other]=other.detectCollisions;other.detectCollisions=false;}
+            return true;
+        }
+        public void CancelFlip()
+        {
+            if(!IsFlipping)return;
+            transform.rotation=flipStart;transform.position+=flipCenter-transform.TransformPoint(flipLocalCenter);
+            FinishFlip();
+        }
+        void FinishFlip()
+        {
+            IsFlipping=false;Phase=TurnPhase.None;groundFlip=false;
+            foreach(var pair in flipBodies)if(pair.Key)pair.Key.detectCollisions=pair.Value;
+            foreach(var pair in flipColliders)if(pair.Key)pair.Key.enabled=pair.Value;
+            flipBodies.Clear();flipColliders.Clear();body.isKinematic=IsHeld||lockWhenReleased;
+            foreach(var surface in GetComponentsInChildren<AssemblyPrecisionSurface>(true))surface.RefreshPhysics();
+            Physics.SyncTransforms();
         }
         void Update()
         {
             if(!IsFlipping)return;
+            if(groundFlip)
+            {
+                flipTime+=Time.deltaTime;Vector3 center;Quaternion rotation;
+                if(flipTime<TravelDuration)
+                {Phase=TurnPhase.Lowering;center=Vector3.Lerp(flipCenter,undergroundCenter,Smooth(flipTime/TravelDuration));rotation=flipStart;}
+                else if(flipTime<TravelDuration+TurnDuration)
+                {Phase=TurnPhase.Turning;center=undergroundCenter;rotation=Quaternion.Slerp(flipStart,flipEnd,Smooth((flipTime-TravelDuration)/TurnDuration));}
+                else
+                {Phase=TurnPhase.Raising;center=Vector3.Lerp(undergroundCenter,returnCenter,Smooth((flipTime-TravelDuration-TurnDuration)/TravelDuration));rotation=flipEnd;}
+                transform.rotation=rotation;transform.position+=center-transform.TransformPoint(flipLocalCenter);
+                if(flipTime>=TravelDuration*2+TurnDuration)FinishFlip();return;
+            }
             flipTime+=Time.deltaTime;float t=Mathf.Clamp01(flipTime/Mathf.Max(.01f,flipDuration));
             transform.rotation=Quaternion.Slerp(flipStart,flipEnd,Mathf.SmoothStep(0,1,t));
             transform.position+=flipCenter-transform.TransformPoint(flipLocalCenter);
-            if(t>=1) { IsFlipping=false;body.isKinematic=IsHeld||lockWhenReleased; }
+            if(t>=1)FinishFlip();
         }
+        static float Smooth(float t){t=Mathf.Clamp01(t);return t*t*t*(t*(t*6-15)+10);}
         public Vector3 GeometryCenter()
         {
-            bool first=true;var bounds=new Bounds(transform.position,Vector3.zero);
+            TryGeometryBounds(out var bounds);return bounds.center;
+        }
+        public bool TryGeometryBounds(out Bounds bounds)
+        {
+            bool first=true;bounds=new Bounds(transform.position,Vector3.zero);
             foreach(var renderer in GetComponentsInChildren<MeshRenderer>(true))
             {
                 if(!renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.GetComponentInParent<GeneratedColliderGroup>() || renderer.gameObject.hideFlags!=HideFlags.None)continue;
                 var part=renderer.GetComponentInParent<AssemblyPart>();if(part && !part.IsSnapped && part.transform!=transform)continue;
                 if(first){bounds=renderer.bounds;first=false;}else bounds.Encapsulate(renderer.bounds);
             }
-            return first?transform.position:bounds.center;
+            return !first;
         }
         void OnCollisionStay(Collision collision)
         {
@@ -105,7 +160,7 @@ namespace EngineAssembly
             if(above)resting.Add(other);else resting.Remove(other);
         }
         void OnCollisionExit(Collision collision) { if(collision.rigidbody)resting.Remove(collision.rigidbody); }
-        void OnDisable() { Release();IsFlipping=false;resting.Clear(); }
+        void OnDisable() { Release();CancelFlip();resting.Clear(); }
     }
 }
 

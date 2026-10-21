@@ -102,7 +102,8 @@ namespace EngineAssembly.Editor
                 player.PickUp(next);Assert(player.CurrentHeldPart==next,"A complete unit can be carried before the engine is turned into the required orientation");
                 Assert(manager.FlipFrame()==manager.AssemblyRoot,"Flip resolves the engine destination for "+next.PartId);
                 var before=next.transform.rotation;var engineBefore=manager.AssemblyRoot.rotation;var center=manager.AssemblyRoot.GetComponent<PickupablePlatform>().GeometryCenter();
-                player.FlipWorkpiece();yield return new WaitForSeconds(.6f);
+                player.FlipWorkpiece();var lift=manager.GetComponent<WorkpieceLift>();float flipDeadline=Time.realtimeSinceStartup+5;
+                while(lift && lift.IsTransitioning && Time.realtimeSinceStartup<flipDeadline)yield return null;
                 Assert(Quaternion.Angle(engineBefore,manager.AssemblyRoot.rotation)>179 && Quaternion.Angle(before,next.transform.rotation)<.01f,"F flips the engine and leaves the carried "+next.PartId+" unchanged");
                 Assert(player.CurrentHeldPart==next && next.IsSelected && Vector3.Distance(center,manager.AssemblyRoot.GetComponent<PickupablePlatform>().GeometryCenter())<.001f,"Flipping preserves inventory and the engine's centre pivot");player.DropHeldPart(false);
             }
@@ -114,12 +115,12 @@ namespace EngineAssembly.Editor
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             var keyboard=InputSystem.AddDevice<Keyboard>();var mouse=InputSystem.AddDevice<Mouse>();
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.Q));InputSystem.Update();player.SendMessage("Update");Assert(player.PlacementMode,"Q enters placement mode");
-            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.R));InputSystem.Update();player.SendMessage("Update");Assert(player.Tool==PlayerAssemblyController.PlacementTool.Move,"R switches the placement tool to Move");
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.T));InputSystem.Update();player.SendMessage("Update");Assert(player.Tool==PlayerAssemblyController.PlacementTool.Move,"T switches the placement tool to Move");
             var centerBefore=AssemblyHeldView.WorldBounds(player.CurrentHeldPart).center;
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());InputSystem.QueueStateEvent(mouse,new MouseState{delta=new Vector2(30,20)}.WithButton(MouseButton.Right));InputSystem.Update();player.SendMessage("Update");
             Assert(Vector3.Distance(centerBefore,AssemblyHeldView.WorldBounds(player.CurrentHeldPart).center)>.05f,"Right-mouse dragging moves the item in the view plane");
             var rotationBefore=player.CurrentHeldPart.transform.rotation;
-            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.R));InputSystem.QueueStateEvent(mouse,new MouseState{delta=new Vector2(24,12)}.WithButton(MouseButton.Right));InputSystem.Update();player.SendMessage("Update");
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.T));InputSystem.QueueStateEvent(mouse,new MouseState{delta=new Vector2(24,12)}.WithButton(MouseButton.Right));InputSystem.Update();player.SendMessage("Update");
             Assert(player.Tool==PlayerAssemblyController.PlacementTool.Rotate && Quaternion.Angle(rotationBefore,player.CurrentHeldPart.transform.rotation)>5,"The Rotate tool uses mouse motion to orient the held item");
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.P));InputSystem.QueueStateEvent(mouse,new MouseState());InputSystem.Update();var caption=manager.GetComponentInChildren<AssemblyCaptionPresenter>();caption.SendMessage("LateUpdate");Assert(!caption.InstructionsVisible,"P hides the top-right step card");
             InputSystem.RemoveDevice(keyboard);InputSystem.RemoveDevice(mouse);InputSystem.settings=originalSettings;

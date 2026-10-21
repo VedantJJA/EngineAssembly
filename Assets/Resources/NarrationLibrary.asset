@@ -1,0 +1,285 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 427a422704a6df24db89fe4cdc0a57c6, type: 3}
+  m_Name: NarrationLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::EngineAssembly.NarrationLibrary
+  cues:
+  - id: chapter-1-cue-001
+    clip: {fileID: 8300000, guid: 7ab5534812a5e2b478bed4c09e60494d, type: 3}
+  - id: chapter-1-cue-002
+    clip: {fileID: 8300000, guid: b96c131cf64633349ac389cdb085c0cd, type: 3}
+  - id: chapter-1-cue-168
+    clip: {fileID: 8300000, guid: 332d9173f0e02f84abaf39f47adc8a0c, type: 3}
+  - id: chapter-1-cue-169
+    clip: {fileID: 8300000, guid: 89232fc9450576f4095a2d0db2b58a74, type: 3}
+  - id: chapter-1-cue-003
+    clip: {fileID: 8300000, guid: 39c1e16567dda8f4b948814738a73f91, type: 3}
+  - id: piston-201
+    clip: {fileID: 8300000, guid: 69c48c87930aede43adb451b4b5d94dd, type: 3}
+  - id: piston-202
+    clip: {fileID: 8300000, guid: 5d14b407f7795314fa9940e431109172, type: 3}
+  - id: piston-203
+    clip: {fileID: 8300000, guid: 9fa7650734238944cb8478762df38499, type: 3}
+  - id: piston-204
+    clip: {fileID: 8300000, guid: 8e1e50f9f3d14df449c7d2b6260ab1ea, type: 3}
+  - id: piston-206
+    clip: {fileID: 8300000, guid: 11f3ff1908e8de34ea0a642d839274c5, type: 3}
+  - id: piston-207
+    clip: {fileID: 8300000, guid: a3ba23027afae874dab0454435d64e2f, type: 3}
+  - id: piston-208
+    clip: {fileID: 8300000, guid: 19a212afb7321f1409e8257e454b836c, type: 3}
+  - id: piston-209
+    clip: {fileID: 8300000, guid: da5481609631fea4eaa3e4a7022e74a9, type: 3}
+  - id: chapter-2-cue-028
+    clip: {fileID: 8300000, guid: 4968fcbd9a124ea4eb8bf487ca3f982e, type: 3}
+  - id: chapter-2-cue-029
+    clip: {fileID: 8300000, guid: 62937652d6e43c84682d368be3864d84, type: 3}
+  - id: chapter-2-cue-030
+    clip: {fileID: 8300000, guid: c545a3295e157c044ae529595f0f174e, type: 3}
+  - id: chapter-3-cue-031
+    clip: {fileID: 8300000, guid: 9da2d3c1e6c886f47ad5fa7e157f7037, type: 3}
+  - id: chapter-3-cue-032
+    clip: {fileID: 8300000, guid: 281b88f71a18e294aab69f9341010421, type: 3}
+  - id: chapter-3-cue-033
+    clip: {fileID: 8300000, guid: 08672f3793178704cbe76388e0bf1308, type: 3}
+  - id: chapter-3-cue-170
+    clip: {fileID: 8300000, guid: 93b82e7bf25c8364b954bdd7c22d242b, type: 3}
+  - id: chapter-3-cue-034
+    clip: {fileID: 8300000, guid: 60f5087c442089a458d65493a990ada6, type: 3}
+  - id: chapter-3-cue-035
+    clip: {fileID: 8300000, guid: 799bdea229f267b40bd300ac78e07b59, type: 3}
+  - id: chapter-3-cue-036
+    clip: {fileID: 8300000, guid: fc5f6cbfd544f3240a2a70f88069c1fc, type: 3}
+  - id: chapter-3-cue-037
+    clip: {fileID: 8300000, guid: fe8bea8b5d5511e4e9715b4bbb71e9a7, type: 3}
+  - id: chapter-3-cue-038
+    clip: {fileID: 8300000, guid: 5aff261bd7bb0004e9144a7a9411d80b, type: 3}
+  - id: chapter-3-cue-171
+    clip: {fileID: 8300000, guid: 9bcd2c5290cc36249930719d9c79fc48, type: 3}
+  - id: chapter-3-cue-172
+    clip: {fileID: 8300000, guid: 062b0f446c719b242ab9e6059a20228b, type: 3}
+  - id: chapter-3-cue-173
+    clip: {fileID: 8300000, guid: 9003827d7c687d64883f0a694d201c3a, type: 3}
+  - id: chapter-3-cue-174
+    clip: {fileID: 8300000, guid: b1353ee69bb11bc48a8b46c4773fe135, type: 3}
+  - id: chapter-3-cue-175
+    clip: {fileID: 8300000, guid: 815f1ba5e3adf964db75a674c23f600e, type: 3}
+  - id: chapter-3-cue-039
+    clip: {fileID: 8300000, guid: f3d8d9937377a454a883695d2449b739, type: 3}
+  - id: chapter-3-cue-040
+    clip: {fileID: 8300000, guid: 117a3dc1aecf1d64aa52484787716928, type: 3}
+  - id: chapter-3-cue-041
+    clip: {fileID: 8300000, guid: d739d6b194a44414d8e06f7ac3909828, type: 3}
+  - id: chapter-4-cue-042
+    clip: {fileID: 8300000, guid: 3b3ec25eef98f884281b41f8e9d44aa5, type: 3}
+  - id: chapter-4-cue-043
+    clip: {fileID: 8300000, guid: 87d9641de1a2b6f49acb159590e4c67a, type: 3}
+  - id: chapter-4-cue-176
+    clip: {fileID: 8300000, guid: 1346e466fe021fd49a5598174b985530, type: 3}
+  - id: valve-402
+    clip: {fileID: 8300000, guid: 1e81fcc08722daf45ae8a004c1e8a138, type: 3}
+  - id: valve-403
+    clip: {fileID: 8300000, guid: 97a1e296416dbe44f9eaa4ff75c71a9d, type: 3}
+  - id: valve-405
+    clip: {fileID: 8300000, guid: 195c49cb426b5674aa779f7edbbd7d74, type: 3}
+  - id: valve-406
+    clip: {fileID: 8300000, guid: 255b05b8f630eb54b8d728b5db45871e, type: 3}
+  - id: valve-407
+    clip: {fileID: 8300000, guid: b7d39994a85d10842843f02c6d5a159a, type: 3}
+  - id: chapter-4-cue-104
+    clip: {fileID: 8300000, guid: af6544487c06cd74a81d6e3fb89e4321, type: 3}
+  - id: chapter-4-cue-105
+    clip: {fileID: 8300000, guid: 8c523079cd0602e409f26e64d9da649e, type: 3}
+  - id: chapter-5-cue-106
+    clip: {fileID: 8300000, guid: 5581f69b316542d4eadff677c1c88d92, type: 3}
+  - id: chapter-5-cue-107
+    clip: {fileID: 8300000, guid: 96e62bf878645ff4ba86bb7da755db1d, type: 3}
+  - id: chapter-5-cue-177
+    clip: {fileID: 8300000, guid: 1aa620968c9ed25448e4bc30cd3a5777, type: 3}
+  - id: chapter-5-cue-108
+    clip: {fileID: 8300000, guid: a0cec2a21d452cb4aa21dbe581cef4b9, type: 3}
+  - id: chapter-5-cue-109
+    clip: {fileID: 8300000, guid: 933f3e52d1bc1b842b926cf7b7c11584, type: 3}
+  - id: chapter-5-cue-110
+    clip: {fileID: 8300000, guid: 1f68c3f55785f0841a254aa3912f3f8d, type: 3}
+  - id: chapter-5-cue-111
+    clip: {fileID: 8300000, guid: 0feed93e580c7d448a628169dd1105ff, type: 3}
+  - id: chapter-5-cue-112
+    clip: {fileID: 8300000, guid: fb1f4aeefc4388a4ab9c2fa9f7bc4e1a, type: 3}
+  - id: chapter-5-cue-113
+    clip: {fileID: 8300000, guid: 0fcd5f5fd7a935045b8bbe1e6f358a85, type: 3}
+  - id: chapter-5-cue-114
+    clip: {fileID: 8300000, guid: 2cab03c8b9a1af84fb8b31c18bac647e, type: 3}
+  - id: chapter-5-cue-178
+    clip: {fileID: 8300000, guid: 2b83d36186f57ac4c94031a0cc050e2f, type: 3}
+  - id: chapter-5-cue-115
+    clip: {fileID: 8300000, guid: b0ae509526649064984456c54a8da3b0, type: 3}
+  - id: chapter-5-cue-116
+    clip: {fileID: 8300000, guid: 265900b83af800f42ab7c5b4f0bd1b9c, type: 3}
+  - id: chapter-5-cue-179
+    clip: {fileID: 8300000, guid: 160d0c93d9151324c8304df46ba944fa, type: 3}
+  - id: chapter-5-cue-117
+    clip: {fileID: 8300000, guid: 5d553c56c64da7d469d72a4d3c0c4895, type: 3}
+  - id: chapter-5-cue-118
+    clip: {fileID: 8300000, guid: d77cb4d5dfafb994582ad9faaaf92f1f, type: 3}
+  - id: chapter-5-cue-119
+    clip: {fileID: 8300000, guid: 1f908f1814d84854c8c7e09746445eaa, type: 3}
+  - id: chapter-5-cue-120
+    clip: {fileID: 8300000, guid: d1bf08abce63352448bae3e6995c7912, type: 3}
+  - id: chapter-5-cue-121
+    clip: {fileID: 8300000, guid: f5f8c4c82711eeb408f1bc875062b28c, type: 3}
+  - id: chapter-5-cue-122
+    clip: {fileID: 8300000, guid: 8efe9969fd25af64e9ea6fd4b1fe26fe, type: 3}
+  - id: chapter-5-cue-123
+    clip: {fileID: 8300000, guid: c8e31460c4154ea4a9fbe7b5596e351b, type: 3}
+  - id: chapter-5-cue-124
+    clip: {fileID: 8300000, guid: 8c48cb54191ce6448a341adf0c32c502, type: 3}
+  - id: chapter-5-cue-125
+    clip: {fileID: 8300000, guid: e968c2c056f094640a91147359ae028c, type: 3}
+  - id: chapter-5-cue-126
+    clip: {fileID: 8300000, guid: 49413c666aa866149977a5c88a6a90f7, type: 3}
+  - id: chapter-5-cue-127
+    clip: {fileID: 8300000, guid: 6c345067a3e516e4cb0bedb000467036, type: 3}
+  - id: chapter-5-cue-128
+    clip: {fileID: 8300000, guid: 3b6bc40a0f23ba24aac9cbf4ba5ed9fd, type: 3}
+  - id: chapter-5-cue-129
+    clip: {fileID: 8300000, guid: 69e74997f7d53cd4da19271c2da3a730, type: 3}
+  - id: chapter-6-cue-130
+    clip: {fileID: 8300000, guid: 5b0c7c029efb71c4089e2bade1171b54, type: 3}
+  - id: chapter-6-cue-131
+    clip: {fileID: 8300000, guid: 5928309d4373dab4ea477a01ba5735d0, type: 3}
+  - id: chapter-6-cue-132
+    clip: {fileID: 8300000, guid: 76466e417cda6434ea3bfe1333f1370c, type: 3}
+  - id: chapter-6-cue-133
+    clip: {fileID: 8300000, guid: fc8632a7b42cbf44fa89f8fc38e27afb, type: 3}
+  - id: chapter-6-cue-134
+    clip: {fileID: 8300000, guid: 21059ddc5854c194fbc4e648c92e86d1, type: 3}
+  - id: chapter-6-cue-135
+    clip: {fileID: 8300000, guid: e7cc25d1c77c38b41b2e2e869990fe1d, type: 3}
+  - id: chapter-6-cue-136
+    clip: {fileID: 8300000, guid: 6d4d8a0fca9f48548bb96764ebc6ca44, type: 3}
+  - id: chapter-6-cue-137
+    clip: {fileID: 8300000, guid: b8fdce9d319d73e4881f9c123b8c5495, type: 3}
+  - id: chapter-6-cue-138
+    clip: {fileID: 8300000, guid: c622a3e5d8f6ca14a92dce225b55bd80, type: 3}
+  - id: chapter-7-cue-139
+    clip: {fileID: 8300000, guid: ea864a8db99b0e143a385ed62b49ece7, type: 3}
+  - id: chapter-7-cue-140
+    clip: {fileID: 8300000, guid: 0aeef9a8828c6c74a85013e6c3e8f890, type: 3}
+  - id: chapter-7-cue-141
+    clip: {fileID: 8300000, guid: 32347789e7be58d4b846a506d365686f, type: 3}
+  - id: chapter-7-cue-142
+    clip: {fileID: 8300000, guid: 00423640593c937469fe3f1d5f1f7b2d, type: 3}
+  - id: chapter-7-cue-143
+    clip: {fileID: 8300000, guid: 6b5c0f227efad824ca644afb9fdcddf8, type: 3}
+  - id: chapter-7-cue-144
+    clip: {fileID: 8300000, guid: b57be6e3ec8fc2b4a9a9b889969737af, type: 3}
+  - id: chapter-7-cue-180
+    clip: {fileID: 8300000, guid: 2e68fa9ec9338f443ac2b88e15ccafe2, type: 3}
+  - id: chapter-7-cue-145
+    clip: {fileID: 8300000, guid: 33ada1bc0f974ef47abe7c7a936e86f4, type: 3}
+  - id: chapter-7-cue-146
+    clip: {fileID: 8300000, guid: 97037b1b009c50f41a9b47e4c161aa2e, type: 3}
+  - id: chapter-7-cue-147
+    clip: {fileID: 8300000, guid: 30da6efad8bceb243a66916920213980, type: 3}
+  - id: chapter-7-cue-148
+    clip: {fileID: 8300000, guid: f50707cdcd1568748a1fc84af55baa41, type: 3}
+  - id: chapter-8-cue-149
+    clip: {fileID: 8300000, guid: 4a628004eb31c484f96997957280428b, type: 3}
+  - id: chapter-8-cue-150
+    clip: {fileID: 8300000, guid: ae514ff42cadf4846bc1e34afaf7f16a, type: 3}
+  - id: chapter-8-cue-181
+    clip: {fileID: 8300000, guid: e49859bde78277548abad5804c8c2818, type: 3}
+  - id: chapter-8-cue-151
+    clip: {fileID: 8300000, guid: e4885419981f981499ee0cfc297043ba, type: 3}
+  - id: chapter-9-cue-152
+    clip: {fileID: 8300000, guid: c500fc170f9151b44839dcc5db7f26e9, type: 3}
+  - id: chapter-9-cue-153
+    clip: {fileID: 8300000, guid: eaa51f6ad5595b84e823cd492ac62a39, type: 3}
+  - id: chapter-9-cue-154
+    clip: {fileID: 8300000, guid: 9189960f6aaf0b340accb65d128f5869, type: 3}
+  - id: chapter-9-cue-182
+    clip: {fileID: 8300000, guid: 67ba9ec7639483f4a8fe8d6f001b582e, type: 3}
+  - id: chapter-9-cue-155
+    clip: {fileID: 8300000, guid: a1586dcbbe671f64fa3a2792a8891573, type: 3}
+  - id: chapter-9-cue-183
+    clip: {fileID: 8300000, guid: a0e8f693d8630754c9e9a9865c77cf91, type: 3}
+  - id: chapter-9-cue-156
+    clip: {fileID: 8300000, guid: cd6002a3a7290124882651643a9f3ee5, type: 3}
+  - id: chapter-9-cue-157
+    clip: {fileID: 8300000, guid: 9afc887852b1916428fe421678fec81f, type: 3}
+  - id: chapter-9-cue-158
+    clip: {fileID: 8300000, guid: 6bb30fbb627ea754e8aa42b2fc660d71, type: 3}
+  - id: chapter-9-cue-159
+    clip: {fileID: 8300000, guid: 1de9d00bb2d82564b972db7bd29cdb5c, type: 3}
+  - id: chapter-9-cue-160
+    clip: {fileID: 8300000, guid: 7b47ab1608283814982c48dc2248960f, type: 3}
+  - id: chapter-9-cue-161
+    clip: {fileID: 8300000, guid: 08c1bbb41c03a744bbcc7d0c4f1db7a5, type: 3}
+  - id: chapter-9-cue-162
+    clip: {fileID: 8300000, guid: 90b13667f72270444a73d373be5fad91, type: 3}
+  - id: chapter-9-cue-163
+    clip: {fileID: 8300000, guid: 16eae37bccfb2fc4d96d3fe3f3299566, type: 3}
+  - id: chapter-9-cue-164
+    clip: {fileID: 8300000, guid: 4f1498a2f08f7d44583ac3dd31705ebc, type: 3}
+  - id: chapter-9-cue-165
+    clip: {fileID: 8300000, guid: 92c53e79637fc1145825b4625404b719, type: 3}
+  - id: chapter-9-cue-166
+    clip: {fileID: 8300000, guid: fd30878cff30e604a9630661ba6fe1e3, type: 3}
+  - id: chapter-9-cue-167
+    clip: {fileID: 8300000, guid: 9763a820276d000478b0e8b8c1cd562e, type: 3}
+  - id: repair-introduction
+    clip: {fileID: 8300000, guid: 367643497dd135d42868128b6c91c341, type: 3}
+  - id: repair-step-0
+    clip: {fileID: 8300000, guid: f696d7763079d4d4f8d2956bab462f88, type: 3}
+  - id: repair-step-1
+    clip: {fileID: 8300000, guid: b5dc4d7c1a532f542850dab21b587d59, type: 3}
+  - id: repair-step-2
+    clip: {fileID: 8300000, guid: 9cc1be5b65598b046ba6b1e0db1b484e, type: 3}
+  - id: repair-step-3
+    clip: {fileID: 8300000, guid: f364b4db1c12e78408fd20e8e7d5cffc, type: 3}
+  - id: repair-step-4
+    clip: {fileID: 8300000, guid: d193669de41fb084bb806d5b2e56fcdf, type: 3}
+  - id: repair-step-5
+    clip: {fileID: 8300000, guid: 13afd767124af1549974b5218a2dc9c2, type: 3}
+  - id: repair-step-6
+    clip: {fileID: 8300000, guid: 087528f4a5d2f7c44aaad1bc989fa894, type: 3}
+  - id: repair-step-7
+    clip: {fileID: 8300000, guid: 877dba6247f699c47a1a49fa5b0d7f7c, type: 3}
+  - id: repair-step-8
+    clip: {fileID: 8300000, guid: 50fbc43ee79216541866b12351997c93, type: 3}
+  - id: repair-step-9
+    clip: {fileID: 8300000, guid: d0f3f4a1b95b6d2479db26763a4f1f7f, type: 3}
+  - id: repair-step-10
+    clip: {fileID: 8300000, guid: 16592e148093eb24299b45b348680429, type: 3}
+  - id: repair-step-11
+    clip: {fileID: 8300000, guid: 4849ffe1d470e5444822bc7d1ad16211, type: 3}
+  - id: repair-step-12
+    clip: {fileID: 8300000, guid: 7ab883f39b69c154ab091eec1cf11653, type: 3}
+  - id: repair-step-13
+    clip: {fileID: 8300000, guid: 759dad0d229f5eb45ad34a86e18fab42, type: 3}
+  - id: complete
+    clip: {fileID: 8300000, guid: de4cb07e8ab92704a99b908915efd43e, type: 3}
+  - id: repair-complete
+    clip: {fileID: 8300000, guid: 54dcfdbfb3aea014587c7a5997ce85f0, type: 3}
+  - id: flip-upright
+    clip: {fileID: 8300000, guid: 6f7eb09be3b634d4e90aa65e7fb6bb2f, type: 3}
+  - id: flip-upside-down
+    clip: {fileID: 8300000, guid: 8b3900a68ea63df4db86f5197ed7ed2d, type: 3}
+  - id: inventory-stack
+    clip: {fileID: 8300000, guid: e56e0a4116d42cc428127c6304dd60ae, type: 3}
+  - id: repeat-piston
+    clip: {fileID: 8300000, guid: af1ee86f200887344ad2c44d87ceac8f, type: 3}
+  - id: repeat-valve
+    clip: {fileID: 8300000, guid: fbe9c2bc28156f446855f3f8c2538e24, type: 3}
+  - id: repeat-matching
+    clip: {fileID: 8300000, guid: 8c71c708701db364daa0386c32c31f6b, type: 3}

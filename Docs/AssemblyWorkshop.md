@@ -29,7 +29,8 @@ The PC HUD places chapter progress at the top left, a bold shadowed instruction 
 | H | Toggle persistent hints (enabled by default; visible through geometry) |
 | V | Toggle the screen-border arrow to the next pickup, or the held part's placement target; it hides while the target is on screen and returns when it leaves the screen |
 | Q | Toggle Carry / Placement in Hard and Medium; Easy uses Carry only |
-| R | Toggle Rotate / Move while placing a part or carrying a platform |
+| R | Replay the current spoken instruction |
+| T | Toggle Rotate / Move while placing a part or carrying a platform |
 | P | Hide / show the instruction card |
 | Space | Jump |
 | Hold Ctrl or C | Crouch (standing requires clear headroom) |
@@ -127,7 +128,7 @@ The old disassembly-recording and descending-order implementation was replaced. 
 
 Use **Tools > Engine Assembly > Run Verification** for editor checks. `Tools/Verification/compile.ps1` compiles runtime/editor code against this project's Unity references without changing the open scene. The isolated Unity test project and its cache are ignored by Git. Check the JSON reports in `Tools/Verification` for the exact assertions executed.
 
-The current PC interaction update passed 46 dedicated control/inventory checks, 24 menu checks, 61 runtime assembly checks, 11 workspace/arrow checks, and all 72 valve-stack placements in native Unity. The 16 mobile checks and 73 subassembly checks also passed. These cover identical flipped springs, exact socket identities in every difficulty, strict wall occlusion, standing/crouching, carrying while flipping the engine, Q/R mouse controls, the scoped Editor save-shortcut guard, original scale and the new head-bench position. UI previews are in `Docs/Previews/InventoryHUD.png`, `ChapterSelector.png`, `SettingsSelector.png` and `WorkshopControls.png`.
+The PC interaction checks cover identical flipped springs, exact socket identities in every difficulty, strict wall occlusion, standing/crouching, carrying while flipping the engine, Q/T mouse controls, the scoped Editor save-shortcut guard, original scale and the head-bench position. UI previews are in `Docs/Previews/InventoryHUD.png`, `ChapterSelector.png`, `SettingsSelector.png` and `WorkshopControls.png`.
 
 The CAD model's detailed geometry and original scale remain unchanged. The rework does not optimize its polygon count or calibrate real-world AR scale. Chapter order is an educational starting point; refine the recipe for your intended teaching procedure.
 
