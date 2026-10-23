@@ -36,6 +36,10 @@ namespace EngineAssembly
             new Step("512_Timing_Belt_01",true,"Refit the toothed timing belt around the lower crankshaft pulley, the two upper camshaft pulleys and the small guide idlers. You have replaced the faulty bearing and reused the good parts. The belt again links piston movement to valve movement. This simulation shows the fitted route; real timing and tension checks require engine-specific instructions.")
         };
         AssemblyManager manager;AssemblyPart replacement;string originalSocketGeometry;
+        readonly List<string> inventory=new List<string>();
+        readonly Dictionary<Renderer,MaterialPropertyBlock> originalColours=new Dictionary<Renderer,MaterialPropertyBlock>();
+        public static readonly Color BrokenColour=new Color(.82f,.12f,.16f),NewColour=new Color(.10f,.58f,.28f);
+        public IReadOnlyList<string> InventoryPartIds=>inventory;
         bool running;
         float supplyX,supplyZ,supplyDepth;
         public bool Active=>running && manager && manager.Mode==WorkshopMode.Assembly && manager.CurrentChapterId==ChapterId;
@@ -66,6 +70,7 @@ namespace EngineAssembly
             replacement.Configure(definition,manager);replacement.TargetSocket=original.TargetSocket;
             originalSocketGeometry=original.TargetSocket.GeometryGroupId;original.TargetSocket.GeometryGroupId=definition.geometryGroup;
             manager.RegisterRepairPart(replacement);
+            inventory.Clear();inventory.Add(ReplacementId);Colour(original,BrokenColour);Colour(replacement,NewColour);
             var table=manager.TrayFrame.GetComponent<Renderer>();var tableBounds=table?table.bounds:new Bounds(manager.TrayFrame.position,new Vector3(4,1,3));
             supplyX=tableBounds.min.x+.25f;supplyZ=tableBounds.min.z+.25f;supplyDepth=0;
             replacement.ResetLoose(manager.TrayFrame,definition.trayPosition,definition.trayRotation);
@@ -77,6 +82,7 @@ namespace EngineAssembly
         {
             if(running){var player=FindAnyObjectByType<PlayerAssemblyController>();if(player && player.CurrentHeldPart)player.DropHeldPart(false);}
             running=false;
+            inventory.Clear();foreach(var pair in originalColours)if(pair.Key)pair.Key.SetPropertyBlock(pair.Value);originalColours.Clear();
             if(!replacement)return;
             replacement.CancelSnap();replacement.Unsnap(true);
             var original=manager.FindPart(FaultyId);if(original){original.TargetSocket.GeometryGroupId=originalSocketGeometry;original.gameObject.SetActive(true);}
@@ -86,13 +92,28 @@ namespace EngineAssembly
         {
             var step=CurrentStep;var part=NextPart;
             if(step==null || step.install || !part || part.IsSnapped || part.IsSelected || part.IsBusy)return;
+            StoreRemoved(part);
+        }
+        public bool StoreRemoved(AssemblyPart part)
+        {
+            if(CurrentStep==null || CurrentStep.install || part!=NextPart || part.IsSnapped || part.IsSelected || part.IsBusy)return false;
+            if(!inventory.Contains(part.PartId))inventory.Add(part.PartId);
             if(part.PartId==UnitId)StageUnit(part);
-            else if(part.PartId==FaultyId){part.gameObject.SetActive(false);}
+            else if(part.PartId==FaultyId){part.Body.isKinematic=true;part.Body.useGravity=false;part.gameObject.SetActive(false);}
             else StageOnTable(part,CompletedSteps+1);
-            Advance();
+            Advance();return true;
+        }
+        void Colour(AssemblyPart part,Color colour)
+        {
+            foreach(var renderer in part.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if(renderer.GetComponentInParent<AssemblyPart>(true)!=part)continue;
+                var previous=new MaterialPropertyBlock();renderer.GetPropertyBlock(previous);originalColours[renderer]=previous;
+                var block=new MaterialPropertyBlock();renderer.GetPropertyBlock(block);block.SetColor("_BaseColor",colour);block.SetColor("_Color",colour);block.SetFloat("_Metallic",.15f);renderer.SetPropertyBlock(block);
+            }
         }
         void Advance(){CompletedSteps++;manager.Report(Complete?"Repair complete. New bearing fitted and timing drive rebuilt.":CurrentStep.instruction);}
-        public void OnInstalled(AssemblyPart part){if(CurrentStep?.install==true && part==NextPart)Advance();}
+        public void OnInstalled(AssemblyPart part){if(CurrentStep?.install==true && part==NextPart){inventory.Remove(part.PartId);Advance();}}
         public bool CanPickUp(AssemblyPart part,out string reason)
         {
             reason=Complete?"Repair complete.":CurrentStep?.instruction??"Choose Repair to start.";

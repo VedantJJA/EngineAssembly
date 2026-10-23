@@ -165,6 +165,7 @@ namespace EngineAssembly
         {
             if(!ready || !MobileARSession.CanInteract(gameObject) || ChapterMenuOpen || manager.AssemblyParts.AnyBusy())return false;
             var part=manager.FindPart(id);
+            if(manager.RepairActive && id==PCRepairChapter.FaultyId){status.text="Broken bearing · kept aside for inspection. It cannot be fitted again.";return false;}
             if(!part || part.IsSnapped || part.IsBusy || (!manager.RepairActive && part.ChapterId!=manager.CurrentChapterId))return false;
             if(!manager.CanInstall(part,part.TargetSocket,out var reason)) { status.text=reason;return false; }
             if(selected==part)return true;
@@ -177,6 +178,7 @@ namespace EngineAssembly
             guide.RefreshTargets();
             idlePreview.Clear();
             RefreshCards();
+            if(manager.RepairActive)RevealInventoryCard(id);
             selectionText.text=part.PartDisplayName;
             status.text="Tap the glowing target to install";
             return true;
@@ -193,12 +195,17 @@ namespace EngineAssembly
         {
             if(ready && manager.RepairActive && !manager.Repair.IsPlacementStep && !ChapterMenuOpen && MobileARSession.CanInteract(gameObject) && viewCamera.pixelRect.Contains(screenPosition))
             {
-                var removalRay=viewCamera.ScreenPointToRay(screenPosition);
                 if(!repairQuery)repairQuery=gameObject.AddComponent<AssemblyPickupQuery>();
-                if(repairQuery.Raycast(removalRay,100,~0,out var picked,out _,out _))
+                // Thin circlips need a finger-sized aim margin, while every
+                // candidate ray must still hit the visible surface of this step.
+                float padding=10*canvas.scaleFactor;
+                foreach(var offset in new[]{Vector2.zero,Vector2.up,Vector2.down,Vector2.left,Vector2.right,new Vector2(.7f,.7f),new Vector2(-.7f,.7f),new Vector2(.7f,-.7f),new Vector2(-.7f,-.7f)})
                 {
+                    var point=screenPosition+offset*padding;if(!viewCamera.pixelRect.Contains(point))continue;
+                    if(!repairQuery.Raycast(viewCamera.ScreenPointToRay(point),100,~0,out var picked,out _,out _))continue;
                     var removalPart=picked?manager.InteractionPart(picked):null;
-                    if(removalPart && manager.Repair.CanRemove(removalPart,out _) && removalPart.BeginGrab()){removalPart.Release(false);refreshPending=true;return true;}
+                    if(removalPart && manager.Repair.CanRemove(removalPart,out _) && removalPart.BeginGrab())
+                    {removalPart.Release(false);if(!manager.Repair.StoreRemoved(removalPart))return false;RefreshChapter();RevealInventoryCard(removalPart.PartId);refreshPending=false;return true;}
                 }
                 status.text="Tap the part named in the repair instruction to remove it.";return false;
             }
@@ -339,8 +346,8 @@ namespace EngineAssembly
                 foreach(var collider in colliders[part])if(collider)collider.enabled=visible && !moving && !manager.IsCarriedMember(part);
             }
             title.text=manager.Recipe.chapters[manager.CurrentChapterIndex].title;
-            actionText.text=manager.ChapterInstalledCount+" / "+manager.ChapterPartCount+" INSTALLED";
-            selectionText.text=selected?selected.PartDisplayName:manager.ChapterComplete?"Section complete":"Choose a part below";
+            actionText.text=manager.ChapterInstalledCount+" / "+manager.ChapterPartCount+(manager.RepairActive?" REPAIR STEPS":" INSTALLED");
+            selectionText.text=selected?selected.PartDisplayName:manager.RepairActive?(manager.Repair.Complete?"Repair complete · broken bearing retained":"Repair hotbar · removed parts and replacement"):manager.ChapterComplete?"Section complete":"Choose a part below";
             status.text=manager.RepairActive && !manager.Repair.IsPlacementStep && !manager.Repair.Complete?"Tap "+manager.Repair.NextPart.PartDisplayName+" to remove it":manager.ChapterComplete?"Continue to the next chapter":selected?"Tap a visible target to install":fixture!=null?manager.FindPart(fixture.rootPartId).PartDisplayName+" · Separate workspace":"1 finger: rotate · 2 fingers: move / pinch to zoom";
             next.gameObject.SetActive(manager.ChapterComplete);
             var preview=manager.NextHintPart();
@@ -355,7 +362,7 @@ namespace EngineAssembly
                 ?manager.Recipe.subAssemblies.Where(g=>g.exclusiveBuildGroup==fixture.exclusiveBuildGroup && !manager.GroupComplete(g)).Select(g=>g.previewPartId).ToHashSet():null;
             var parts=manager.Recipe.parts.Where(d=>d.chapterId==manager.CurrentChapterId && !manager.IsPlaced(d.id)
                 && (choices!=null?choices.Contains(d.id):fixture!=null?d.subAssemblyId==fixture.id:string.IsNullOrEmpty(d.subAssemblyId))).OrderBy(d=>d.order).ToArray();
-            if(manager.RepairActive)parts=manager.Repair.IsPlacementStep?new[]{manager.Repair.NextPart.Definition}:new PartDefinition[0];
+            if(manager.RepairActive)parts=manager.Repair.InventoryPartIds.Select(manager.FindPart).Where(p=>p).Select(p=>p.Definition).ToArray();
             var ids=new HashSet<string>(parts.Select(d=>d.id));
             foreach(var id in cards.Keys.Where(id=>!ids.Contains(id)).ToArray()) { cards[id].gameObject.SetActive(false);Destroy(cards[id].gameObject);cards.Remove(id); }
             for(int i=0;i<parts.Length;i++)
@@ -366,17 +373,33 @@ namespace EngineAssembly
                     string id=d.id;card=MakeCard(cardContent,()=>SelectPart(id));cards.Add(id,card);
                     var layout=card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();layout.preferredWidth=218;layout.preferredHeight=236;
                     var photo=NewRect("Part image",card.transform);Anchor(photo,new Vector2(0,1),new Vector2(1,1),new Vector2(10,-145),new Vector2(-10,-10));
-                    var image=photo.gameObject.AddComponent<UnityEngine.UI.RawImage>();var carrier=manager.CarrierDefinition(id);image.texture=artwork?artwork.Find(id)??artwork.Find(carrier?.previewPartId):null;image.color=image.texture?Color.white:new Color(.12f,.2f,.23f);image.raycastTarget=false;
-                    Label(card.transform,d.order.ToString("000"),17,Mint,new Vector2(12,-148),new Vector2(190,24));
+                    var image=photo.gameObject.AddComponent<UnityEngine.UI.RawImage>();var carrier=manager.CarrierDefinition(id);image.texture=artwork?artwork.Find(id==PCRepairChapter.ReplacementId?PCRepairChapter.FaultyId:id)??artwork.Find(carrier?.previewPartId):null;image.color=image.texture?Color.white:new Color(.12f,.2f,.23f);image.raycastTarget=false;
+                    Label(card.transform,d.order.ToString("000"),17,Mint,new Vector2(12,-148),new Vector2(190,24)).name="Part state";
                     Label(card.transform,d.displayName,20,TextColor,new Vector2(12,-174),new Vector2(194,56));
                 }
                 card.transform.SetSiblingIndex(i);
                 bool eligible=manager.CanInstall(part,part.TargetSocket,out _);
                 card.normal=selected==part?WorkshopTheme.AccentWash:Panel;card.highlight=WorkshopTheme.Hover;
+                bool broken=manager.RepairActive && d.id==PCRepairChapter.FaultyId,fresh=manager.RepairActive && d.id==PCRepairChapter.ReplacementId;
+                if(manager.RepairActive)
+                {
+                    var state=card.transform.Find("Part state").GetComponent<TextMeshProUGUI>();
+                    state.text=broken?"BROKEN · KEEP ASIDE":fresh?"NEW REPLACEMENT":eligible?"READY TO REFIT":"REMOVED · STORED";
+                    state.color=broken?PCRepairChapter.BrokenColour:fresh?PCRepairChapter.NewColour:Mint;
+                    if(broken || fresh){card.normal=Color.Lerp(Panel,broken?PCRepairChapter.BrokenColour:PCRepairChapter.NewColour,.23f);card.highlight=Color.Lerp(card.normal,Color.white,.3f);var image=card.GetComponentInChildren<UnityEngine.UI.RawImage>();if(image && image.texture)image.color=Color.Lerp(Color.white,broken?PCRepairChapter.BrokenColour:PCRepairChapter.NewColour,.38f);}
+                }
                 card.GetComponent<UnityEngine.UI.Image>().color=card.normal;
-                var group=card.GetComponent<CanvasGroup>();if(!group)group=card.gameObject.AddComponent<CanvasGroup>();group.alpha=eligible?1:.68f;
+                var group=card.GetComponent<CanvasGroup>();if(!group)group=card.gameObject.AddComponent<CanvasGroup>();group.alpha=eligible || broken || fresh?1:.68f;
                 // Future cards remain tappable so a useful ordering/orientation explanation can be shown.
             }
+        }
+        void RevealInventoryCard(string id)
+        {
+            if(!cards.TryGetValue(id,out var card))return;
+            Canvas.ForceUpdateCanvases();var scroll=cardContent.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+            float overflow=cardContent.rect.width-scroll.viewport.rect.width;if(overflow<=0)return;
+            float center=RectTransformUtility.CalculateRelativeRectTransformBounds(cardContent,card.transform).center.x;
+            scroll.StopMovement();scroll.horizontalNormalizedPosition=Mathf.Clamp01((center-scroll.viewport.rect.width*.5f)/overflow);
         }
         void CreateUI()
         {

@@ -22,10 +22,18 @@ def wait(pid):
 
 try:
     state('finishing-current-build')
-    for pid in sys.argv[1:]: wait(pid)
+    for pid in sys.argv[1:]:
+        if not pid.startswith('--'): wait(pid)
     state('verifying-final-display-controls')
     for folder in ['Assets/Scripts','Assets/Resources','Assets/Audio/Narration/English']:
         shutil.copytree(ROOT/folder,CLONE/folder,dirs_exist_ok=True)
+    if '--repair' in sys.argv:
+        state('verifying-mobile-repair-and-experiences')
+        subprocess.run([UNITY,'-batchmode','-force-d3d11','-projectPath',str(CLONE),'-executeMethod','EngineAssembly.Editor.ExperienceRefreshVerification.RunBatch','-logFile',str(ROOT/'Tools/Verification/repair-hotbar-verification.log')],cwd=CLONE,check=True)
+        repair_report=json.loads((CLONE/'Tools/Verification/experience-refresh-report.json').read_text())
+        if not repair_report['passed']: raise RuntimeError(repair_report['error'])
+        shutil.copy2(CLONE/'Tools/Verification/experience-refresh-report.json',ROOT/'Tools/Verification/experience-refresh-report.json')
+        state('verifying-final-display-controls')
     subprocess.run([UNITY,'-batchmode','-force-d3d11','-projectPath',str(CLONE),'-executeMethod','EngineAssembly.Editor.EngineOperationVerification.RunBatch','-logFile',str(ROOT/'Tools/Verification/operation-final-replay.log')],cwd=CLONE,check=True)
     report=json.loads((CLONE/'Tools/Verification/engine-operation-report.json').read_text())
     if not report['passed']: raise RuntimeError(report['error'])

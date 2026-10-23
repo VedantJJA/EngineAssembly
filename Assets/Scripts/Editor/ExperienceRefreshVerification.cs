@@ -168,10 +168,16 @@ namespace EngineAssembly.Editor
         IEnumerator CompleteRepair(MobileAssemblyController phone)
         {
             var manager=phone.GetComponent<AssemblyManager>();
+            var expectedInventory=new HashSet<string>{PCRepairChapter.ReplacementId};
+            yield return null;yield return null;
+            Check(phone.VisiblePartIds.Contains(PCRepairChapter.ReplacementId),"Repair hotbar holds the new bearing before teardown starts");
+            var broken=manager.FindPart(PCRepairChapter.FaultyId);var replacement=manager.Repair.Replacement;var colour=new MaterialPropertyBlock();
+            broken.GetComponentInChildren<MeshRenderer>(true).GetPropertyBlock(colour);Check(colour.GetColor("_BaseColor")==PCRepairChapter.BrokenColour,"Faulty bearing is red in the engine");
+            replacement.GetComponentInChildren<MeshRenderer>(true).GetPropertyBlock(colour);Check(colour.GetColor("_BaseColor")==PCRepairChapter.NewColour,"Replacement bearing is green");
             for(int i=0;i<manager.Repair.StepCount;i++)
             {
                 var part=manager.Repair.NextPart;
-                if(manager.Repair.IsPlacementStep){Check(phone.SelectPart(part.PartId),"Repair card selects "+part.PartId);Check((bool)typeof(AssemblyPart).GetMethod("GuidedSnap",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(part,new object[]{part.TargetSocket}),"Repair replacement/reassembly fits "+part.PartId);}
+                if(manager.Repair.IsPlacementStep){Check(phone.SelectPart(part.PartId),"Repair card selects "+part.PartId);Check((bool)typeof(AssemblyPart).GetMethod("GuidedSnap",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(part,new object[]{part.TargetSocket}),"Repair replacement/reassembly fits "+part.PartId);expectedInventory.Remove(part.PartId);}
                 else
                 {
                     bool removed=false;var b=AssemblyHeldView.WorldBounds(part);foreach(var direction in new[]{Vector3.back,Vector3.forward,Vector3.right,Vector3.left,Vector3.up,Vector3.down})
@@ -182,10 +188,15 @@ namespace EngineAssembly.Editor
                         if(removed)break;
                     }
                     Check(removed,"Visible touch removes "+part.PartId);
+                    expectedInventory.Add(part.PartId);
+                    Check(manager.Repair.CompletedSteps==i+1 && phone.VisiblePartIds.Contains(part.PartId),"Tapping a repair part immediately stores it in the hotbar: "+part.PartId);
                 }
                 yield return null;yield return null;
+                Check(expectedInventory.SetEquals(phone.VisiblePartIds),"Hotbar retains every removed item until it is refitted, repair step "+i);
             }
             Check(manager.Repair.Complete,"Complete mobile repair replaces the faulty bearing");
+            Check(phone.VisiblePartIds.Count==1 && phone.VisiblePartIds.Contains(PCRepairChapter.FaultyId),"The broken bearing remains in the hotbar after the completed repair");
+            Check(!phone.SelectPart(PCRepairChapter.FaultyId) && manager.FindPart(PCRepairChapter.FaultyId).TargetSocket.CurrentPart==replacement,"The retained broken bearing cannot replace the fitted new bearing");
             yield return null;
         }
     }

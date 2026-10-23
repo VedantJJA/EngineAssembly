@@ -19,3 +19,5 @@ Section zero is independent from the physical recipe chapters, so existing chapt
 Author text and control references in `Assets/Resources/WorkshopTutorial.json`. Voice exports are in `Assets/Audio/Narration/English/Tutorial`. Regenerate and align with the existing scripts in `Tools/Narration` after editing spoken text.
 
 The PC HUD shares the AR palette, rounded cards, typography and caption treatment. Hold **Alt** to click the header actions; **Tab** and **Escape** still open chapters and pause directly.
+
+Phone repair stores every removed part in the bottom hotbar. Tap a visible part named by the current removal step; it leaves the model and its card is revealed in the hotbar. Select the green replacement or a reusable part when the reassembly instruction requests it, then tap its visible ghost. The red broken bearing remains in the hotbar after the engine is rebuilt. Leaving the repair chapter resets this practice inventory.

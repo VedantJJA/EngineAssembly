@@ -74,7 +74,7 @@ namespace EngineAssembly
                 var repair=manager.Repair;CurrentCueId=repair.Complete?"repair-complete":"repair-step-"+repair.CompletedSteps;
                 if(stepTitle)stepTitle.text=repair.Complete?"REPAIR COMPLETE":"REPAIR · STEP "+(repair.CompletedSteps+1).ToString("00")+" / "+repair.StepCount;
                 SetCaption(repair.Complete?"Repair complete. The replacement bearing is fitted and the timing drive is rebuilt.":repair.CurrentStep.instruction);
-                context.text=repair.Complete?"TAB to choose another chapter.":repair.IsPlacementStep?"Next: "+repair.NextPart.PartDisplayName:"Pick up the highlighted part, then G to set aside.";
+                context.text=repair.Complete?(mobile?"Broken bearing retained in the hotbar. Tap CHAPTERS to continue.":"TAB to choose another chapter."):repair.IsPlacementStep?"Next: "+repair.NextPart.PartDisplayName:mobile?"Tap the named part to remove it into the hotbar.":"Pick up the highlighted part, then G to set aside.";
                 return;
             }
             if(manager.ChapterComplete)

@@ -65,9 +65,9 @@ namespace EngineAssembly
             hudStatus=Label(header,"",14,Muted,20,72,780,34);
             foreach(var label in new[]{hudTitle,hudStatus}){var r=label.rectTransform;r.anchorMax=Vector2.one;r.offsetMax=new Vector2(-550,r.offsetMax.y);}
             ActionCard(header,"SECTION 0",OpenTutorial,0,15,150,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-510);
-            ActionCard(header,"CHAPTERS / TAB",()=>Open(Page.Chapters),0,15,174,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-346);
-            ActionCard(header,"PAUSE / ESC",()=>Open(Page.Pause),0,15,150,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-158);
-            var pointerHelp=Label(header,"Hold ALT to use these controls",12,Muted,0,78,470,22);pointerHelp.alignment=TextAlignmentOptions.Right;pointerHelp.rectTransform.anchorMin=pointerHelp.rectTransform.anchorMax=Vector2.one;pointerHelp.rectTransform.pivot=Vector2.one;pointerHelp.rectTransform.anchoredPosition=new Vector2(-16,-76);
+            ActionCard(header,ExperienceMenu.MobileWorkshopRequested?"CHAPTERS":"CHAPTERS / TAB",()=>Open(Page.Chapters),0,15,174,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-346);
+            ActionCard(header,ExperienceMenu.MobileWorkshopRequested?"PAUSE":"PAUSE / ESC",()=>Open(Page.Pause),0,15,150,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-158);
+            var pointerHelp=Label(header,ExperienceMenu.MobileWorkshopRequested?"Tap a control to open its menu":"Hold ALT to use these controls",12,Muted,0,78,470,22);pointerHelp.alignment=TextAlignmentOptions.Right;pointerHelp.rectTransform.anchorMin=pointerHelp.rectTransform.anchorMax=Vector2.one;pointerHelp.rectTransform.pivot=Vector2.one;pointerHelp.rectTransform.anchoredPosition=new Vector2(-16,-76);
             var crosshair=Rect("Inverting crosshair",hud);crosshair.gameObject.AddComponent<InvertingCrosshair>();
             crosshair.anchorMin=crosshair.anchorMax=new Vector2(.5f,.5f);crosshair.sizeDelta=new Vector2(32,32);
             crosshair.pivot=new Vector2(.5f,.5f);crosshair.anchoredPosition=Vector2.zero;
