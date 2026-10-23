@@ -38,7 +38,7 @@ namespace EngineAssembly.Editor
         public override bool RequiresCameraPermission=>false;
         public override bool HasSurface=>surface && reliable;
         public override bool TrackingReliable=>reliable;
-        public override void Begin(){if(startupBehavior==1)throw new InvalidOperationException("Simulated SDK startup exception");if(startupBehavior==2)return;camera=new GameObject("Test tracked camera").AddComponent<Camera>();camera.transform.position=new Vector3(0,1,-3);ReportReady();}
+        public override void Begin(){if(startupBehavior==1)throw new InvalidOperationException("Simulated SDK startup exception");if(startupBehavior==2)return;camera=new GameObject("Test tracked camera").AddComponent<Camera>();camera.nearClipPlane=.01f;camera.farClipPlane=20;camera.transform.position=new Vector3(0,1,-3);ReportReady();}
         public override Transform PlaceAnchor(){anchor=new GameObject("Test world anchor").transform;anchor.position=new Vector3(.4f,0,.2f);return anchor;}
         public override void BeginRepositioning(){}
         public void FailAs(ARFailure failure)=>ReportFailure(failure);

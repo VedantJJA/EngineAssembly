@@ -7,6 +7,7 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 namespace EngineAssembly.Editor
 {
     [InitializeOnLoad] public static class ExperienceMenuVerification
@@ -43,9 +44,22 @@ namespace EngineAssembly.Editor
             menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Capture(menu,"experience-cards");
             Assert(menu.GetComponentsInChildren<WorkshopCard>().Count(c=>c.GetComponentsInChildren<TextMeshProUGUI>().Any(t=>t.text.Contains(" / ")))==4,"All four experience cards are displayed");
-            Assert(Card(menu,"04 / QUEST 2").interactable,"Quest repair fallback card is available");
+            Assert(Card(menu,"04 / META QUEST 2").interactable,"Quest repair fallback card is available");
             Card(menu,"01 / WINDOWS").clicked();yield return null;yield return null;yield return null;
             Assert(FindAnyObjectByType<PlayerAssemblyController>() && AssemblyManager.Instance.Recipe.parts.All(d=>AssemblyManager.Instance.FindPart(d.id)?.Definition!=null),"Windows card loads every playable component and carrier in the desktop workshop");
+            ExperienceMenu.GoHome();yield return null;yield return null;
+            menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
+            var phoneCard=menu.GetComponentsInChildren<WorkshopCard>().Single(c=>c.name=="Play workshop on phone");
+            ExecuteEvents.ExecuteHierarchy(phoneCard.gameObject,new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left},ExecuteEvents.pointerClickHandler);
+            yield return null;yield return null;yield return null;
+            var phonePlayer=FindAnyObjectByType<PlayerAssemblyController>();var touch=FindAnyObjectByType<MobileWorkshopControls>();
+            Assert(ExperienceMenu.MobileWorkshopRequested && phonePlayer && touch && touch.HasTouchHud && touch.HasLandscapeLayout,"First experience phone action opens the full workshop with a landscape touch HUD");
+            Assert(AssemblyManager.Instance.Difficulty==SnapDifficulty.Easy,"Phone workshop enables direct ghost placement");
+            AssemblyManager.Instance.GetComponent<AssemblyWorkshopUI>().SetOpen(false);yield return null;Canvas.ForceUpdateCanvases();
+            var stick=touch.transform.Find("Mobile workshop touch HUD/Move joystick");var stickCenter=RectTransformUtility.WorldToScreenPoint(null,stick.position);
+            touch.SetStick(stickCenter+Vector2.right*80);Assert(touch.Movement.x>.3f,"Phone joystick provides walking input");touch.ReleaseStick();
+            touch.SetButton(TouchControl.Kind.Crouch,true);touch.SetButton(TouchControl.Kind.Sprint,true);
+            Assert(touch.CrouchHeld && touch.SprintHeld && touch.Movement==Vector2.zero,"Phone crouch and sprint buttons provide independent hold input");
             ExperienceMenu.GoHome();yield return null;yield return null;
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Card(menu,"03 / ANDROID").clicked();yield return null;yield return null;yield return null;
@@ -56,7 +70,7 @@ namespace EngineAssembly.Editor
             Assert(FindAnyObjectByType<MobileEngineDisplay>(),"Android display card routes to its separate timeline scene");
             ExperienceMenu.GoHome();yield return null;yield return null;
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Experiences);yield return null;
-            Card(menu,"04 / QUEST 2").clicked();yield return null;yield return null;yield return null;yield return null;
+            Card(menu,"04 / META QUEST 2").clicked();yield return null;yield return null;yield return null;yield return null;
             Assert(AssemblyManager.Instance.RepairActive && FindAnyObjectByType<RepairVRFallback>().Ready,"Quest card opens the playable repair fallback scene");
             ExperienceMenu.GoHome();yield return null;yield return null;
             menu=FindAnyObjectByType<ExperienceMenu>();menu.Show(ExperienceMenu.Page.Options);yield return null;

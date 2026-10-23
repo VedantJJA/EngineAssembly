@@ -44,6 +44,8 @@ namespace EngineAssembly.Editor
                 report.agreementAccepted=(bool)type.GetMethod("HasUserAcceptedCurrentVersionEula",flags).Invoke(utility,null);
                 if(!report.licencePresent || !report.agreementAccepted)throw new InvalidOperationException("App licence and Vuforia agreement must be configured before building.");
                 VuforiaSceneSetup.ConfigureSDK();VuforiaSceneSetup.Create();
+                PhoneAndroidBuildSettings.Configure();
+                AssemblyAudioSetup.Run();
                 // Phone builds must keep their normal launcher and AR camera.
                 var phoneXR=UnityEngine.XR.OpenXR.OpenXRSettings.GetSettingsForBuildTargetGroup(BuildTargetGroup.Android);
                 var questFeature=phoneXR?phoneXR.GetFeature<UnityEngine.XR.OpenXR.Features.MetaQuestSupport.MetaQuestFeature>():null;if(questFeature)questFeature.enabled=false;

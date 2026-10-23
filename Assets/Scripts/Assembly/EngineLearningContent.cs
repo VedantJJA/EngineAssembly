@@ -7,10 +7,10 @@ namespace EngineAssembly
 {
     [Serializable] public class AssemblyInstruction
     {
-        public string id, chapterId, caption, narration, voiceId;
+        public string id, chapterId, caption, narration, voiceId, purpose;
         public List<string> partIds=new List<string>();
     }
-    [Serializable] public class EnginePartDetail { public string partId,title,description; }
+    [Serializable] public class EnginePartDetail { public string partId,title,description,voiceId; }
     [Serializable] public class EngineLearningData
     {
         public int version;

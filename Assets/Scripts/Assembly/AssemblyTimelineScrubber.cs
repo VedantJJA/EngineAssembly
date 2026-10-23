@@ -22,10 +22,10 @@ namespace EngineAssembly
         {
             var rect=(RectTransform)transform;
             if(RectTransformUtility.ScreenPointToLocalPointInRectangle(rect,e.position,e.pressEventCamera,out var local))
-                changed?.Invoke(Mathf.InverseLerp(rect.rect.xMin,rect.rect.xMax,local.x));
+            {SetValue(Mathf.InverseLerp(rect.rect.xMin,rect.rect.xMax,local.x));changed?.Invoke(value);}
         }
         public void OnPointerDown(PointerEventData e){if(e.button==PointerEventData.InputButton.Left)Apply(e);}
         public void OnDrag(PointerEventData e){if(e.button==PointerEventData.InputButton.Left)Apply(e);}
-        public void OnScroll(PointerEventData e)=>changed?.Invoke(Mathf.Clamp01(value+e.scrollDelta.y*.01f));
+        public void OnScroll(PointerEventData e){SetValue(value+e.scrollDelta.y*.01f);changed?.Invoke(value);}
     }
 }

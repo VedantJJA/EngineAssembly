@@ -1,0 +1,17 @@
+{
+    "passed": true,
+    "checks": [
+        "Reviewed catalogue keeps 183 steps and all 325 item descriptions",
+        "Every recipe item has exactly one lesson",
+        "Every lesson teaches purpose and fitting directions",
+        "Repeated piston and valve lessons share identical narration",
+        "First beginner lesson starts with a loaded clip",
+        "Installing early does not cut off the current explanation",
+        "Next queued lesson starts after the previous audio finishes",
+        "Pause menu pauses a lesson",
+        "Returning to the workshop resumes the lesson",
+        "Replay accepts the current fitting instruction",
+        "Replay works for an already-loaded clip without leaving a stuck coroutine"
+    ],
+    "error": ""
+}

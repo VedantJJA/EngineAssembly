@@ -36,6 +36,8 @@ namespace EngineAssembly
     [Serializable] public class SubAssemblyDefinition
     {
         public string id, rootPartId, previewPartId;
+        // Units in a choice group can be started in any order, one unit at a time.
+        public string exclusiveBuildGroup = "";
         public Vector3 benchPosition = new Vector3(1.5f,.3f,0);
         public Vector3 focusCenter;
         public float focusRadius = .65f;

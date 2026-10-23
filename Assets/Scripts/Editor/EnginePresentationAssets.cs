@@ -73,7 +73,7 @@ namespace EngineAssembly.Editor
             catalogue.cards.Clear();Directory.CreateDirectory("Assets/UI/ChapterImages/Light");
             var palette=AssetDatabase.LoadAssetAtPath<EngineSurfaceLibrary>("Assets/Resources/EngineSurfaceLibrary.asset");
             var previous=UnityEngine.SceneManagement.SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
-            var highlight=new Material(palette.Find("Cast aluminium"));highlight.SetColor("_BaseColor",new Color(.22f,.54f,.54f));highlight.SetFloat("_Metallic",.2f);int count=0;
+            var highlight=new Material(palette.Find("Cast aluminium"));highlight.SetColor("_BaseColor",new Color(.36f,.55f,.80f));highlight.SetFloat("_Metallic",.2f);int count=0;
             try
             {
                 RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.7f,.74f,.77f);

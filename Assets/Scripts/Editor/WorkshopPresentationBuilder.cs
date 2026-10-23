@@ -32,7 +32,7 @@ namespace EngineAssembly.Editor
             font.name=name;AssetDatabase.CreateAsset(font,path);
             AssetDatabase.AddObjectToAsset(font.material,font);
             foreach(var atlas in font.atlasTextures)AssetDatabase.AddObjectToAsset(atlas,font);
-            font.TryAddCharacters(string.Concat(Enumerable.Range(32,95).Select(i=>(char)i))+"→●·—°");
+            font.TryAddCharacters(string.Concat(Enumerable.Range(32,95).Select(i=>(char)i))+"→●·-°");
             EditorUtility.SetDirty(font);
         }
         public static void PrepareBatch()

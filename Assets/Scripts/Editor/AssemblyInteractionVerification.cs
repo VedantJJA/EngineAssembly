@@ -83,9 +83,8 @@ namespace EngineAssembly.Editor
             player.PickUp(seed);Check(player.Inventory.Count==1 && player.Inventory.Contains(seed),"Pickup collects only the selected part");
             var second=seats.First(i=>i!=seed && AssemblyInventory.Matches(seed,i));player.PickUp(second);
             Check(player.Inventory.Count==2 && player.Inventory.Items.All(i=>AssemblyInventory.Matches(seed,i)),"Matching parts stack only after individual pickups");
-            float stackDeadline=Time.realtimeSinceStartup+15;
-            while((narrator.CurrentCueId!="inventory-stack" || !narrator.Source.isPlaying) && Time.realtimeSinceStartup<stackDeadline)yield return null;
-            Check(narrator.CurrentCueId=="inventory-stack" && narrator.Source.isPlaying,"First matching-item stack plays its one-time voice instruction (actual "+narrator.CurrentCueId+")");
+            yield return new WaitForSecondsRealtime(1);
+            Check(narrator.CurrentCueId!="inventory-stack","Matching-item pickups do not play an inventory announcement");
             Check(player.Inventory.Items.All(i=>Vector3.Distance(i.transform.lossyScale,pickupScales[i])<.00001f),"Collected items retain their exact reduced scale");
             yield return null;ui.SendMessage("Update");var count=ui.GetComponentsInChildren<TextMeshProUGUI>().First(t=>t.text=="×"+player.Inventory.Count || t.text=="x"+player.Inventory.Count);
             Check(count.outlineColor==Color.white && count.outlineWidth>.1f,"Inventory quantity has its own white text border");

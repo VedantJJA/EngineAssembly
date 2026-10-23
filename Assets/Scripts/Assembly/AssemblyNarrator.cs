@@ -7,30 +7,30 @@ namespace EngineAssembly
     public sealed class AssemblyNarrator : MonoBehaviour
     {
         AssemblyManager manager;AudioSource source;NarrationLibrary library;
-        string currentKey="";Coroutine loading;bool paused,inventoryAnnouncementPending,inventoryAnnouncementPlayed;
+        string currentKey="";Coroutine loading;bool paused;
         readonly HashSet<string> spokenCues=new HashSet<string>();
         readonly HashSet<string> repeatGroups=new HashSet<string>();
+        readonly Queue<string> pendingCues=new Queue<string>();
         int chapterVisit=-1;
+        float nextCueAt;
+        bool wasPlaying;
         public AudioSource Source=>source;
         public bool HasSpokenSharedCue(string id)=>spokenCues.Contains(id);
         public string CurrentCueId { get; private set; }
+        public float LastCueFinishedAt {get;private set;}
+        public float LastCueStartedAt {get;private set;}
         void Awake()
         {
             manager=GetComponent<AssemblyManager>();library=Resources.Load<NarrationLibrary>("NarrationLibrary");
             source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=false;source.spatialBlend=0;source.volume=1;source.priority=32;
             AudioListener.volume=WorkshopAudio.Volume;
         }
-        public void NotifyInventoryStack(int count)
-        {
-            if(count>1 && !inventoryAnnouncementPlayed){inventoryAnnouncementPlayed=true;inventoryAnnouncementPending=true;}
-        }
         public bool ReplayCurrent()
         {
             if(!manager || manager.Mode!=WorkshopMode.Assembly)return false;
-            var cue=CurrentCueId;
-            if(string.IsNullOrEmpty(cue) || !library || !library.Find(cue))cue=CurrentInstructionCue();
+            var cue=CurrentInstructionCue();
             if(string.IsNullOrEmpty(cue))return false;
-            PlayCue(cue);return true;
+            pendingCues.Clear();PlayCue(cue);return true;
         }
         string CurrentInstructionCue()
         {
@@ -48,36 +48,36 @@ namespace EngineAssembly
         void Update()
         {
             if(manager.Recipe==null)return;
-            if(chapterVisit!=manager.ChapterVisit){chapterVisit=manager.ChapterVisit;spokenCues.Clear();repeatGroups.Clear();currentKey="";}
+            if(chapterVisit!=manager.ChapterVisit){chapterVisit=manager.ChapterVisit;spokenCues.Clear();repeatGroups.Clear();pendingCues.Clear();StopCue();currentKey="";if(manager.RepairActive)pendingCues.Enqueue("repair-introduction");}
             var ui=manager.GetComponent<AssemblyWorkshopUI>();var mobile=manager.GetComponent<MobileAssemblyController>();
-            bool suspend=manager.Mode!=WorkshopMode.Assembly || (ui && ui.IsOpen) || (mobile && mobile.ChapterMenuOpen) || !MobileARSession.CanInteract(gameObject);
+            bool suspend=WorkshopTutorial.IsOpen || manager.DisplayActive || manager.Mode!=WorkshopMode.Assembly || (ui && ui.IsOpen) || (mobile && mobile.ChapterMenuOpen) || !MobileARSession.CanInteract(gameObject);
             if(suspend){if(!paused){source.Pause();paused=true;}return;}
+            if(paused){source.UnPause();paused=false;}
+            if(wasPlaying && !source.isPlaying){LastCueFinishedAt=Time.unscaledTime;nextCueAt=LastCueFinishedAt+(CurrentCueId!=null && CurrentCueId.StartsWith("flip-")?1.2f:.75f);}
+            wasPlaying=source.isPlaying;
             var cue=CurrentInstructionCue();string key=manager.CurrentChapterId+":"+manager.Task+":"+cue;
             if(key!=currentKey)
             {
-                currentKey=key;CurrentCueId=cue;
-                if(string.IsNullOrEmpty(cue)){StopCue();return;}
-                if(cue.StartsWith("flip-") || manager.RepairActive || manager.ChapterComplete || spokenCues.Add(cue))PlayCue(cue);
-                else
-                {
-                    var instruction=EngineLearningContent.ForPart(manager.NextHintPart()?.Definition);
-                    if((instruction.partIds.Count>1 || !string.IsNullOrEmpty(instruction.voiceId)) && repeatGroups.Add(RepeatGroup(cue)))PlayCue(RepeatCue(RepeatGroup(cue)));
-                    else StopCue();
-                }
+                currentKey=key;
+                if(string.IsNullOrEmpty(cue)){pendingCues.Clear();StopCue();return;}
+                if(cue.StartsWith("flip-") || manager.RepairActive || manager.ChapterComplete || spokenCues.Add(cue))pendingCues.Enqueue(cue);
             }
-            else if(paused){source.UnPause();paused=false;}
-            if(loading!=null || source.isPlaying)return;
-            if(inventoryAnnouncementPending){inventoryAnnouncementPending=false;PlayCue("inventory-stack");return;}
+            if(loading!=null || source.isPlaying || Time.unscaledTime<nextCueAt)return;
+            // Finish each explanation even when the learner places a part early.
+            // Skip obsolete flip prompts if the learner has already turned it.
+            while(pendingCues.Count>0)
+            {
+                var pending=pendingCues.Dequeue();if(pending.StartsWith("flip-") && pending!=cue)continue;
+                PlayCue(pending);return;
+            }
             if(cue.StartsWith("flip-") || manager.RepairActive || manager.ChapterComplete || manager.Task!=AssemblyTask.Assemble)return;
             var active=EngineLearningContent.ForPart(manager.NextHintPart()?.Definition);
-            if(active.partIds.Count<=1 || !spokenCues.Contains(cue))return;
-            int installed=0;foreach(var id in active.partIds)if(manager.IsPlaced(id))installed++;
-            if(installed>0 && installed<active.partIds.Count && repeatGroups.Add(RepeatGroup(cue)))PlayCue(RepeatCue(RepeatGroup(cue)));
+            // Shared piston and valve lessons intentionally remain silent on repeats.
         }
         void StopCue()
         {
             if(loading!=null){StopCoroutine(loading);loading=null;}
-            source.Stop();paused=false;
+            source.Stop();paused=false;wasPlaying=false;
         }
         void PlayCue(string cue)
         {
@@ -87,11 +87,14 @@ namespace EngineAssembly
         }
         IEnumerator PlayLoaded(AudioClip clip)
         {
+            // Always suspend once so StartCoroutine assigns its handle before
+            // this routine clears it, including already-loaded replay clips.
+            yield return null;
             if(clip.loadState==AudioDataLoadState.Unloaded)clip.LoadAudioData();
             while(clip.loadState==AudioDataLoadState.Loading)yield return null;
-            if(clip.loadState!=AudioDataLoadState.Failed){source.clip=clip;source.Play();if(paused)source.Pause();}
+            if(clip.loadState!=AudioDataLoadState.Failed){source.clip=clip;source.Play();LastCueStartedAt=Time.unscaledTime;if(paused)source.Pause();}
             loading=null;
         }
-        void OnDisable(){StopCue();currentKey="";}
+        void OnDisable(){pendingCues.Clear();StopCue();currentKey="";}
     }
 }

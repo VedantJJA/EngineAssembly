@@ -47,8 +47,14 @@ try:
     check(any(item.get(attr + "name") == "com.google.ar.core" and item.get(attr + "value") == "optional" for item in app.findall("meta-data")), "ARCore remains optional after manifest merging")
     check(any("com.unity3d.player.UnityPlayer" in item.get(attr + "name", "") for item in app.findall("activity")), "Unity's Android activity is preserved")
     with zipfile.ZipFile(apk) as archive:
+        boot = archive.read("assets/bin/Data/boot.config").decode("utf-8")
+        check("xrsdk-pre-init-library=" not in boot, "Phone starts without native VR pre-initialization")
+        check("xr-use-vulkan-offscreen-swapchain-no-main-display-buffer=1" not in boot,
+              "Phone retains its normal on-screen display buffer")
         check(archive.testzip() is None, "APK archive passes CRC integrity checks")
         libraries = [name for name in archive.namelist() if name.startswith("lib/") and name.endswith(".so")]
+        check(not any(name.endswith(("/libUnityOpenXR.so", "/libopenxr_loader.so")) for name in libraries),
+              "Phone APK excludes native headset runtime libraries")
         check(libraries and all(name.startswith("lib/arm64-v8a/") for name in libraries), "All packaged native libraries use ARM64")
         for name in ("libVuforiaEngine.so", "libVuforiaUnityPlayer.so", "libarcore_sdk_c.so", "libil2cpp.so"):
             check(archive.read("lib/arm64-v8a/" + name).startswith(b"\x7fELF"), f"{name} is packaged as a native ELF library")

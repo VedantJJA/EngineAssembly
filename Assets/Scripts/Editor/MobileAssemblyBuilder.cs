@@ -59,31 +59,35 @@ namespace EngineAssembly.Editor
             }
             finally { if(previous.IsValid() && previous.isLoaded)SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true); }
         }
-        static MobilePartArtwork GenerateArtwork(List<AssemblyPart> parts,Camera camera)
+        public static MobilePartArtwork GenerateArtwork(List<AssemblyPart> parts,Camera camera,bool refresh=false)
         {
             const string path="Assets/UI/MobilePartArtwork.asset";
             var art=AssetDatabase.LoadAssetAtPath<MobilePartArtwork>(path);
             if(!art) { art=ScriptableObject.CreateInstance<MobilePartArtwork>();AssetDatabase.CreateAsset(art,path); }
             Directory.CreateDirectory("Assets/UI/MobileParts");
             var originalMask=camera.cullingMask;var originalPosition=camera.transform.position;var originalRotation=camera.transform.rotation;var originalFov=camera.fieldOfView;
+            var originalRect=camera.rect;var originalAspect=camera.aspect;
+            camera.rect=new Rect(0,0,1,1);camera.aspect=256f/180;
             camera.cullingMask=1<<29;camera.fieldOfView=32;
             foreach(var part in parts)
             {
-                if(art.Find(part.PartId))continue;
+                if(!refresh && art.Find(part.PartId))continue;
                 var renderers=part.GetComponentsInChildren<MeshRenderer>().Where(r=>part.Manager?part.Manager.OwnsMesh(part,r.GetComponent<MeshFilter>()):r.GetComponentInParent<AssemblyPart>()==part).ToArray();
                 if(renderers.Length==0)continue;
                 var layers=renderers.Select(r=>r.gameObject.layer).ToArray();
-                var bounds=renderers[0].bounds;foreach(var r in renderers) { bounds.Encapsulate(r.bounds);r.gameObject.layer=29; }
+                var palette=Resources.Load<EngineSurfaceLibrary>("EngineSurfaceLibrary");
+                var bounds=renderers[0].bounds;foreach(var r in renderers) { bounds.Encapsulate(r.bounds);r.gameObject.layer=29;if(refresh){r.gameObject.SetActive(true);r.enabled=true;var material=palette.Find(EngineSurfaceLibrary.Category(r.name));if(material)r.sharedMaterial=material;} }
                 float distance=Mathf.Max(.015f,bounds.extents.magnitude)*4.5f;
                 camera.nearClipPlane=Mathf.Max(.001f,distance*.01f);camera.transform.position=bounds.center+new Vector3(1,.65f,-1).normalized*distance;camera.transform.LookAt(bounds.center);
                 string filename="Assets/UI/MobileParts/"+part.PartId+".png";
                 WorkshopPresentationBuilder.Render(camera,filename,256,180);
                 for(int i=0;i<renderers.Length;i++)renderers[i].gameObject.layer=layers[i];
                 AssetDatabase.ImportAsset(filename);
-                var importer=(TextureImporter)AssetImporter.GetAtPath(filename);importer.mipmapEnabled=false;importer.maxTextureSize=256;importer.SaveAndReimport();
-                art.parts.Add(new MobilePartArtwork.Entry{id=part.PartId,image=AssetDatabase.LoadAssetAtPath<Texture2D>(filename)});
+                var importer=(TextureImporter)AssetImporter.GetAtPath(filename);if(importer.mipmapEnabled || importer.maxTextureSize!=256){importer.mipmapEnabled=false;importer.maxTextureSize=256;importer.SaveAndReimport();}
+                art.parts.RemoveAll(p=>p.id==part.PartId);art.parts.Add(new MobilePartArtwork.Entry{id=part.PartId,image=AssetDatabase.LoadAssetAtPath<Texture2D>(filename)});
             }
             camera.cullingMask=originalMask;camera.transform.SetPositionAndRotation(originalPosition,originalRotation);camera.fieldOfView=originalFov;camera.nearClipPlane=.05f;
+            camera.rect=originalRect;camera.aspect=originalAspect;
             EditorUtility.SetDirty(art);return art;
         }
         public static void GenerateSubAssemblyArtworkBatch()
@@ -99,9 +103,13 @@ namespace EngineAssembly.Editor
                 var group=manager.CarrierDefinition(part.PartId);var box=part.GetComponent<BoxCollider>();
                 group.focusCenter=box.center;group.focusRadius=box.size.magnitude*.55f;
             }
-            GenerateArtwork(carriers,Camera.main);AssetDatabase.SaveAssets();
+            GenerateArtwork(carriers,Camera.main,true);AssetDatabase.SaveAssets();
             AssemblyRecipeStore.Save(manager.Recipe,"three-cylinder");
             Debug.Log("Generated "+carriers.Count+" complete-unit thumbnails and measured fixture bounds.");
+        }
+        public static void RefreshMaterialArtworkBatch()
+        {
+            GenerateSubAssemblyArtworkBatch();EditorApplication.Exit(0);
         }
         public static void GenerateWiringArtworkBatch()
         {

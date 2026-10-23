@@ -1,0 +1,39 @@
+{
+  "cues": [
+    {
+      "id": "engine-operation-introduction",
+      "title": "How the engine works",
+      "text": "An engine turns energy from burning fuel into rotation. The pistons slide inside the cylinders. Connecting rods link the pistons to the crankshaft, which turns as the pistons move. The belt drives the camshafts at half the crankshaft speed. Cam lobes open the valves, and springs close them. Follow the nearest cylinder through four strokes.",
+      "startAngle": 360,
+      "endAngle": 360
+    },
+    {
+      "id": "engine-stroke-intake",
+      "title": "1. Intake",
+      "text": "During the intake stroke, the piston moves down and the intake valves open. Fresh air enters the space above the piston. Blue represents the incoming air. The exhaust valves stay closed so the air follows the intake passage.",
+      "startAngle": 360,
+      "endAngle": 540
+    },
+    {
+      "id": "engine-stroke-compression",
+      "title": "2. Compression",
+      "text": "During the compression stroke, the piston moves up with both sets of valves closed. The trapped air is squeezed into a smaller space, increasing its pressure and temperature. Gold represents the compressed air near the top of the cylinder.",
+      "startAngle": 540,
+      "endAngle": 720
+    },
+    {
+      "id": "engine-stroke-power",
+      "title": "3. Power",
+      "text": "During the power stroke, fuel burns in the hot compressed air. Orange represents the hot gas expanding and pushing the piston down. The connecting rod transfers that push to the crankshaft. The crankshaft delivers rotation to the rest of the machine.",
+      "startAngle": 0,
+      "endAngle": 180
+    },
+    {
+      "id": "engine-stroke-exhaust",
+      "title": "4. Exhaust",
+      "text": "During the exhaust stroke, the exhaust valves open and the piston moves up. Used gas leaves the cylinder through the exhaust passage. Grey represents the outgoing gas. The intake valves then open for another cycle. Four strokes take two complete crankshaft turns and one camshaft turn.",
+      "startAngle": 180,
+      "endAngle": 360
+    }
+  ]
+}

@@ -13,6 +13,12 @@ Shader "EngineAssembly/Surface Triplanar"
         _Smoothness("Smoothness", Range(0,1)) = 0.5
         [HideInInspector] _Cull("Cull", Float) = 2
         [HideInInspector] _Cutoff("Cutoff", Float) = 0.5
+        [HideInInspector] _ContextOpacity("Context visibility", Range(0,1)) = 1
+        [HideInInspector] _SectionEnabled("Section enabled", Float) = 0
+        [HideInInspector] _SectionPlane("World section plane", Vector) = (1,0,0,0)
+        [HideInInspector] _SectionEdgeWidth("Section edge width", Float) = .001
+        [HideInInspector] _SectionColor("Section surface", Color) = (.3,.4,.48,1)
+        [HideInInspector] _CamPoseWarp("Operating cam pose", Float) = 0
     }
     SubShader
     {
@@ -21,7 +27,7 @@ Shader "EngineAssembly/Surface Triplanar"
         {
             Name "ForwardLit"
             Tags { "LightMode"="UniversalForward" }
-            Cull Back ZWrite On
+            Cull [_Cull] ZWrite On
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
@@ -38,10 +44,7 @@ Shader "EngineAssembly/Surface Triplanar"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             TEXTURE2D(_RoughnessMap); SAMPLER(sampler_RoughnessMap);
             TEXTURE2D(_DetailNormal); SAMPLER(sampler_DetailNormal);
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseColor;
-                float _TextureScale, _TextureStrength, _NormalStrength, _Metallic, _Smoothness;
-            CBUFFER_END
+            #include "EngineDisplaySection.hlsl"
             struct Attributes
             {
                 float4 positionOS:POSITION;
@@ -64,6 +67,7 @@ Shader "EngineAssembly/Surface Triplanar"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input,output);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+                EngineDisplayPose(input.positionOS.xyz,input.normalOS);
                 VertexPositionInputs position=GetVertexPositionInputs(input.positionOS.xyz);
                 output.positionCS=position.positionCS;
                 output.positionWS=position.positionWS;
@@ -72,11 +76,12 @@ Shader "EngineAssembly/Surface Triplanar"
                 output.fog=ComputeFogFactor(position.positionCS.z);
                 return output;
             }
-            half4 Frag(Varyings input):SV_Target
+            half4 Frag(Varyings input, FRONT_FACE_TYPE facing : FRONT_FACE_SEMANTIC):SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float3 normal=normalize(input.normalOS);
+                EngineDisplayClip(input.positionWS,input.positionCS.xy);
+                float3 normal=normalize(input.normalOS)*IS_FRONT_VFACE(facing,1,-1);
                 float3 weights=pow(abs(normal),4);weights/=max(dot(weights,1),.0001);
                 float3 signs=step(0,normal)*2-1;
                 float3 p=input.positionOS*_TextureScale;
@@ -102,6 +107,12 @@ Shader "EngineAssembly/Surface Triplanar"
                 surface.smoothness=saturate(_Smoothness+(0.5-roughness)*.24);
                 surface.normalTS=half3(0,0,1);
                 surface.occlusion=1;surface.alpha=1;
+                if(_SectionEnabled>.5)
+                {
+                    surface.albedo=IS_FRONT_VFACE(facing,surface.albedo,_SectionColor.rgb);
+                    float edge=1-saturate(abs(dot(float4(input.positionWS,1),_SectionPlane))/max(_SectionEdgeWidth,.00001));
+                    surface.emission=_SectionColor.rgb*edge*.6;
+                }
                 InputData data=(InputData)0;
                 data.positionWS=input.positionWS;
                 data.normalWS=NormalizeNormalPerPixel(TransformObjectToWorldNormal(normal));
@@ -118,8 +129,51 @@ Shader "EngineAssembly/Surface Triplanar"
             ENDHLSL
         }
         UsePass "Universal Render Pipeline/Lit/ShadowCaster"
-        UsePass "Universal Render Pipeline/Lit/DepthOnly"
-        UsePass "Universal Render Pipeline/Lit/DepthNormals"
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode"="DepthOnly" }
+            ZWrite On ColorMask R Cull [_Cull]
+            HLSLPROGRAM
+            #pragma vertex SectionDepthVertex
+            #pragma fragment SectionDepthFragment
+            #pragma multi_compile_instancing
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "EngineDisplaySection.hlsl"
+            struct A { float4 positionOS:POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct V { float4 positionCS:SV_POSITION; float3 positionWS:TEXCOORD0; UNITY_VERTEX_OUTPUT_STEREO };
+            V SectionDepthVertex(A input){V o=(V)0;UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);float3 normal=float3(0,1,0);EngineDisplayPose(input.positionOS.xyz,normal);o.positionWS=TransformObjectToWorld(input.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.positionWS);return o;}
+            half SectionDepthFragment(V input):SV_Target{UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);EngineDisplayClip(input.positionWS,input.positionCS.xy);return input.positionCS.z;}
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "DepthNormals"
+            Tags { "LightMode"="DepthNormals" }
+            ZWrite On Cull [_Cull]
+            HLSLPROGRAM
+            #pragma vertex SectionNormalVertex
+            #pragma fragment SectionNormalFragment
+            #pragma multi_compile_instancing
+            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
+            #include "EngineDisplaySection.hlsl"
+            struct A { float4 positionOS:POSITION;float3 normalOS:NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct V { float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;float3 normalWS:TEXCOORD1; UNITY_VERTEX_OUTPUT_STEREO };
+            V SectionNormalVertex(A input){V o=(V)0;UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);EngineDisplayPose(input.positionOS.xyz,input.normalOS);o.positionWS=TransformObjectToWorld(input.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.positionWS);o.normalWS=TransformObjectToWorldNormal(input.normalOS);return o;}
+            half4 SectionNormalFragment(V input,FRONT_FACE_TYPE facing:FRONT_FACE_SEMANTIC):SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);EngineDisplayClip(input.positionWS,input.positionCS.xy);
+                float3 normal=normalize(input.normalWS)*IS_FRONT_VFACE(facing,1,-1);
+                #if defined(_GBUFFER_NORMALS_OCT)
+                    return half4(PackFloat2To888(saturate(PackNormalOctQuadEncode(normal)*.5+.5)),0);
+                #else
+                    return half4(normal,0);
+                #endif
+            }
+            ENDHLSL
+        }
     }
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }

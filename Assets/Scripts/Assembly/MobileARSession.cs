@@ -38,7 +38,7 @@ namespace EngineAssembly
         public string FallbackScene=>fallbackScene;
         public ARTrackingProvider Provider=>provider;
         public void Configure(ARTrackingProvider tracking,string fallback){provider=tracking;fallbackScene=fallback;}
-        public static bool CanInteract(GameObject host){var session=host.GetComponent<MobileARSession>();return !session || session.AllowsInteraction;}
+        public static bool CanInteract(GameObject host){if(WorkshopTutorial.IsOpen)return false;var session=host.GetComponent<MobileARSession>();return !session || session.AllowsInteraction;}
         IEnumerator Start()
         {
             rig=GetComponent<SpatialExperienceRig>();assembly=GetComponent<MobileAssemblyController>();display=GetComponent<MobileEngineDisplay>();
@@ -180,7 +180,7 @@ namespace EngineAssembly
         public void Zoom(float ratio,Vector3 focus)
         {
             if(!AllowsInteraction || ratio<=0)return;
-            var build=ActiveBuild;if(!homeScales.TryGetValue(build,out var baseline))return;
+            var build=ActiveBuild;if(!homeScales.ContainsKey(build))RememberHome(build);var baseline=homeScales[build];
             var localFocus=build.InverseTransformPoint(focus);
             float factor=Mathf.Clamp(build.localScale.x/baseline.x*ratio,.5f,3);
             build.localScale=baseline*factor;build.position+=focus-build.TransformPoint(localFocus);

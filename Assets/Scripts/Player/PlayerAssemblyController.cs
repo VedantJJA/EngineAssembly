@@ -26,6 +26,7 @@ namespace EngineAssembly
         CharacterController controller;
         AssemblyPickupQuery pickupQuery;
         HeldPlayerCollisionGuard collisionGuard;
+        MobileWorkshopControls mobileControls;
         Vector3 spawnPosition,contactLocal,placementOffset;
         Quaternion spawnRotation,heldViewRotation;
         bool placementMode,crouched,platformWasFlipping,hoveredAllowed;
@@ -55,6 +56,7 @@ namespace EngineAssembly
             standingHeight=controller.height;standingEye=playerCamera?playerCamera.transform.localPosition.y:1.65f;normalFov=playerCamera?playerCamera.fieldOfView:60;
             hover=gameObject.AddComponent<AssemblyVisual>();pickupQuery=gameObject.AddComponent<AssemblyPickupQuery>();collisionGuard=gameObject.AddComponent<HeldPlayerCollisionGuard>();inventory=gameObject.AddComponent<AssemblyInventory>();
             spawnPosition=transform.position;spawnRotation=transform.rotation;
+            if(ExperienceMenu.MobileWorkshopRequested)mobileControls=gameObject.AddComponent<MobileWorkshopControls>();
         }
         void Start(){if(!AssemblyManager.Instance && !FindAnyObjectByType<AssemblyManager>())new GameObject("Assembly Workshop").AddComponent<AssemblyManager>();}
         void Update()
@@ -65,13 +67,17 @@ namespace EngineAssembly
             if(heldPart && !inventory.Contains(heldPart))heldPart=null;
             if(!heldPart && inventory.Count>0)Activate(inventory.Items.First());
             if(!workshopUI)workshopUI=FindAnyObjectByType<AssemblyWorkshopUI>();
-            bool menu=workshopUI && workshopUI.IsOpen;
-            var desiredLock=menu?CursorLockMode.None:CursorLockMode.Locked;
+            bool menu=workshopUI && workshopUI.IsOpen || WorkshopTutorial.BlocksInput;
+            bool displayMode=AssemblyManager.Instance && AssemblyManager.Instance.DisplayActive;
+            bool displayPointer=displayMode && !MouseHeld(1);
+            bool hudPointer=InputHelper.IsKeyHeld(KeyCode.LeftAlt);
+            var desiredLock=menu || mobileControls || displayPointer || hudPointer?CursorLockMode.None:CursorLockMode.Locked;
             if(Cursor.lockState!=desiredLock)Cursor.lockState=desiredLock;
-            if(Cursor.visible!=menu)Cursor.visible=menu;
-            if(menu){ClearHover();return;}
+            if(Cursor.visible!=(menu || displayPointer || hudPointer))Cursor.visible=menu || displayPointer || hudPointer;
+            if(menu || hudPointer){ClearHover();return;}
+            if(mobileControls){UpdateMobile();return;}
             if(InputHelper.IsKeyDown(KeyCode.R))AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.ReplayCurrent();
-            if(LiftControlHandle.ProcessDesktop(playerCamera,MouseDown(0),MouseHeld(0),MouseDelta().y,pickupDistance)){ClearHover();return;}
+            if(LiftControlHandle.DesktopHolding && LiftControlHandle.ProcessDesktop(playerCamera,false,MouseHeld(0),MouseDelta().y,pickupDistance)){ClearHover();HoverMessage="Hold and drag up / down · Release to stop";return;}
             var lift=AssemblyManager.Instance?AssemblyManager.Instance.GetComponent<WorkpieceLift>():null;
             if(lift && InputHelper.IsKeyDown(KeyCode.LeftArrow))lift.Cycle(-1);
             if(lift && InputHelper.IsKeyDown(KeyCode.RightArrow))lift.Cycle(1);
@@ -80,8 +86,8 @@ namespace EngineAssembly
             if(InputHelper.IsKeyDown(KeyCode.Q))TogglePlacementMode();
             if((PlacementMode || heldPlatform) && InputHelper.IsKeyDown(KeyCode.T))TogglePlacementTool();
             var delta=MouseDelta();bool manipulating=(PlacementMode || heldPlatform) && MouseHeld(1);
-            playerCamera.fieldOfView=Mathf.Lerp(playerCamera.fieldOfView,!manipulating && MouseHeld(1)?zoomFieldOfView:normalFov,12*Time.deltaTime);
-            if(!manipulating){transform.Rotate(Vector3.up,delta.x*mouseSensitivity);pitch=Mathf.Clamp(pitch-delta.y*mouseSensitivity,-85,85);playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);}
+            playerCamera.fieldOfView=Mathf.Lerp(playerCamera.fieldOfView,!displayMode && !manipulating && MouseHeld(1)?zoomFieldOfView:normalFov,12*Time.deltaTime);
+            if(!manipulating && (!displayMode || MouseHeld(1))){transform.Rotate(Vector3.up,delta.x*mouseSensitivity);pitch=Mathf.Clamp(pitch-delta.y*mouseSensitivity,-85,85);playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);}
             UpdateCrouch(InputHelper.IsKeyHeld(KeyCode.LeftControl)||InputHelper.IsKeyHeld(KeyCode.C));
             float x=(InputHelper.IsKeyHeld(KeyCode.D)?1:0)-(InputHelper.IsKeyHeld(KeyCode.A)?1:0),z=(InputHelper.IsKeyHeld(KeyCode.W)?1:0)-(InputHelper.IsKeyHeld(KeyCode.S)?1:0);
             if(controller.isGrounded && fallSpeed<0)fallSpeed=-2;
@@ -89,6 +95,13 @@ namespace EngineAssembly
             fallSpeed+=gravity*Time.deltaTime;
             var direction=Vector3.ClampMagnitude(transform.right*x+transform.forward*z,1)*(crouched?crouchSpeed:InputHelper.IsKeyHeld(KeyCode.LeftShift)?sprintSpeed:walkSpeed);
             if(controller.enabled)controller.Move((direction+Vector3.up*fallSpeed)*Time.deltaTime);
+            if(displayMode){if(MouseDown(0) && (!UnityEngine.EventSystems.EventSystem.current || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(playerCamera.ScreenPointToRay(InputHelper.GetMousePosition()));HoverMessage="Click a component · Hold right mouse to look around";return;}
+            var aimedControl=LiftControlHandle.RayControl(playerCamera.ViewportPointToRay(new Vector3(.5f,.5f,0)),pickupDistance);
+            if(aimedControl && MouseDown(0))
+            {
+                ShowControlPrompt(aimedControl);
+                LiftControlHandle.ProcessDesktop(playerCamera,MouseDown(0),MouseHeld(0),0,pickupDistance);return;
+            }
             if(Held && InputHelper.IsKeyDown(KeyCode.G)){DropHeldPart(false);return;}
             if(Held)
             {
@@ -108,6 +121,7 @@ namespace EngineAssembly
                     if(heldPart)heldPart.MoveHeld(position,rotation);else heldPlatform.MoveHeld(position,rotation);
                 }
                 foreach(var item in inventory.Items)if(item!=heldPart){inventory.Hide(item);item.MoveHeld(new Vector3(0,-1000,0),item.transform.rotation);}
+                if(aimedControl){ShowControlPrompt(aimedControl);return;}
                 var ray=new Ray(playerCamera.transform.position,playerCamera.transform.forward);
                 var manager=AssemblyManager.Instance;var guide=manager?manager.GetComponent<AssemblyEasyGuide>():null;
                 bool click=MouseDown(0)||InputHelper.IsKeyDown(KeyCode.E);
@@ -122,7 +136,45 @@ namespace EngineAssembly
                 if(heldPart && CarryMode){HoverForCollection(ray,click);return;}
                 if(click)DropHeldPart();return;
             }
+            if(aimedControl){ShowControlPrompt(aimedControl);return;}
             HoverForCollection(new Ray(playerCamera.transform.position,playerCamera.transform.forward),MouseDown(0)||InputHelper.IsKeyDown(KeyCode.E));
+        }
+        void ShowControlPrompt(LiftControlHandle control)
+        {ClearHover();HoverMessage=control.Kind==LiftControlHandle.ControlKind.Lever?"Hold click + drag up / down to move this lift":"Click to turn this workpiece over";}
+        void UpdateMobile()
+        {
+            var movement=mobileControls.Movement;
+            var look=mobileControls.ConsumeLook();
+            transform.Rotate(Vector3.up,look.x*mouseSensitivity);
+            pitch=Mathf.Clamp(pitch-look.y*mouseSensitivity,-85,85);
+            playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);
+            UpdateCrouch(mobileControls.CrouchHeld);
+            if(controller.isGrounded && fallSpeed<0)fallSpeed=-2;
+            if(controller.isGrounded && !crouched && mobileControls.ConsumeJump())fallSpeed=Mathf.Sqrt(jumpHeight*-2*gravity);
+            fallSpeed+=gravity*Time.deltaTime;
+            var direction=Vector3.ClampMagnitude(transform.right*movement.x+transform.forward*movement.y,1)*(crouched?crouchSpeed:mobileControls.SprintHeld?sprintSpeed:walkSpeed);
+            if(controller.enabled)controller.Move((direction+Vector3.up*fallSpeed)*Time.deltaTime);
+            if(Held)
+            {
+                var rotation=playerCamera.transform.rotation*heldViewRotation;
+                if(heldPart)
+                {
+                    float distance=Mathf.Max(1,AssemblyHeldView.WorldBounds(heldPart).extents.magnitude*.9f);
+                    heldPart.MoveHeld(playerCamera.transform.TransformPoint(new Vector3(.35f,-.2f,distance))-rotation*Vector3.Scale(contactLocal,Held.lossyScale),rotation);
+                }
+                else heldPlatform.MoveHeld(playerCamera.transform.TransformPoint(new Vector3(0,0,holdDistance))-rotation*Vector3.Scale(contactLocal,Held.lossyScale),rotation);
+            }
+            if(!mobileControls.ConsumeTap(out var screen))return;
+            var ray=playerCamera.ScreenPointToRay(screen);
+            if(AssemblyManager.Instance && AssemblyManager.Instance.DisplayActive){AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(ray);return;}
+            if(Held)
+            {
+                var manager=AssemblyManager.Instance;
+                if(heldPart && manager && manager.Mode==WorkshopMode.Assembly && manager.Task==AssemblyTask.Assemble && TryPlace(ray))return;
+                if(heldPart){HoverForCollection(ray,true);return;}
+                return;
+            }
+            HoverForCollection(ray,true);
         }
         public void Manipulate(Vector2 delta,ref Quaternion rotation)
         {
@@ -137,7 +189,7 @@ namespace EngineAssembly
             var platform=hit.collider?hit.collider.GetComponentInParent<PickupablePlatform>():null;
             if(!part){ClearHover();if(!Held && platform && click)GrabPlatform(platform,hit.point);return;}
             string reason="";bool allowed=heldPart?part.Manager && part.Manager.CanCollect(part,heldPart,out reason):!part.Manager || part.Manager.CanPickUp(part,out reason);
-            HoverMessage=allowed?part.PartDisplayName:part.PartDisplayName+" — "+reason;
+            HoverMessage=allowed?part.PartDisplayName:part.PartDisplayName+" - "+reason;
             if(hoveredPart!=part || hoveredAllowed!=allowed){hover.Hover(part,allowed);hoveredPart=part;hoveredAllowed=allowed;}
             if(!click)return;
             if(!Held && part.Definition!=null && part.Definition.isBase){GrabPlatform(part.Manager.MovableFrame(part).GetComponent<PickupablePlatform>(),contact);return;}
@@ -147,7 +199,6 @@ namespace EngineAssembly
         {
             bool first=inventory.Count==0;if(!inventory.Collect(part))return;
             if(first){heldPart=part;CaptureContact(contact);}else {inventory.Hide(part);part.MoveHeld(new Vector3(0,-1000,0),part.transform.rotation);collisionGuard.Track(part.transform,part,null);}
-            AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.NotifyInventoryStack(inventory.Count);
             ClearHover();
         }
         public bool TryPlace(Ray ray)

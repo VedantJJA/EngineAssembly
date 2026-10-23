@@ -47,8 +47,8 @@ namespace EngineAssembly.Editor
         {
             yield return null;yield return null;
             var menu=FindAnyObjectByType<ExperienceMenu>();
-            Check(menu && Camera.main.backgroundColor.r>.9f,"Main menu uses the shared light background");
-            Check(menu.GetComponentsInChildren<WorkshopCard>().All(c=>c.normal.r>.7f && c.GetComponent<UnityEngine.UI.Image>().sprite),"Main menu uses light rounded custom cards");
+            Check(menu && Camera.main.backgroundColor.r<.75f && Camera.main.backgroundColor.r>.3f,"Main menu uses a subdued garage-grey background");
+            Check(menu.GetComponentsInChildren<WorkshopCard>().All(c=>c.normal.r<.9f && c.GetComponent<UnityEngine.UI.Image>().sprite),"Custom cards use the subdued garage palette");
             Capture(menu.GetComponentInChildren<Canvas>(),Camera.main,"main-menu-light");menu.Show(ExperienceMenu.Page.Experiences);yield return null;
             Capture(menu.GetComponentInChildren<Canvas>(),Camera.main,"experiences-light");menu.Show(ExperienceMenu.Page.Options);yield return null;
             Capture(menu.GetComponentInChildren<Canvas>(),Camera.main,"options-light");CheckMaterials();
@@ -63,12 +63,21 @@ namespace EngineAssembly.Editor
             }
             Check(images.All(i=>i.GetComponentInParent<UnityEngine.UI.Mask>() && i.uvRect.width<=1 && i.uvRect.height<=1),"Chapter photos are cropped inside rounded masks");
             Capture(ui.GetComponentInChildren<Canvas>(),Camera.main,"chapters-light");ui.Open(AssemblyWorkshopUI.Page.Settings);yield return null;Capture(ui.GetComponentInChildren<Canvas>(),Camera.main,"settings-light");ui.Open(AssemblyWorkshopUI.Page.Pause);yield return null;Capture(ui.GetComponentInChildren<Canvas>(),Camera.main,"pause-light");
+            Check(ui.GetComponentsInChildren<UnityEngine.UI.RawImage>().Any(i=>i.transform.parent && i.transform.parent.name=="Chapter photograph" && i.texture),"Pause screen shows the current chapter photograph");
             ui.SetOpen(false);FindAnyObjectByType<PlayerAssemblyController>().enabled=false;
+            var subtitle=ui.GetComponentInChildren<AssemblyCaptionPresenter>();
+            Check(subtitle && !subtitle.GetComponent<UnityEngine.UI.Image>() && subtitle.GetComponentsInChildren<TextMeshProUGUI>().All(t=>t.outlineWidth>0),"Assembly directions render as outlined subtitles without a backing panel");
+            CheckLessonFit(subtitle);
+            yield return null;Capture(ui.GetComponentInChildren<Canvas>(),Camera.main,"workshop-subtitles");
             var next=manager.NextHintPart();var assist=manager.GetComponent<AssemblyStepAssist>();Check(assist.NextStep() && next.IsSnapped && !next.IsBusy,"PC assistance finishes installation in the same call");yield return null;CheckMaterials();
             yield return SceneManager.LoadSceneAsync("MobileAssemblyARFallback");yield return null;yield return null;yield return null;
             manager=AssemblyManager.Instance;var phone=manager.GetComponent<MobileAssemblyController>();next=manager.NextHintPart();Check(!phone.TapTarget(phone.ViewCamera.pixelRect.center),"Mobile placement still requires selecting a component");Check(manager.GetComponent<AssemblyStepAssist>().NextStep() && next.IsSnapped && !next.IsBusy,"Mobile assistance places immediately");yield return null;yield return null;Check(!phone.VisiblePartIds.Contains(next.PartId),"Mobile card is removed as soon as its part is installed");CheckMaterials();
+            Check(!phone.GetComponentInChildren<AssemblyCaptionPresenter>().GetComponent<UnityEngine.UI.Image>(),"Mobile directions do not cover the model with a panel");
+            CheckLessonFit(phone.GetComponentInChildren<AssemblyCaptionPresenter>());
+            Capture(phone.GetComponentInChildren<Canvas>(),phone.ViewCamera,"mobile-assembly-redesign");
             yield return SceneManager.LoadSceneAsync("MobileDisplayARFallback");yield return null;yield return null;
             var display=FindAnyObjectByType<MobileEngineDisplay>();var timeline=EngineLearningContent.Timeline(display.Recipe);CheckMaterials();
+            Check(display.GetComponentsInChildren<RectTransform>().Any(r=>r.name=="Timeline dock" && r.rect.height<320),"Display timeline uses a compact information dock");
             var wanted=new[]{"Crankshaft","Wrist_Pin","Stem_Seal","Keeper","Spring_Seat","Cylinder_Head","Bolt"};
             foreach(var keyword in wanted)
             {
@@ -86,6 +95,18 @@ namespace EngineAssembly.Editor
             display.SetTimeline(1);Capture(display.GetComponentInChildren<Canvas>(),display.ViewCamera,"display-materials-light");
             Check(display.VisiblePartCount==display.Recipe.parts.Count-display.Recipe.subAssemblies.Count,"Complete timelapse retains every physical component");
             display.SetTimeline(0);Check(display.VisiblePartCount==display.Recipe.parts.Count(p=>p.isBase && !display.Recipe.subAssemblies.Any(g=>g.rootPartId==p.id)),"Reversing the timeline hides every uninstalled component");
+        }
+        void CheckLessonFit(AssemblyCaptionPresenter presenter)
+        {
+            var caption=presenter.transform.Find("Caption").GetComponent<TextMeshProUGUI>();
+            string previous=caption.text;
+            foreach(var lesson in EngineLearningContent.Data.steps)
+            {
+                Check(!string.IsNullOrWhiteSpace(lesson.purpose),"Lesson explains purpose: "+lesson.id);
+                caption.text=lesson.caption;caption.ForceMeshUpdate();
+                Check(!caption.isTextOverflowing,"Instruction fits its subtitle area: "+lesson.id);
+            }
+            caption.text=previous;caption.ForceMeshUpdate();
         }
         void Capture(Canvas canvas,Camera camera,string name)
         {

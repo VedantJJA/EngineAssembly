@@ -20,6 +20,7 @@ namespace EngineAssembly
         [SerializeField] MobilePartArtwork artwork;
         AssemblyManager manager;
         AssemblyEasyGuide guide;
+        AssemblyPickupQuery repairQuery;
         AssemblyPart selected;
         AssemblyVisual idlePreview;
         readonly Dictionary<string,WorkshopCard> cards=new Dictionary<string,WorkshopCard>();
@@ -45,12 +46,13 @@ namespace EngineAssembly
         readonly Dictionary<string,Transform> workspaces=new Dictionary<string,Transform>();
         readonly Dictionary<string,Pose> workspaceHome=new Dictionary<string,Pose>();
         float fixtureRadius=1,zoomFactor=1,lastPinchDistance;
-        Transform Workpiece=>fixture==null?manager.AssemblyRoot:fixtureStage;
-        Vector3 FocusCenter=>fixture==null?engineCenter:Vector3.zero;
-        float FocusRadius=>fixture==null?engineRadius*(manager?manager.EngineScale:1):fixtureRadius;
+        bool RepairUnitActive=>manager && manager.RepairActive && !manager.IsPlaced(PCRepairChapter.UnitId);
+        Transform Workpiece=>RepairUnitActive?manager.FindPart(PCRepairChapter.UnitId).transform:fixture==null?manager.AssemblyRoot:fixtureStage;
+        Vector3 FocusCenter=>RepairUnitActive?Vector3.zero:fixture==null?engineCenter:Vector3.zero;
+        float FocusRadius=>RepairUnitActive?Mathf.Max(.15f,AssemblyPresentationBounds.World(Workpiece,manager).extents.magnitude):fixture==null?Mathf.Max(.3f,AssemblyPresentationBounds.World(Workpiece,manager).extents.magnitude):fixtureRadius;
         public Transform ActiveWorkpiece=>Workpiece;
         public bool Ready=>ready;
-        public Vector3 WorldFocus=>fixture!=null?AssemblyPresentationBounds.World(Workpiece,manager).center:Workpiece.TransformPoint(FocusCenter);
+        public Vector3 WorldFocus=>AssemblyPresentationBounds.World(Workpiece,manager).center;
         public float PresentationRadius=>FocusRadius;
         public string ActiveWorkspaceId=>fixture?.id??"engine";
         public Transform WorkspaceFor(string id)=>workspaces.TryGetValue(id,out var stage)?stage:null;
@@ -70,6 +72,7 @@ namespace EngineAssembly
         {
             manager=GetComponent<AssemblyManager>();
             while(manager.Recipe==null)yield return null;
+            if(!manager.GetComponent<PCRepairChapter>())manager.gameObject.AddComponent<PCRepairChapter>();
             if(!viewCamera)viewCamera=Camera.main;
             spatialRig=SpatialExperienceRig.Ensure(gameObject,manager.AssemblyRoot,viewCamera);
             spatialRig.CameraChanged+=SetPresentationCamera;
@@ -94,7 +97,9 @@ namespace EngineAssembly
             CreateUI();
             AssemblyCaptionPresenter.Create(safe,manager,true);
             manager.Changed+=OnChanged;manager.onPartSnapped.AddListener(OnInstalled);
-            ready=true;PrepareFixtureStage();RefreshChapter();UpdateViewport();
+            ready=true;PrepareFixtureStage();
+            if(ExperienceMenu.MobileRepairRequested){int repair=manager.Recipe.chapters.FindIndex(c=>c.id==PCRepairChapter.ChapterId);if(repair>=0)manager.SelectChapter(repair);}
+            RefreshChapter();UpdateViewport();
             Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         }
         void OnChanged()=>refreshPending=true;
@@ -123,7 +128,7 @@ namespace EngineAssembly
             var ratio=Divide(manager.AssemblyRoot.lossyScale,authoredEngineScale);
             // Reset independently zoomed station pieces before the manager
             // installs previous chapters into the engine's reference frame.
-            foreach(var pair in sourceScales.OrderBy(p=>p.Key.transform.GetComponentsInParent<Transform>(true).Length))
+            foreach(var pair in sourceScales.Where(p=>p.Key && manager.AssemblyParts.Contains(p.Key)).OrderBy(p=>p.Key.transform.GetComponentsInParent<Transform>(true).Length))
             {
                 var world=Vector3.Scale(pair.Value,ratio);var part=pair.Key;
                 part.transform.localScale=part.transform.parent?Divide(world,part.transform.parent.lossyScale):world;
@@ -150,7 +155,7 @@ namespace EngineAssembly
         }
         void Update()
         {
-            if(!ready)return;
+            if(!ready || WorkshopTutorial.BlocksInput)return;
             if(stepAssistCard){var assist=manager.GetComponent<AssemblyStepAssist>();stepAssistCard.interactable=assist && assist.Available;}
             if(refreshPending) { refreshPending=false;RefreshChapter(); }
             if(lastScreen!=new Vector2Int(Screen.width,Screen.height) || lastSafeArea!=Screen.safeArea)UpdateViewport();
@@ -160,15 +165,16 @@ namespace EngineAssembly
         {
             if(!ready || !MobileARSession.CanInteract(gameObject) || ChapterMenuOpen || manager.AssemblyParts.AnyBusy())return false;
             var part=manager.FindPart(id);
-            if(!part || part.IsSnapped || part.IsBusy || part.ChapterId!=manager.CurrentChapterId)return false;
+            if(!part || part.IsSnapped || part.IsBusy || (!manager.RepairActive && part.ChapterId!=manager.CurrentChapterId))return false;
             if(!manager.CanInstall(part,part.TargetSocket,out var reason)) { status.text=reason;return false; }
             if(selected==part)return true;
             if(selected && selected.IsBusy)return false;
             CancelSelection();
             SetTargetScale(part);
             if(!part.BeginGrab())return false;
+            selected=part;RefreshChapter();
             if(spatialRig.IsTracked)part.transform.SetParent(Workpiece,true);
-            selected=part;guide.RefreshTargets();
+            guide.RefreshTargets();
             idlePreview.Clear();
             RefreshCards();
             selectionText.text=part.PartDisplayName;
@@ -180,11 +186,22 @@ namespace EngineAssembly
             if(!ready || ChapterMenuOpen)return false;
             CancelSelection();
             SetTargetScale(part);
-            if(!part.BeginGrab())return false;if(spatialRig.IsTracked)part.transform.SetParent(Workpiece,true);selected=part;
+            if(!part.BeginGrab())return false;selected=part;RefreshChapter();if(spatialRig.IsTracked)part.transform.SetParent(Workpiece,true);
             guide.RefreshTargets();selectionText.text=part.PartDisplayName;status.text="Next Step · Place this component";return true;
         }
         public bool TapTarget(Vector2 screenPosition)
         {
+            if(ready && manager.RepairActive && !manager.Repair.IsPlacementStep && !ChapterMenuOpen && MobileARSession.CanInteract(gameObject) && viewCamera.pixelRect.Contains(screenPosition))
+            {
+                var removalRay=viewCamera.ScreenPointToRay(screenPosition);
+                if(!repairQuery)repairQuery=gameObject.AddComponent<AssemblyPickupQuery>();
+                if(repairQuery.Raycast(removalRay,100,~0,out var picked,out _,out _))
+                {
+                    var removalPart=picked?manager.InteractionPart(picked):null;
+                    if(removalPart && manager.Repair.CanRemove(removalPart,out _) && removalPart.BeginGrab()){removalPart.Release(false);refreshPending=true;return true;}
+                }
+                status.text="Tap the part named in the repair instruction to remove it.";return false;
+            }
             if(!ready || !MobileARSession.CanInteract(gameObject) || ChapterMenuOpen || !selected || selected.IsBusy || !viewCamera.pixelRect.Contains(screenPosition))return false;
             var ray=viewCamera.ScreenPointToRay(screenPosition);
             if(guide.Aim(ray,100,viewCamera)!=selected){status.text="Tap the visible ghost. Drag to turn the engine.";return false;}
@@ -289,9 +306,16 @@ namespace EngineAssembly
         }
         void RefreshChapter()
         {
+            foreach(var obsolete in renderers.Keys.Where(p=>!p || !manager.AssemblyParts.Contains(p)).ToArray()){renderers.Remove(obsolete);colliders.Remove(obsolete);sourceScales.Remove(obsolete);}
+            foreach(var part in manager.AssemblyParts.Where(p=>!renderers.ContainsKey(p)))
+            {
+                sourceScales[part]=part.transform.lossyScale;targetScales[part.PartId]=manager.TargetFrame(part.Definition).lossyScale;
+                renderers[part]=part.GetComponentsInChildren<Renderer>(true).Where(r=>r.GetComponentInParent<AssemblyPart>(true)==part).ToArray();
+                colliders[part]=part.GetComponentsInChildren<Collider>(true).Where(c=>c.enabled && c.GetComponentInParent<AssemblyPart>(true)==part).ToArray();
+            }
             AttachPresentationSources();
             var nextPart=selected?selected:manager.NextHintPart();
-            var nextFixture=manager.MemberGroup(nextPart);
+            var nextFixture=manager.RepairActive?null:manager.MemberGroup(nextPart);
             bool focusChanged=fixture!=nextFixture;
             if(focusChanged)
             {
@@ -307,7 +331,8 @@ namespace EngineAssembly
                 bool visible=part.IsSnapped;
                 var group=manager.MemberGroup(part);
                 if(group!=null)visible=part.IsSnapped && (spatialRig.IsTracked || fixture!=null && group.id==fixture.id || fixture==null && manager.IsPlaced(group.rootPartId));
-                else if(fixture!=null && !spatialRig.IsTracked)visible=false;
+                if(manager.RepairActive && group?.rootPartId==PCRepairChapter.UnitId && !manager.IsPlaced(PCRepairChapter.UnitId))visible=part.IsSnapped || part.PartId==PCRepairChapter.UnitId;
+                else if(fixture!=null && !spatialRig.IsTracked && (group==null || group.id!=fixture.id))visible=false;
                 bool moving=selected && selected.IsBusy && (part==selected || manager.MemberGroup(part)?.rootPartId==selected.PartId);
                 visible|=moving;
                 foreach(var renderer in renderers[part])if(renderer)renderer.enabled=visible;
@@ -316,17 +341,21 @@ namespace EngineAssembly
             title.text=manager.Recipe.chapters[manager.CurrentChapterIndex].title;
             actionText.text=manager.ChapterInstalledCount+" / "+manager.ChapterPartCount+" INSTALLED";
             selectionText.text=selected?selected.PartDisplayName:manager.ChapterComplete?"Section complete":"Choose a part below";
-            status.text=manager.ChapterComplete?"Continue to the next chapter":selected?"Tap a visible target to install":fixture!=null?manager.FindPart(fixture.rootPartId).PartDisplayName+" · Separate workspace":"1 finger: rotate · 2 fingers: move / pinch to zoom";
+            status.text=manager.RepairActive && !manager.Repair.IsPlacementStep && !manager.Repair.Complete?"Tap "+manager.Repair.NextPart.PartDisplayName+" to remove it":manager.ChapterComplete?"Continue to the next chapter":selected?"Tap a visible target to install":fixture!=null?manager.FindPart(fixture.rootPartId).PartDisplayName+" · Separate workspace":"1 finger: rotate · 2 fingers: move / pinch to zoom";
             next.gameObject.SetActive(manager.ChapterComplete);
             var preview=manager.NextHintPart();
             idlePreview.Clear();
             RefreshCards();
             if(focusChanged) { zoomFactor=1;UpdateViewport();cardContent.GetComponentInParent<UnityEngine.UI.ScrollRect>().horizontalNormalizedPosition=0; }
+            else if(!spatialRig.IsTracked)UpdateViewport();
         }
         void RefreshCards()
         {
+            var choices=fixture!=null && !string.IsNullOrEmpty(fixture.exclusiveBuildGroup) && manager.ActiveExclusiveBuild(fixture.exclusiveBuildGroup)==null
+                ?manager.Recipe.subAssemblies.Where(g=>g.exclusiveBuildGroup==fixture.exclusiveBuildGroup && !manager.GroupComplete(g)).Select(g=>g.previewPartId).ToHashSet():null;
             var parts=manager.Recipe.parts.Where(d=>d.chapterId==manager.CurrentChapterId && !manager.IsPlaced(d.id)
-                && (fixture!=null?d.subAssemblyId==fixture.id:string.IsNullOrEmpty(d.subAssemblyId))).OrderBy(d=>d.order).ToArray();
+                && (choices!=null?choices.Contains(d.id):fixture!=null?d.subAssemblyId==fixture.id:string.IsNullOrEmpty(d.subAssemblyId))).OrderBy(d=>d.order).ToArray();
+            if(manager.RepairActive)parts=manager.Repair.IsPlacementStep?new[]{manager.Repair.NextPart.Definition}:new PartDefinition[0];
             var ids=new HashSet<string>(parts.Select(d=>d.id));
             foreach(var id in cards.Keys.Where(id=>!ids.Contains(id)).ToArray()) { cards[id].gameObject.SetActive(false);Destroy(cards[id].gameObject);cards.Remove(id); }
             for(int i=0;i<parts.Length;i++)
@@ -343,7 +372,7 @@ namespace EngineAssembly
                 }
                 card.transform.SetSiblingIndex(i);
                 bool eligible=manager.CanInstall(part,part.TargetSocket,out _);
-                card.normal=selected==part?new Color(.78f,.94f,.93f):Panel;card.highlight=new Color(.86f,.96f,.96f);
+                card.normal=selected==part?WorkshopTheme.AccentWash:Panel;card.highlight=WorkshopTheme.Hover;
                 card.GetComponent<UnityEngine.UI.Image>().color=card.normal;
                 var group=card.GetComponent<CanvasGroup>();if(!group)group=card.gameObject.AddComponent<CanvasGroup>();group.alpha=eligible?1:.68f;
                 // Future cards remain tappable so a useful ordering/orientation explanation can be shown.
@@ -371,12 +400,14 @@ namespace EngineAssembly
             title=Label(header,"",36,TextColor,new Vector2(28,-62),new Vector2(770,84),true);
             title.rectTransform.anchorMax=Vector2.one;title.rectTransform.sizeDelta=new Vector2(-278,84);
             actionText=Label(header,"",19,Muted,new Vector2(28,-147),new Vector2(700,28));
-            var chapters=MakeCard(header,ToggleChapters);Anchor((RectTransform)chapters.transform,Vector2.one,Vector2.one,new Vector2(-224,-66),new Vector2(-24,-16));CenterLabel(chapters.transform,"CHAPTERS",20);
-            var home=MakeCard(header,ExperienceMenu.GoHome);Anchor((RectTransform)home.transform,Vector2.one,Vector2.one,new Vector2(-224,-128),new Vector2(-24,-78));CenterLabel(home.transform,"MAIN MENU",18);
+            header.name="Assembly header";
+            var chapters=MakeCard(header,ToggleChapters);chapters.name="Chapter menu action";Anchor((RectTransform)chapters.transform,Vector2.one,Vector2.one,new Vector2(-224,-66),new Vector2(-24,-16));CenterLabel(chapters.transform,"CHAPTERS",20);
+            var home=MakeCard(header,ExperienceMenu.GoHome);home.name="Home action";Anchor((RectTransform)home.transform,Vector2.one,Vector2.one,new Vector2(-224,-128),new Vector2(-24,-78));CenterLabel(home.transform,"MAIN MENU",18);
+            var tutorial=MakeCard(header,OpenTutorial);tutorial.name="Section 0 action";Anchor((RectTransform)tutorial.transform,Vector2.one,Vector2.one,new Vector2(-448,-66),new Vector2(-240,-16));CenterLabel(tutorial.transform,"SECTION 0",18);
             var rotate=MakeCard(safe,ResetView);
             var arrowLabel=(TextMeshProUGUI)null;
-            var arrowToggle=MakeCard(safe,()=>{questArrow.Toggle(!questArrow.Tracking);arrowLabel.text=questArrow.Tracking?"ARROW ON":"ARROW OFF";});arrowToggle.name="Quest arrow toggle";
-            Anchor((RectTransform)arrowToggle.transform,Vector2.up,Vector2.up,new Vector2(24,-248),new Vector2(244,-194));CenterLabel(arrowToggle.transform,"ARROW OFF",18);arrowLabel=arrowToggle.GetComponentInChildren<TextMeshProUGUI>();
+            var arrowToggle=MakeCard(header,()=>{questArrow.Toggle(!questArrow.Tracking);arrowLabel.text=questArrow.Tracking?"ARROW ON":"ARROW OFF";});arrowToggle.name="Quest arrow toggle";
+            Anchor((RectTransform)arrowToggle.transform,Vector2.one,Vector2.one,new Vector2(-224,-180),new Vector2(-24,-138));CenterLabel(arrowToggle.transform,"ARROW OFF",16);arrowLabel=arrowToggle.GetComponentInChildren<TextMeshProUGUI>();
             questArrow=NewRect("Quest arrow",safe).gameObject.AddComponent<WorkshopQuestArrow>();questArrow.ConfigureMobile(safe,manager,this,font);
             Anchor((RectTransform)rotate.transform,new Vector2(1,0),new Vector2(1,0),new Vector2(-212,348),new Vector2(-24,400));CenterLabel(rotate.transform,"RESET VIEW",18);
             var flip=MakeCard(safe,()=>RotateEngine(new Vector2(0,600)));
@@ -384,7 +415,7 @@ namespace EngineAssembly
             var assist=MakeCard(safe,()=>manager.GetComponent<AssemblyStepAssist>()?.NextStep());assist.name="Next Step";
             stepAssistCard=assist;
             Anchor((RectTransform)assist.transform,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(-164,348),new Vector2(164,400));CenterLabel(assist.transform,"NEXT STEP  →",20);
-            var footer=Box(safe,Panel);Anchor(footer,Vector2.zero,new Vector2(1,0),Vector2.zero,new Vector2(0,330));
+            var footer=Box(safe,Panel);footer.name="Parts dock";Anchor(footer,Vector2.zero,new Vector2(1,0),Vector2.zero,new Vector2(0,330));
             selectionText=Label(footer,"",25,TextColor,new Vector2(24,-14),new Vector2(970,40),true);
             status=Label(footer,"",18,Muted,new Vector2(24,-54),new Vector2(1000,30));
             var scrollRoot=NewRect("Part cards",footer);Anchor(scrollRoot,Vector2.zero,Vector2.one,new Vector2(16,8),new Vector2(-16,-90));
@@ -405,15 +436,18 @@ namespace EngineAssembly
             var content=NewRect("Chapters",vp);content.anchorMin=new Vector2(0,1);content.anchorMax=Vector2.one;content.pivot=new Vector2(.5f,1);content.sizeDelta=Vector2.zero;
             var vl=content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();vl.spacing=16;vl.childControlHeight=true;vl.childControlWidth=true;vl.childForceExpandHeight=false;
             content.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit=UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;chapterScroll.viewport=vp;chapterScroll.content=content;
+            var guideCard=MakeCard(content,OpenTutorial);guideCard.name="Section 0 card";
+            guideCard.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight=106;CenterLabel(guideCard.transform,"00   Controls and features",27);
             for(int i=0;i<manager.Recipe.chapters.Count;i++)
             {
                 int index=i;var chapter=manager.Recipe.chapters[i];var card=MakeCard(content,()=>ChooseChapter(index));
                 card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight=106;CenterLabel(card.transform,(i+1).ToString("00")+"   "+chapter.title,27);
-                card.interactable=manager.Recipe.parts.Any(p=>p.chapterId==chapter.id);
+                card.interactable=manager.IsPlayableChapter(chapter.id);
             }
             chapterPanel.gameObject.SetActive(false);
         }
         void ToggleChapters() { chapterPanel.gameObject.SetActive(!chapterPanel.gameObject.activeSelf);pointerActive=false; }
+        public void OpenTutorial(){chapterPanel.gameObject.SetActive(false);pointerActive=false;WorkshopTutorial.Open(gameObject);}
         void SetPresentationCamera(Camera camera){viewCamera=camera;if(ready)UpdateViewport();}
         public void ResetView(){if(spatialRig.IsTracked){GetComponent<MobileARSession>().ResetActiveBuild();return;}zoomFactor=1;Workpiece.SetLocalPositionAndRotation(fixture==null?initialPosition:fixturePosition,fixture==null?initialRotation:fixtureRotation);RotateEngine(Vector2.zero);UpdateViewport();}
         void UpdateViewport()
@@ -422,10 +456,18 @@ namespace EngineAssembly
             safe.anchorMin=lastSafeArea.min/new Vector2(Screen.width,Screen.height);safe.anchorMax=lastSafeArea.max/new Vector2(Screen.width,Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;
             Canvas.ForceUpdateCanvases();
             canvas.GetComponent<UnityEngine.UI.CanvasScaler>().referenceResolution=Screen.width>Screen.height?new Vector2(1920,1080):new Vector2(1080,1920);
+            bool landscape=Screen.width>Screen.height;
+            var header=(RectTransform)safe.Find("Assembly header");header.offsetMin=new Vector2(0,landscape?-110:-184);
+            var guide=(RectTransform)header.Find("Section 0 action");Anchor(guide,Vector2.one,Vector2.one,landscape?new Vector2(-826,-76):new Vector2(-448,-66),landscape?new Vector2(-642,-20):new Vector2(-240,-16));
+            title.rectTransform.anchoredPosition=new Vector2(28,landscape?-50:-62);title.rectTransform.sizeDelta=new Vector2(landscape?-860:-278,landscape?48:84);title.fontSize=landscape?28:36;
+            actionText.enabled=!landscape;
+            string[] controls={"Chapter menu action","Home action","Quest arrow toggle"};
+            for(int i=0;i<controls.Length;i++){var button=(RectTransform)header.Find(controls[i]);Anchor(button,Vector2.one,Vector2.one,landscape?new Vector2(-624+i*202,-76):new Vector2(-224,-66-i*58),landscape?new Vector2(-440+i*202,-20):new Vector2(-24,-16-i*58));}
             Canvas.ForceUpdateCanvases();
             if(spatialRig.IsTracked)return;
-            float bottom=lastSafeArea.yMin+410*canvas.scaleFactor,top=lastSafeArea.yMax-350*canvas.scaleFactor;
-            viewCamera.pixelRect=new Rect(lastSafeArea.xMin,bottom,lastSafeArea.width,Mathf.Max(100,top-bottom));
+            float bottom=lastSafeArea.yMin+410*canvas.scaleFactor,top=lastSafeArea.yMax-(landscape?120:400)*canvas.scaleFactor;
+            float left=landscape?lastSafeArea.xMin+lastSafeArea.width*.32f:lastSafeArea.xMin;
+            viewCamera.pixelRect=new Rect(left,bottom,lastSafeArea.xMax-left,Mathf.Max(100,top-bottom));
             float vertical=viewCamera.fieldOfView*Mathf.Deg2Rad*.5f;
             float horizontal=Mathf.Atan(Mathf.Tan(vertical)*viewCamera.aspect);
             float distance=FocusRadius/Mathf.Sin(Mathf.Min(vertical,horizontal))*1.12f/zoomFactor;

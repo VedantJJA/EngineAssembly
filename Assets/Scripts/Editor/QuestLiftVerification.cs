@@ -71,12 +71,30 @@ namespace EngineAssembly.Editor
             var pcCamera=new GameObject("PC lever verification camera").AddComponent<Camera>();var pcLever=lift.StationLever(2);var shaft=pcLever.transform.Find("Lever shaft");
             var redGrip=pcLever.transform.Find("Red joystick grip");var gripOrigin=redGrip.position-lift.StationPanel(2).forward*1.5f;
             Check(LiftControlHandle.RayControl(new Ray(gripOrigin,(redGrip.position-gripOrigin).normalized),2)==pcLever,"Crosshair on the visible red joystick grip selects its lever");
-            pcCamera.transform.position=shaft.position-lift.StationPanel(2).forward*1.5f;pcCamera.transform.LookAt(shaft.position+lift.StationPanel(2).right*.065f);Physics.SyncTransforms();
+            foreach(var control in new[]{pcLever,lift.StationFlip(2)})
+            foreach(float eyeHeight in new[]{1.05f,1.7f,2.0f})
+            foreach(float side in new[]{-.45f,0f,.45f})
+            {
+                var origin=control.AimPosition-lift.StationPanel(2).forward*1.1f+lift.StationPanel(2).right*side;origin.y=eyeHeight;
+                var ray=new Ray(origin,(control.AimPosition-origin).normalized);
+                Check(LiftControlHandle.RayControl(ray,3)==control,"Red surface hit from eye height "+eyeHeight+" and side "+side+" on "+control.Kind);
+            }
+            var selfBody=new GameObject("Standing self-collision regression");var capsule=selfBody.AddComponent<CharacterController>();capsule.radius=.6f;capsule.height=2f;capsule.center=Vector3.up;
+            var selfEye=pcLever.AimPosition-lift.StationPanel(2).forward*.45f;selfEye.y=2.2f;selfBody.transform.position=new Vector3(selfEye.x,0,selfEye.z);yield return null;Physics.SyncTransforms();
+            var selfRay=new Ray(selfEye,(pcLever.AimPosition-selfEye).normalized);
+            Check(Physics.RaycastAll(selfRay,3).Any(h=>h.collider==capsule),"Regression ray crosses the standing player's capsule before the control");
+            Check(LiftControlHandle.RayControl(selfRay,3)==pcLever,"Player capsule never blocks their own red-control interaction");Destroy(selfBody);yield return null;
+            var missOrigin=pcLever.AimPosition-lift.StationPanel(2).forward;
+            var missTarget=pcLever.AimPosition+lift.StationPanel(2).right*.09f;
+            Check(LiftControlHandle.RayControl(new Ray(missOrigin,(missTarget-missOrigin).normalized),2)!=pcLever,"Pointing beside the visible grip does not engage an invisible oversized hit area");
+            var blocker=GameObject.CreatePrimitive(PrimitiveType.Cube);blocker.transform.position=(missOrigin+pcLever.AimPosition)*.5f;blocker.transform.localScale=Vector3.one*.15f;Physics.SyncTransforms();
+            Check(LiftControlHandle.RayControl(new Ray(missOrigin,(pcLever.AimPosition-missOrigin).normalized),2)==null,"Actual scenery in front of the red control blocks the click");Destroy(blocker);yield return null;
+            pcCamera.transform.position=shaft.position-lift.StationPanel(2).forward*1.5f;pcCamera.transform.LookAt(redGrip.position);Physics.SyncTransforms();
             Check(LiftControlHandle.ProcessDesktop(pcCamera,true,true,0,2) && pcLever.Held,"PC cursor can grab the lever from a normal walking distance");
             var pcY=lift.StationFrame(2).position.y;LiftControlHandle.ProcessDesktop(pcCamera,false,true,35,2);yield return new WaitForSeconds(.2f);
             Check(lift.StationFrame(2).position.y>pcY+.03f,"PC hold-and-pull lifts the directly targeted station");LiftControlHandle.ProcessDesktop(pcCamera,false,false,0,2);Check(!pcLever.Held && pcLever.Value==0,"PC release stops and centers the lever");Destroy(pcCamera.gameObject);
-            pcCamera=new GameObject("Oblique PC lever camera").AddComponent<Camera>();pcCamera.transform.position=pcLever.AimPosition-lift.StationPanel(2).forward*1.45f+lift.StationPanel(2).right*.55f;pcCamera.transform.LookAt(pcLever.AimPosition+lift.StationPanel(2).up*.12f);Physics.SyncTransforms();
-            Check(LiftControlHandle.ProcessDesktop(pcCamera,true,true,0,2) && pcLever.Held,"Oblique PC view can grab the lever with a forgiving hit area");LiftControlHandle.ProcessDesktop(pcCamera,false,false,0,2);Destroy(pcCamera.gameObject);
+            pcCamera=new GameObject("Oblique PC lever camera").AddComponent<Camera>();pcCamera.transform.position=pcLever.AimPosition-lift.StationPanel(2).forward*1.45f+lift.StationPanel(2).right*.55f;pcCamera.transform.LookAt(pcLever.AimPosition);Physics.SyncTransforms();
+            Check(LiftControlHandle.ProcessDesktop(pcCamera,true,true,0,2) && pcLever.Held,"Oblique PC view can grab the visible red grip");LiftControlHandle.ProcessDesktop(pcCamera,false,false,0,2);Destroy(pcCamera.gameObject);
             lift.Select(0);var mainY=lift.StationFrame(0).position.y;var subY=lift.StationFrame(2).position.y;var direct=lift.StationLever(2);Check(direct.Begin(),"Inactive station lever operates directly without selecting its lift");direct.SetValue(1);yield return new WaitForSeconds(.2f);direct.Release();
             Check(lift.SelectedStation==0 && Mathf.Abs(lift.StationFrame(0).position.y-mainY)<.001f && lift.StationFrame(2).position.y>subY+.05f,"Direct lever moves only its own station and preserves keyboard selection");
             lift.Select(0);var basePosition=lift.StationBase(0).position;var lever=lift.StationLever(0);var initial=lift.ActiveFrame.position.y;
@@ -88,11 +106,11 @@ namespace EngineAssembly.Editor
             lift.Select(0);yield return null;Check(lift.StationColor(0).r>.9f && lift.StationColor(1).r<.5f,"Active lift remains white and inactive lifts grey");
             var frame=lift.ActiveFrame;var platform=frame.GetComponent<PickupablePlatform>();var before=m.WorkpieceBounds(frame).center;var rotation=frame.rotation;
             var flip=lift.StationFlip(0);var angledOrigin=flip.AimPosition-lift.StationPanel(0).forward*1.4f+lift.StationPanel(0).right*.5f;
-            var angledTarget=flip.AimPosition+lift.StationPanel(0).up*.12f;
+            var angledTarget=flip.AimPosition;
             var redButton=flip.GetComponent<Renderer>().bounds.center;var buttonOrigin=redButton-lift.StationPanel(0).forward*1.5f;
             Check(LiftControlHandle.RayControl(new Ray(buttonOrigin,(redButton-buttonOrigin).normalized),2)==flip,"Crosshair on the visible red flip button selects the button");
             Check(LiftControlHandle.RayControl(new Ray(angledOrigin,(angledTarget-angledOrigin).normalized),2)==flip,"Flip button is selectable from an oblique view without pixel-perfect aim");
-            pcCamera=new GameObject("PC flip verification camera").AddComponent<Camera>();pcCamera.transform.position=lift.StationFlip(0).transform.position-lift.StationPanel(0).forward*1.5f;pcCamera.transform.LookAt(lift.StationFlip(0).transform.position+lift.StationPanel(0).right*.06f);Physics.SyncTransforms();
+            pcCamera=new GameObject("PC flip verification camera").AddComponent<Camera>();pcCamera.transform.position=lift.StationFlip(0).transform.position-lift.StationPanel(0).forward*1.5f;pcCamera.transform.LookAt(lift.StationFlip(0).AimPosition);Physics.SyncTransforms();
             Check(LiftControlHandle.ProcessDesktop(pcCamera,true,true,0,2) && lift.IsTransitioning,"Clicking the flip button begins the hatch sequence");Destroy(pcCamera.gameObject);Check(!platform.IsFlipping,"Hatches open before the engine starts descending");
             yield return new WaitForSeconds(.4f);Check(lift.GateOpening(0)>.99f && platform.Phase==PickupablePlatform.TurnPhase.Lowering,"Grey hatch doors fully open before lowering the engine");
             yield return new WaitForSeconds(.6f);Check(platform.Phase==PickupablePlatform.TurnPhase.Turning && m.WorkpieceBounds(frame).max.y<lift.GroundHeight,"Engine turns entirely beneath the black recess");

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace EngineAssembly
 {
-    // A PC-only service exercise. It reuses assembly sockets without changing the saved recipe.
+    // Shared repair sequence for desktop, tracked VR and touch/AR.
     [DisallowMultipleComponent, RequireComponent(typeof(AssemblyManager))]
     public sealed class PCRepairChapter : MonoBehaviour
     {
@@ -20,20 +20,20 @@ namespace EngineAssembly
         }
         readonly List<Step> steps=new List<Step>
         {
-            new Step("512_Timing_Belt_01",false,"Find the toothed timing belt around the pulleys at the timing end. Pick up the belt and press G to set it on the parts table."),
-            new Step("511_Idler_Shaft_Circlip_02",false,"Find timing idler 1, the small guide pulley. Remove the split retaining ring at its exposed shaft end and press G. Leave the ring behind the pulley fitted."),
-            new Step(UnitId,false,"Pull timing idler 1 off its shaft as a complete unit. Press G to put it on the small work platform."),
-            new Step("511_Idler_Bore_Circlip_01",false,"At the small platform, find the split ring inside the pulley opening. Remove the first labelled ring and press G. These two rings hold the bearings inside the pulley."),
-            new Step("511_Idler_Bore_Circlip_02",false,"Remove the second labelled ring from the pulley opening and press G. Both bearing-retaining rings are now on the parts table."),
-            new Step("510_Idler_Ball_Bearing_6203_02",false,"Remove the outer idler bearing to reach the faulty inner bearing. Press G to set it aside for reuse."),
-            new Step(FaultyId,false,"Remove the faulty inner idler bearing. Press G to discard it from this repair; use the new replacement bearing next."),
-            new Step(ReplacementId,true,"Pick up the part labelled New replacement · timing idler bearing from the table. Fit it into the empty inner bearing position inside the pulley."),
-            new Step("510_Idler_Ball_Bearing_6203_02",true,"Refit the original outer bearing into the remaining idler bearing seat."),
-            new Step("511_Idler_Bore_Circlip_01",true,"Return the first labelled split ring to its groove inside the pulley opening. It keeps the bearing from sliding out."),
-            new Step("511_Idler_Bore_Circlip_02",true,"Return the second labelled split ring to the other groove. Both bearings are retained, and the idler unit is complete again."),
-            new Step(UnitId,true,"Pick up the rebuilt timing idler and fit it back onto its shaft, against the retained inner shaft circlip."),
-            new Step("511_Idler_Shaft_Circlip_02",true,"Refit the outer shaft circlip to secure the rebuilt idler."),
-            new Step("512_Timing_Belt_01",true,"Refit the timing belt around its original pulleys and idlers to complete the repair.")
+            new Step("512_Timing_Belt_01",false,"We will replace one bearing inside a timing-belt guide pulley. A worn bearing can stop the pulley turning freely. First find the toothed belt on the end opposite the flywheel. Lift it off the large pulleys and small idlers, then set it on the parts table. This gives access to the faulty idler."),
+            new Step("511_Idler_Shaft_Circlip_02",false,"Find the first small timing idler, labelled timing idler one. The split ring on the exposed end of its shaft stops the pulley sliding off. Remove this outer ring and set it aside. Leave the inner ring, behind the pulley, on the shaft."),
+            new Step(UnitId,false,"Slide the whole first idler off its fixed shaft. Carry it to the small work platform and set it down with its centre opening accessible. We are removing the pulley and its internal bearings together, not removing the shaft from the engine."),
+            new Step("511_Idler_Bore_Circlip_01",false,"Look inside the pulley opening. The two rings in grooves inside this opening hold the bearings in the pulley. Remove the first internal retaining ring and set it aside for reuse. These internal rings are different from the ring you removed from the engine shaft."),
+            new Step("511_Idler_Bore_Circlip_02",false,"Remove the second internal retaining ring from the other end of the pulley opening. Set it aside with the first. Both bearings are now free of their retaining rings, so we can reach the damaged bearing without forcing it past a clip."),
+            new Step("510_Idler_Ball_Bearing_6203_02",false,"Remove the outer bearing ring from the pulley centre and set it aside for reuse. Its balls let the pulley rotate around the fixed shaft. This bearing is still good; removing it gives access to the inner bearing that needs replacement."),
+            new Step(FaultyId,false,"Remove the faulty inner bearing from the now-open pulley centre. Set this damaged bearing aside separately. We will use a new bearing of the same size instead of putting the faulty one back."),
+            new Step(ReplacementId,true,"Pick up the part labelled New replacement timing idler bearing. Fit it into the empty inner bearing position inside the pulley centre. Its outer ring seats in the pulley, and its small centre hole lines up with the pulley axis."),
+            new Step("510_Idler_Ball_Bearing_6203_02",true,"Pick up the original good outer bearing. Refit it into the remaining seat at the outer end of the pulley opening. The two small bearing holes must line up so the engine's fixed shaft can pass through both."),
+            new Step("511_Idler_Bore_Circlip_01",true,"Refit the first internal split ring into its groove inside the pulley opening, just outside the bearing. It stops the bearing sliding out. Keep the centre opening clear; the ring sits at the edge of the opening."),
+            new Step("511_Idler_Bore_Circlip_02",true,"Refit the second internal split ring in the groove at the other end of the opening. Both bearings are now retained. The rebuilt idler contains one new bearing and one reused bearing, held by the original two internal rings."),
+            new Step(UnitId,true,"Pick up the rebuilt idler as one unit. Slide its bearing holes over the original shaft on the engine's timing-idler plate. Move it inward until it reaches the inner shaft ring that you left in place. Leave the outer shaft groove visible."),
+            new Step("511_Idler_Shaft_Circlip_02",true,"Refit the outer shaft clip into the exposed groove just beyond the pulley. The two shaft clips now keep the whole idler on the engine, while its internal bearings allow it to turn."),
+            new Step("512_Timing_Belt_01",true,"Refit the toothed timing belt around the lower crankshaft pulley, the two upper camshaft pulleys and the small guide idlers. You have replaced the faulty bearing and reused the good parts. The belt again links piston movement to valve movement. This simulation shows the fitted route; real timing and tension checks require engine-specific instructions.")
         };
         AssemblyManager manager;AssemblyPart replacement;string originalSocketGeometry;
         bool running;
@@ -122,6 +122,12 @@ namespace EngineAssembly
         }
         void StageUnit(AssemblyPart part)
         {
+            if(manager.GetComponent<MobileAssemblyController>())
+            {
+                StageCentered(part,manager.AssemblyRoot.position+manager.AssemblyRoot.TransformVector(new Vector3(2,.15f,0)));
+                var rig=manager.GetComponent<SpatialExperienceRig>();if(rig && rig.IsTracked){part.transform.SetParent(rig.ContentAnchor,true);manager.GetComponent<MobileARSession>()?.RememberHome(part.transform);}
+                SetAsidePosition=AssemblyHeldView.WorldBounds(part).center;return;
+            }
             var platform=GameObject.Find("Portable Work Platform");
             var bounds=platform?platform.GetComponent<Renderer>().bounds:new Bounds(manager.AssemblyRoot.position+Vector3.right*2,Vector3.one);
             StageCentered(part,new Vector3(bounds.center.x,bounds.max.y+.03f,bounds.center.z));

@@ -35,8 +35,8 @@ def group(gid,label,members,preview,order,bench,dependencies=(),orientation=0):
 for p in parts:p['subAssemblyId']='';p['prerequisites']=[];p['parentPartId']=''
 block=match('Cylinder_Block')[0];crank=match('103_Crankshaft')[0]
 stage([block],101)
-stage(match('102_'),102,[block])
-stage([crank],103,match('102_'))
+stage(match('102_'),102,[block],2)
+stage([crank],103,match('102_'),2)
 piston_units=[]
 for cylinder in range(1,4):
  tag=f'Cyl{cylinder:02d}';base=200+(cylinder-1)*10
@@ -48,7 +48,8 @@ for cylinder in range(1,4):
  stage(pin,base+3,rod);stage(clips,base+4,pin)
  stage(studs,base+6,rod);stage(oil,base+7,piston+pin+clips);stage(second,base+8,oil);stage(top,base+9,second)
  members=piston+rod+pin+clips+studs+oil+second+top
- unit=group(f'230_Piston_Rod_Unit_Cyl{cylinder:02d}',f'Piston + rod unit — cylinder {cylinder:02d}',members,piston[0],230,(1.6,.4,(cylinder-2)*.8),[crank],1)
+ unit=group(f'230_Piston_Rod_Unit_Cyl{cylinder:02d}',f'Piston + rod unit - cylinder {cylinder:02d}',members,piston[0],230,(1.6,.4,(cylinder-2)*.8),[crank],1)
+ recipe['subAssemblies'][-1]['exclusiveBuildGroup']='pistons'
  piston_units.append(unit)
  caps=match('206_Connecting_Rod_Big_End_Cap_'+tag)
  stage(caps,240,[unit],2)
@@ -137,7 +138,10 @@ for chapter in recipe['chapters']:
  previous=[]
  for order in sorted(groups):
   current=groups[order]
-  for p in current:p['prerequisites']=sorted(set(p['prerequisites']+[d['id'] for d in previous]))
+  for p in current:
+   alternatives={g['id'] for g in recipe['subAssemblies'] if g.get('exclusiveBuildGroup')=='pistons'}
+   earlier=[d['id'] for d in previous if not (p.get('subAssemblyId') in alternatives and d.get('subAssemblyId') in alternatives and p['subAssemblyId']!=d['subAssemblyId'])]
+   p['prerequisites']=sorted(set(p['prerequisites']+earlier))
   previous=current
 parts.sort(key=lambda p:(recipe['chapters'].index(next(c for c in recipe['chapters'] if c['id']==p['chapterId'])),p['order'],p['id']))
 assert original_ids-excluded_ids=={p['id'] for p in parts if p['id'] in original_ids}

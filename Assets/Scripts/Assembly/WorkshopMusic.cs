@@ -20,7 +20,7 @@ namespace EngineAssembly
         void SceneChanged(Scene scene,LoadSceneMode mode)=>narrators=FindObjectsByType<AssemblyNarrator>(FindObjectsSortMode.None);
         void Update()
         {
-            bool speaking=narrators!=null && narrators.Any(n=>n && n.Source && n.Source.isPlaying);
+            bool speaking=(narrators!=null && narrators.Any(n=>n && n.Source && n.Source.isPlaying)) || FindObjectsByType<NarrationSpeech>(FindObjectsSortMode.None).Any(n=>n.Source && n.Source.isPlaying);
             source.volume=Mathf.MoveTowards(source.volume,speaking?.025f:.12f,Time.unscaledDeltaTime*.25f);
         }
         void OnDestroy(){SceneManager.sceneLoaded-=SceneChanged;if(instance==this)instance=null;}

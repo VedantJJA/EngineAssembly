@@ -24,7 +24,8 @@ namespace EngineAssembly
         PCRepairChapter repair;
         public PCRepairChapter Repair=>repair?repair:repair=GetComponent<PCRepairChapter>();
         public bool RepairActive=>Repair && Repair.Active;
-        public bool IsPlayableChapter(string id)=>id==PCRepairChapter.ChapterId && Repair || Recipe.parts.Any(p=>p.chapterId==id);
+        public bool DisplayActive=>CurrentChapterId==PCDisplayChapter.ChapterId;
+        public bool IsPlayableChapter(string id)=>id==PCDisplayChapter.ChapterId || id==PCRepairChapter.ChapterId && Repair || Recipe.parts.Any(p=>p.chapterId==id);
         internal void RegisterRepairPart(AssemblyPart part){assemblyParts.Add(part);byId[part.PartId]=part;}
         internal void UnregisterRepairPart(AssemblyPart part){assemblyParts.Remove(part);byId.Remove(part.PartId);}
         public WorkshopMode Mode { get; private set; }
@@ -108,6 +109,21 @@ namespace EngineAssembly
         public SubAssemblyDefinition MemberGroup(AssemblyPart part)=>Recipe?.subAssemblies?.FirstOrDefault(s=>s.id==part?.Definition?.subAssemblyId);
         public IEnumerable<AssemblyPart> Members(SubAssemblyDefinition group)=>group==null?Enumerable.Empty<AssemblyPart>():Recipe.parts.Where(p=>p.subAssemblyId==group.id).Select(p=>FindPart(p.id)).Where(p=>p).Select(p=>p.TargetSocket && p.TargetSocket.CurrentPart?p.TargetSocket.CurrentPart:p);
         public bool GroupComplete(SubAssemblyDefinition group)=>group!=null && Members(group).All(p=>IsPlaced(p.PartId));
+        public SubAssemblyDefinition ActiveExclusiveBuild(string choice)=>string.IsNullOrEmpty(choice)?null:Recipe?.subAssemblies.FirstOrDefault(g=>g.exclusiveBuildGroup==choice && !GroupComplete(g) && Members(g).Any(p=>IsPlaced(p.PartId)));
+        bool BuildChoiceReady(PartDefinition definition,out string reason)
+        {
+            reason="";var group=Recipe.subAssemblies.FirstOrDefault(g=>g.id==definition.subAssemblyId);
+            var active=group==null?null:ActiveExclusiveBuild(group.exclusiveBuildGroup);
+            if(active==null || active==group)return true;
+            reason="Finish "+FindPart(active.rootPartId).PartDisplayName+" before starting another unit.";return false;
+        }
+        bool EarlierStepPending(PartDefinition definition)
+        {
+            var group=Recipe.subAssemblies.FirstOrDefault(g=>g.id==definition.subAssemblyId);
+            return Recipe.parts.Any(p=>p.chapterId==CurrentChapterId && p.order<definition.order && !IsPlaced(p.id)
+                && !(group!=null && !string.IsNullOrEmpty(group.exclusiveBuildGroup) && p.subAssemblyId!=group.id
+                    && Recipe.subAssemblies.Any(g=>g.id==p.subAssemblyId && g.exclusiveBuildGroup==group.exclusiveBuildGroup)));
+        }
         public Transform MovableFrame(AssemblyPart part)
         {
             var group=MemberGroup(part)??CarrierDefinition(part.PartId);var carrier=group==null?null:FindPart(group.rootPartId);
@@ -282,6 +298,7 @@ namespace EngineAssembly
             }
             foreach (var p in candidates.Where(p => !Recipe.parts.Any(d => d.id == p.PartId))) { p.ClearRecipeConfiguration();p.gameObject.SetActive(false); }
             Repair?.EnsureChapter();
+            GetComponent<PCDisplayChapter>()?.EnsureChapter();
             IsPreparing = false;
             SelectChapter(Mathf.Clamp(CurrentChapterIndex,0,Recipe.chapters.Count-1));
         }
@@ -314,6 +331,7 @@ namespace EngineAssembly
         public bool SelectChapter(int index)
         {
             if (Recipe == null || index < 0 || index >= Recipe.chapters.Count) return false;
+            GetComponent<PCDisplayChapter>()?.StopAnimation();
             ChapterVisit++;
             GetComponent<WorkpieceLift>()?.CancelTransitions();
             Repair?.End();
@@ -369,8 +387,9 @@ namespace EngineAssembly
             {
                 // Staging does not require the destination to be upright yet.
                 // Installation still checks its orientation in CanInstall.
+                if(!BuildChoiceReady(part.Definition,out reason))return false;
                 foreach(var id in AssemblyRecipe.Dependencies(part.Definition))if(!IsPlaced(id)){reason="First install "+(FindPart(id)?.PartDisplayName??id);return false;}
-                if(Recipe.parts.Any(p=>p.chapterId==CurrentChapterId && p.order<part.Definition.order && !IsPlaced(p.id))){reason="Complete the earlier assembly step.";return false;}
+                if(EarlierStepPending(part.Definition)){reason="Complete the earlier assembly step.";return false;}
                 return true;
             }
             if(Mode==WorkshopMode.Assembly && Task==AssemblyTask.Disassemble && Interaction==WorkshopInteraction.Build && !part.IsSnapped) { reason="This part is already removed.";return false; }
@@ -383,6 +402,7 @@ namespace EngineAssembly
             if(!part || !stack || !AssemblyInventory.Matches(part,stack))return false;
             if(part.Manager!=this || part.ChapterId!=CurrentChapterId || part.Definition.isBase || part.IsSnapped || part.IsSelected || part.IsBusy || Task==AssemblyTask.Disassemble)return false;
             var group=MemberGroup(part);if(group!=null && IsPlaced(group.rootPartId))return false;
+            if(Mode==WorkshopMode.Assembly && !BuildChoiceReady(part.Definition,out reason))return false;
             reason="";return true; // Future sockets stay locked by CanInstall.
         }
         public bool CanInstall(AssemblyPart part, AssemblySocket socket, out string reason)
@@ -399,9 +419,10 @@ namespace EngineAssembly
             if(Task==AssemblyTask.Disassemble) { reason="Remove this section in reverse order. Switch to Assemble to install parts.";return false; }
             var memberGroup=MemberGroup(part);
             if(memberGroup!=null && IsPlaced(memberGroup.rootPartId)) { reason="This subassembly is already installed.";return false; }
+            if(!BuildChoiceReady(d,out reason))return false;
             foreach (string dependency in AssemblyRecipe.Dependencies(d))
                 if (!IsPlaced(dependency)) { reason = "First install " + (FindPart(dependency)?.PartDisplayName ?? dependency); return false; }
-            if (Recipe.parts.Any(p => p.chapterId == CurrentChapterId && p.order < d.order && !IsPlaced(p.id))) { reason = "Complete the earlier assembly step."; return false; }
+            if (EarlierStepPending(d)) { reason = "Complete the earlier assembly step."; return false; }
             if(RequiresWorkpieceOrientation && !OrientationReady(d)) { reason=d.orientation==AssemblyOrientation.UpsideDown?"Turn this workpiece upside down with F before fitting this part.":"Turn this workpiece upright with F before fitting this part.";return false; }
             return true;
         }

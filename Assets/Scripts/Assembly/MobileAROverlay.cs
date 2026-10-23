@@ -49,23 +49,23 @@ namespace EngineAssembly
             var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.matchWidthOrHeight=.5f;
             safe=Rect("Safe area",go.transform);safe.anchorMin=Vector2.zero;safe.anchorMax=Vector2.one;safe.offsetMin=safe.offsetMax=Vector2.zero;
             panel=Rect("AR status",safe);panel.anchorMin=panel.anchorMax=new Vector2(.5f,1);panel.pivot=new Vector2(.5f,1);panel.anchoredPosition=new Vector2(0,-230);panel.sizeDelta=new Vector2(580,210);
-            var image=panel.gameObject.AddComponent<Image>();WorkshopUIArt.Card(image);image.color=new Color(1,1,1,.96f);
+            var image=panel.gameObject.AddComponent<Image>();WorkshopUIArt.Card(image);image.color=WorkshopTheme.Surface;
             title=Text("Title",panel,new Vector2(22,-14),new Vector2(536,40),25,true);
             description=Text("Guidance",panel,new Vector2(22,-56),new Vector2(536,65),20,false);UpdateSafeArea();
         }
         WorkshopCard Card(string label,Action action,Vector2 position,Vector2 size)
         {
             var rect=Rect(label,panel);rect.anchorMin=rect.anchorMax=Vector2.zero;rect.pivot=Vector2.zero;rect.anchoredPosition=position;rect.sizeDelta=size;
-            var image=rect.gameObject.AddComponent<Image>();WorkshopUIArt.Card(image);image.color=new Color(.02f,.42f,.46f);
-            var card=rect.gameObject.AddComponent<WorkshopCard>();card.normal=image.color;card.highlight=new Color(.04f,.55f,.57f);card.clicked=action;
-            var text=Text(label,rect,Vector2.zero,size,19,true);text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=text.rectTransform.offsetMax=Vector2.zero;text.alignment=TextAlignmentOptions.Center;text.color=Color.white;
+            var image=rect.gameObject.AddComponent<Image>();WorkshopUIArt.Card(image);image.color=WorkshopTheme.AccentWash;
+            var card=rect.gameObject.AddComponent<WorkshopCard>();card.normal=image.color;card.highlight=WorkshopTheme.Hover;card.clicked=action;
+            var text=Text(label,rect,Vector2.zero,size,19,true);text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=text.rectTransform.offsetMax=Vector2.zero;text.alignment=TextAlignmentOptions.Center;text.color=WorkshopTheme.Text;
             return card;
         }
         static RectTransform Rect(string name,Transform parent){var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);return rect;}
         static TextMeshProUGUI Text(string label,Transform parent,Vector2 position,Vector2 size,float fontSize,bool bold)
         {
             var rect=Rect(label,parent);rect.anchorMin=rect.anchorMax=Vector2.up;rect.pivot=Vector2.up;rect.anchoredPosition=position;rect.sizeDelta=size;
-            var text=rect.gameObject.AddComponent<TextMeshProUGUI>();text.text=label;text.font=Resources.Load<TMP_FontAsset>(bold?"WorkshopHeading":"WorkshopBody");text.fontSize=fontSize;text.color=new Color(.08f,.14f,.2f);text.raycastTarget=false;return text;
+            var text=rect.gameObject.AddComponent<TextMeshProUGUI>();text.text=label;text.font=Resources.Load<TMP_FontAsset>(bold?"WorkshopHeading":"WorkshopBody");text.fontSize=fontSize;text.color=WorkshopTheme.Text;text.raycastTarget=false;return text;
         }
         public void SetStatus(string heading,string guidance,bool canPlace,bool placed)
         {

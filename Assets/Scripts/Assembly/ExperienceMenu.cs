@@ -10,6 +10,10 @@ namespace EngineAssembly
 {
     public sealed class ExperienceMenu : MonoBehaviour
     {
+        public static bool MobileWorkshopRequested { get; private set; }
+        public static string RequestedChapter="";
+        public static bool MobileRepairRequested;
+        int deviceMode;
         public enum Page { Home, Experiences, Options }
         public Page CurrentPage { get; private set; }
         RectTransform safe,content;
@@ -19,6 +23,7 @@ namespace EngineAssembly
         static readonly Color Ink=WorkshopTheme.Background,Panel=WorkshopTheme.Surface,Mint=WorkshopTheme.Accent,White=WorkshopTheme.Text,Muted=WorkshopTheme.Muted;
         void Awake()
         {
+            deviceMode=QuestVRSession.IsQuestModel(SystemInfo.deviceModel)?2:0;
             Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
             body=Resources.Load<TMP_FontAsset>("WorkshopBody");heading=Resources.Load<TMP_FontAsset>("WorkshopHeading");
             AudioListener.volume=PlayerPrefs.GetFloat("Assembly.Volume",1);
@@ -34,7 +39,9 @@ namespace EngineAssembly
                 events.AddComponent<StandaloneInputModule>();
 #endif
             }
-            safe=Rect("Safe area",canvasObject.transform);Stretch(safe);content=Rect("Menu content",safe);Stretch(content);Show(Page.Home);
+            safe=Rect("Safe area",canvasObject.transform);Stretch(safe);
+            var grid=Rect("Drafting grid",safe);Stretch(grid);var texture=grid.gameObject.AddComponent<UnityEngine.UI.RawImage>();texture.texture=WorkshopUIArt.DraftGrid;texture.uvRect=new Rect(0,0,16,10);texture.raycastTarget=false;
+            content=Rect("Menu content",safe);Stretch(content);Show(Page.Home);
             if(Camera.main){Camera.main.backgroundColor=Ink;Camera.main.clearFlags=CameraClearFlags.SolidColor;}
         }
         void Update()
@@ -48,44 +55,71 @@ namespace EngineAssembly
             CurrentPage=page;foreach(Transform child in content){child.gameObject.SetActive(false);Destroy(child.gameObject);}Canvas.ForceUpdateCanvases();
             if(enginePreview)enginePreview.gameObject.SetActive(page==Page.Home);
             float width=content.rect.width;
-            Text(content,"ENGINE / LAB",20,Mint,48,30,width-96,30,true);
-            Text(content,page==Page.Home?"Your engine.\nYour experience.":page==Page.Experiences?"Select experience":"Make it your workshop",page==Page.Home?52:44,White,48,90,width-96,page==Page.Home?170:66,true);
+            Text(content,"ENGINE / LAB",20,Mint,40,26,width-80,32,true);
+            Text(content,page==Page.Home?"Learn the engine. Build it yourself.":page==Page.Experiences?"Choose your experience":"Settings",page==Page.Home?42:38,White,40,84,width-80,96,true);
             if(page==Page.Home)
             {
-                Text(content,"Build, explore and repair a three-cylinder engine.",20,Muted,50,270,width-100,56);
-                float w=Mathf.Min(580,width-96);
-                ActionCard("SELECT EXPERIENCE","Choose your platform and activity",()=>Show(Page.Experiences),48,335,w,92,true);
-                ActionCard("OPTIONS","Snap difficulty and sound",()=>Show(Page.Options),48,449,w,92);
-                ActionCard("QUIT GAME","Leave Engine / Lab",Quit,48,563,w,92);
+                Text(content,"A guided workshop in assembly, repair and engine systems.",20,Muted,42,188,width-84,64);
+                float w=Mathf.Min(550,width-80);
+                ActionCard("ENTER WORKSHOP","Choose assembly, repair or engine display",()=>Show(Page.Experiences),40,290,w,100,true);
+                ActionCard("SETTINGS","Placement difficulty and sound",()=>Show(Page.Options),40,410,w,82);
+                ActionCard("QUIT","",Quit,40,510,w,66);
             }
             else if(page==Page.Experiences)
             {
-                Text(content,"One engine. Four ways to explore it.",20,Muted,50,165,width-96,35);
-                float w=(width-116)/2;
-                ExperienceCard("01 / WINDOWS","Engine assembly","Carry components, build subassemblies and complete each chapter.","PLAY WORKSHOP  →",()=>Launch("AssemblyWorkshop"),48,230,w,true);
-                ExperienceCard("02 / ANDROID · AR","Engine display","Place the engine on a real surface. Explore its timeline and components. Phone view is available when AR cannot run.","EXPLORE ENGINE  →",()=>Launch("MobileDisplayAR"),68+w,230,w,true);
-                ExperienceCard("03 / ANDROID · AR","Engine assembly","Scan a surface, place the engine and build with the part cards. Phone view is available when AR cannot run.","BUILD ENGINE  →",()=>Launch("MobileAssemblyAR"),48,495,w,true);
-                ExperienceCard("04 / META QUEST 2 · VR","Engine repair","Walk around the engine or use the sticks to move and teleport. Grab components and operate the lift controls.","REPAIR ENGINE  →",()=>Launch("RepairVRFallback"),68+w,495,w,true);
+                Text(content,"Choose where to work, then choose an activity.",19,Muted,42,175,width-84,40);
+                float tab=(width-104)/3;
+                string[] modes={Application.isMobilePlatform?"PHONE WORKSHOP":"PC WORKSHOP","AUGMENTED REALITY","VIRTUAL REALITY"};
+                for(int i=0;i<3;i++){int index=i;ActionCard(modes[i],"",()=>{deviceMode=index;Show(Page.Experiences);},40+i*(tab+12),232,tab,56,i==deviceMode);}
+                bool narrow=width<1000;float w=narrow?width-80:(width-112)/3;
+                string[] names={"Engine assembly","Engine repair","Engine display"};
+                string[] descriptions={"Build the engine one chapter at a time. Learn why every part is needed.","Open the timing drive, replace a worn bearing and put the system back together.","Select components to hear how they work. Explore the complete engine."};
+                for(int i=0;i<3;i++){int activity=i;float x=narrow?40:40+i*(w+16),y=narrow?322+i*184:338;
+                    ActivityCard(i,names[i],descriptions[i],()=>LaunchActivity(activity),x,y,w,narrow);}
             }
             else
             {
-                Text(content,"Assembly snap difficulty",23,White,50,220,width-96,42,true);
-                string[] labels={"HARD","MEDIUM","EASY"};string[] descriptions={"Position and orientation","Position only","Carry, aim at the ghost and click"};
-                int selected=PlayerPrefs.GetInt("Assembly.SnapDifficulty",0);float w=(width-136)/3;
-                for(int i=0;i<3;i++){int index=i;ActionCard(labels[i]+(i==selected?"  /  ACTIVE":""),descriptions[i],()=>{PlayerPrefs.SetInt("Assembly.SnapDifficulty",index);PlayerPrefs.Save();Show(Page.Options);},48+i*(w+20),280,w,130,i==selected);}
-                WorkshopVolumeSlider.Create(content,50,465,width-100);
+                Text(content,"Placement difficulty",20,White,42,230,width-84,36,true);
+                string[] labels={"Hard","Medium","Easy"};string[] descriptions={"Position and orient each component.","Position each component; rotation is assisted.","Carry a component and select its visible target."};
+                int selected=PlayerPrefs.GetInt("Assembly.SnapDifficulty",0);float w=Mathf.Min(170,(width-104)/3);
+                for(int i=0;i<3;i++){int index=i;ActionCard(labels[i],"",()=>{PlayerPrefs.SetInt("Assembly.SnapDifficulty",index);Show(Page.Options);},40+i*(w+12),290,w,56,i==selected);}
+                Text(content,descriptions[Mathf.Clamp(selected,0,2)],18,Muted,42,370,width-84,64);
+                WorkshopVolumeSlider.Create(content,42,475,Mathf.Min(880,width-84));
             }
-            if(page!=Page.Home)ActionCard("← MAIN MENU","",()=>Show(Page.Home),48,785,260,64);
-            Text(content,"ENGINEERING · LEARN BY BUILDING",12,Muted,48,content.rect.height-40,width-96,25);
+            if(page!=Page.Home)ActionCard("BACK","",()=>Show(Page.Home),40,content.rect.height-105,180,58);
+            Text(content,"EXPLORE  /  UNDERSTAND  /  BUILD",12,Muted,40,content.rect.height-35,width-80,24);
         }
-        void ExperienceCard(string platform,string title,string description,string action,Action click,float x,float y,float w,bool available)
+        void LaunchActivity(int activity)
+        {
+            if(deviceMode==1){MobileRepairRequested=activity==1;Launch(activity==2?"MobileDisplayAR":"MobileAssemblyAR");return;}
+            RequestedChapter=activity==1?PCRepairChapter.ChapterId:activity==2?PCDisplayChapter.ChapterId:"";
+            if(deviceMode==2){MobileWorkshopRequested=false;Launch("AssemblyWorkshop");if(QuestVRSession.Instance && QuestVRSession.IsQuestModel(SystemInfo.deviceModel))QuestVRSession.Instance.Request();}
+            else LaunchDesktopWorkshop();
+        }
+        void ActivityCard(int index,string title,string description,Action click,float x,float y,float w,bool compact)
+        {
+            var card=Card(content,x,y,w,compact?168:350,click);
+            var imageFrame=Rect("Experience image frame",card.transform);Place(imageFrame,12,12,compact?132:w-24,compact?144:144);imageFrame.gameObject.AddComponent<UnityEngine.UI.Image>();imageFrame.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic=false;
+            var picture=Rect("Experience artwork",imageFrame);Stretch(picture);var image=picture.gameObject.AddComponent<UnityEngine.UI.RawImage>();var art=Resources.Load<AssemblyChapterArtwork>("AssemblyChapterArtwork");image.texture=art?art.PresentationImage(EngineLearningContent.Data.recipeTitle,index==0?"chapter-1":index==1?"chapter-5":"chapter-9"):null;image.raycastTarget=false;picture.gameObject.AddComponent<CroppedArtwork>();
+            float left=compact?162:22,top=compact?18:174,width=compact?w-184:w-44;
+            Text(card.transform,(index+1).ToString("00")+" / "+title,23,White,left,top,width,38,true);
+            Text(card.transform,description,17,Muted,left,top+47,width,compact?62:78);
+            Text(card.transform,index==2?"EXPLORE ENGINE  →":"ENTER WORKSHOP  →",14,Mint,left,compact?132:308,width,26,true);
+        }
+        void ExperienceCard(string platform,string title,string description,string action,Action click,float x,float y,float w,bool available,Action phoneClick=null)
         {
             var card=Card(content,x,y,w,240,click);card.interactable=available;
-            var accent=Rect("Accent",card.transform);Place(accent,0,0,w,3);accent.gameObject.AddComponent<UnityEngine.UI.Image>().color=available?Mint:new Color(.95f,.65f,.32f);
+            var accent=Rect("Accent",card.transform);Place(accent,0,0,w,3);accent.gameObject.AddComponent<UnityEngine.UI.Image>().color=WorkshopTheme.Brass;
             Text(card.transform,platform,14,available?Mint:Muted,22,24,w-44,25,true);
             Text(card.transform,title,28,White,22,61,w-44,62,true);
             Text(card.transform,description,17,Muted,22,126,w-44,66);
-            Text(card.transform,action,13,available?Mint:Muted,22,206,w-44,23,true);
+            Text(card.transform,action,13,available?Mint:Muted,22,206,phoneClick==null?w-44:(w-44)*.44f,23,true);
+            if(phoneClick!=null)
+            {
+                var mobile=Card(card.transform,w-190,197,170,36,phoneClick);mobile.name="Play workshop on phone";
+                mobile.normal=WorkshopTheme.AccentWash;mobile.GetComponent<UnityEngine.UI.Image>().color=mobile.normal;
+                Text(mobile.transform,"PLAY ON PHONE  →",12,Mint,10,8,150,24,true);
+            }
         }
         void ActionCard(string title,string description,Action click,float x,float y,float w,float h,bool accent=false)
         {
@@ -103,8 +137,15 @@ namespace EngineAssembly
         static RectTransform Rect(string name,Transform parent){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);return r;}
         static void Stretch(RectTransform r){r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;}
         static void Place(RectTransform r,float x,float y,float w,float h){r.anchorMin=r.anchorMax=Vector2.up;r.pivot=Vector2.up;r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);}
-        public static void Launch(string scene){Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;SceneManager.LoadScene(scene);if(scene=="RepairVRFallback" && QuestVRSession.Instance && !QuestVRSession.Instance.Active)QuestVRSession.Instance.Request();}
-        public static void GoHome()=>Launch("MainMenu");
+        public static void LaunchMobileWorkshop()
+        {
+            MobileWorkshopRequested=true;
+            if(Application.isMobilePlatform)Screen.orientation=ScreenOrientation.LandscapeLeft;
+            Launch("AssemblyWorkshop");
+        }
+        public static void LaunchDesktopWorkshop(){if(Application.isMobilePlatform && !QuestVRSession.IsQuestModel(SystemInfo.deviceModel)){LaunchMobileWorkshop();return;}MobileWorkshopRequested=false;Launch("AssemblyWorkshop");}
+        public static void Launch(string scene){if(scene!="AssemblyWorkshop")MobileWorkshopRequested=false;if(scene=="MainMenu" && Application.isMobilePlatform)Screen.orientation=ScreenOrientation.Portrait;Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;SceneManager.LoadScene(scene);if(scene=="RepairVRFallback" && QuestVRSession.Instance && !QuestVRSession.Instance.Active)QuestVRSession.Instance.Request();}
+        public static void GoHome(){RequestedChapter="";MobileRepairRequested=false;Launch("MainMenu");}
         static void Quit()
         {
 #if UNITY_EDITOR

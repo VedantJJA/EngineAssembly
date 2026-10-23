@@ -21,6 +21,7 @@ namespace EngineAssembly
         AssemblyManager manager;
         PlayerAssemblyController player;
         Canvas canvas;
+        public Canvas WorkshopCanvas=>canvas;
         RectTransform surface,hud;
         TextMeshProUGUI hudTitle,hudStatus,hudHelp,notice;
         TextMeshProUGUI carryStatus;
@@ -39,6 +40,7 @@ namespace EngineAssembly
         float savedTimeScale=1;
         Page settingsBack=Page.Pause;
         static readonly Color Ink=WorkshopTheme.Background,Panel=WorkshopTheme.Surface,Muted=WorkshopTheme.Muted,White=WorkshopTheme.Text,Mint=WorkshopTheme.Accent,Hover=WorkshopTheme.Hover;
+        static readonly Color OverlayText=WorkshopTheme.OverlayText,OverlayMuted=WorkshopTheme.OverlayMuted;
         void Awake()
         {
             manager=GetComponent<AssemblyManager>();bodyFont=Resources.Load<TMP_FontAsset>("WorkshopBody");headingFont=Resources.Load<TMP_FontAsset>("WorkshopHeading");
@@ -57,33 +59,52 @@ namespace EngineAssembly
                 events.transform.SetParent(transform,false);
             }
             hud=Rect("Workshop HUD",root.transform);Stretch(hud);
-            Box(hud,new Color(1,1,1,.95f),24,20,580,110).name="Chapter status card";
-            hudTitle=Label(hud,"",24,White,38,28,548,38);
-            hudStatus=Label(hud,"",17,Mint,38,68,548,50);
+            var header=Box(hud,Panel,20,16,1400,112);header.name="Workshop header";header.anchorMax=Vector2.one;header.offsetMax=new Vector2(-20,-16);header.offsetMin=new Vector2(20,-128);
+            Label(header,"ENGINE / LAB",13,Mint,20,10,420,22,true);
+            hudTitle=Label(header,"",22,White,20,35,780,34);
+            hudStatus=Label(header,"",14,Muted,20,72,780,34);
+            foreach(var label in new[]{hudTitle,hudStatus}){var r=label.rectTransform;r.anchorMax=Vector2.one;r.offsetMax=new Vector2(-550,r.offsetMax.y);}
+            ActionCard(header,"SECTION 0",OpenTutorial,0,15,150,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-510);
+            ActionCard(header,"CHAPTERS / TAB",()=>Open(Page.Chapters),0,15,174,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-346);
+            ActionCard(header,"PAUSE / ESC",()=>Open(Page.Pause),0,15,150,42);AnchorHeaderAction(header.GetChild(header.childCount-1),-158);
+            var pointerHelp=Label(header,"Hold ALT to use these controls",12,Muted,0,78,470,22);pointerHelp.alignment=TextAlignmentOptions.Right;pointerHelp.rectTransform.anchorMin=pointerHelp.rectTransform.anchorMax=Vector2.one;pointerHelp.rectTransform.pivot=Vector2.one;pointerHelp.rectTransform.anchoredPosition=new Vector2(-16,-76);
             var crosshair=Rect("Inverting crosshair",hud);crosshair.gameObject.AddComponent<InvertingCrosshair>();
             crosshair.anchorMin=crosshair.anchorMax=new Vector2(.5f,.5f);crosshair.sizeDelta=new Vector2(32,32);
             crosshair.pivot=new Vector2(.5f,.5f);crosshair.anchoredPosition=Vector2.zero;
+            if(ExperienceMenu.MobileWorkshopRequested)crosshair.gameObject.SetActive(false);
             inventoryPanel=Box(hud,Ink,0,0,430,132);inventoryPanel.name="Held inventory";
             inventoryPanel.anchorMin=inventoryPanel.anchorMax=Vector2.zero;inventoryPanel.pivot=Vector2.zero;inventoryPanel.anchoredPosition=new Vector2(28,28);
             var icon=Box(inventoryPanel,Panel,12,12,108,108);icon.name="Inventory item card";
             var art=Rect("Inventory artwork",icon);Place(art,6,6,96,96);inventoryIcon=art.gameObject.AddComponent<UnityEngine.UI.RawImage>();inventoryIcon.raycastTarget=false;
             inventoryCount=Label(icon,"",20,White,44,70,62,36,true);inventoryCount.alignment=TextAlignmentOptions.Right;inventoryCount.textWrappingMode=TextWrappingModes.NoWrap;
-            inventoryCounterMaterial=new Material(inventoryCount.fontSharedMaterial);inventoryCount.fontMaterial=inventoryCounterMaterial;inventoryCount.outlineColor=Color.white;inventoryCount.outlineWidth=.22f;inventoryCount.UpdateMeshPadding();
+            inventoryCounterMaterial=new Material(inventoryCount.fontSharedMaterial);inventoryCount.fontMaterial=inventoryCounterMaterial;inventoryCount.color=WorkshopTheme.Accent;inventoryCount.outlineColor=Color.white;inventoryCount.outlineWidth=.32f;inventoryCount.UpdateMeshPadding();
             inventoryTitle=Label(inventoryPanel,"",19,White,140,17,276,58,true);
             carryStatus=Label(inventoryPanel,"",14,Mint,140,88,276,28);
-            hudHelp=Label(hud,"",15,White,0,0,600,48);hudHelp.rectTransform.anchorMin=hudHelp.rectTransform.anchorMax=new Vector2(.5f,.5f);hudHelp.rectTransform.pivot=new Vector2(.5f,1);hudHelp.rectTransform.anchoredPosition=new Vector2(0,-28);hudHelp.alignment=TextAlignmentOptions.Center;
+            hudHelp=Label(hud,"",15,OverlayText,0,0,600,48);hudHelp.rectTransform.anchorMin=hudHelp.rectTransform.anchorMax=new Vector2(.5f,.5f);hudHelp.rectTransform.pivot=new Vector2(.5f,1);hudHelp.rectTransform.anchoredPosition=new Vector2(0,-28);hudHelp.alignment=TextAlignmentOptions.Center;
+            hudHelp.outlineColor=new Color(.02f,.06f,.07f,.9f);hudHelp.outlineWidth=.16f;hudHelp.UpdateMeshPadding();
             AssemblyCaptionPresenter.Create(hud,manager,false);
             ActionCard(hud,"NEXT STEP  ·  N",()=>GetComponent<AssemblyStepAssist>()?.NextStep(),0,0,240,52,true);
             var assistCard=(RectTransform)hud.GetChild(hud.childCount-1);assistCard.anchorMin=assistCard.anchorMax=Vector2.right;assistCard.pivot=Vector2.right;assistCard.anchoredPosition=new Vector2(-28,28);
+            if(ExperienceMenu.MobileWorkshopRequested)
+            {
+                inventoryPanel.anchorMin=inventoryPanel.anchorMax=new Vector2(.5f,0);inventoryPanel.pivot=new Vector2(.5f,0);inventoryPanel.anchoredPosition=new Vector2(0,16);
+                assistCard.anchorMin=assistCard.anchorMax=Vector2.one;assistCard.pivot=Vector2.one;assistCard.anchoredPosition=new Vector2(-24,-145);
+            }
             stepAssistCard=assistCard.GetComponent<WorkshopCard>();
             surface=Rect("Menu",root.transform);Stretch(surface);
-            var bg=surface.gameObject.AddComponent<UnityEngine.UI.Image>();bg.color=new Color(Ink.r,Ink.g,Ink.b,.78f);bg.raycastTarget=true;
+            var bg=surface.gameObject.AddComponent<UnityEngine.UI.Image>();bg.color=WorkshopTheme.Overlay;bg.raycastTarget=true;
             savedTimeScale=Time.timeScale;Time.timeScale=0;
         }
         void OnDestroy(){if(inventoryCounterMaterial)Destroy(inventoryCounterMaterial);}
-        void Start() { if(!GetComponent<PCRepairChapter>())gameObject.AddComponent<PCRepairChapter>();player=FindAnyObjectByType<PlayerAssemblyController>();if(player){var arrow=Rect("Quest arrow",hud);questArrow=arrow.gameObject.AddComponent<WorkshopQuestArrow>();questArrow.Configure(hud,manager,player,bodyFont);}Rebuild(); }
+        void Start() { if(!GetComponent<PCRepairChapter>())gameObject.AddComponent<PCRepairChapter>();if(!GetComponent<PCDisplayChapter>())gameObject.AddComponent<PCDisplayChapter>();player=FindAnyObjectByType<PlayerAssemblyController>();if(player){var arrow=Rect("Quest arrow",hud);questArrow=arrow.gameObject.AddComponent<WorkshopQuestArrow>();questArrow.Configure(hud,manager,player,bodyFont);}Rebuild(); }
         void Update()
         {
+            if(WorkshopTutorial.BlocksInput)return;
+            if(manager.Recipe!=null && !string.IsNullOrEmpty(ExperienceMenu.RequestedChapter))
+            {
+                int requested=manager.Recipe.chapters.FindIndex(c=>c.id==ExperienceMenu.RequestedChapter);
+                if(requested>=0){ExperienceMenu.RequestedChapter="";manager.SelectChapter(requested);SetOpen(false);}
+            }
             if(stepAssistCard){var assist=GetComponent<AssemblyStepAssist>();stepAssistCard.interactable=assist && assist.Available;stepAssistCard.gameObject.SetActive(manager.Mode==WorkshopMode.Assembly && manager.Task==AssemblyTask.Assemble && !manager.RepairActive);}
             if(!IsOpen && InputHelper.IsKeyDown(KeyCode.N))GetComponent<AssemblyStepAssist>()?.NextStep();
             if(InputHelper.IsKeyDown(KeyCode.F6))
@@ -102,6 +123,7 @@ namespace EngineAssembly
             if(!IsOpen && manager.Mode==WorkshopMode.Assembly && manager.ChapterComplete && InputHelper.IsKeyDown(KeyCode.Return))manager.ContinueChapter();
             if(hudTitle)hudTitle.text=(manager.Mode==WorkshopMode.Edit?"EDITOR  ·  ":"CHAPTER "+(manager.CurrentChapterIndex+1)+"  ·  ")+(manager.Recipe==null?"Workshop":manager.Recipe.chapters[manager.CurrentChapterIndex].title);
             if(hudStatus)hudStatus.text=manager.ChapterInstalledCount+" / "+manager.ChapterPartCount+(manager.RepairActive?" steps":" parts")+"  ·  "+manager.Difficulty+(manager.ChapterComplete?"  ·  Chapter complete":"")+(GetComponent<WorkpieceLift>() is WorkpieceLift lift?"\nLift · "+lift.ActiveLabel:"");
+            if(manager.DisplayActive && hudTitle && hudStatus){hudTitle.text="ENGINE DISPLAY";hudStatus.text="Click a visible component to hear how it works.";}
             int count=player && player.Inventory?player.Inventory.Count:0;inventoryPanel.gameObject.SetActive(count>0);
             if(count>0)
             {
@@ -113,6 +135,8 @@ namespace EngineAssembly
             if(hudHelp)hudHelp.text=player?player.HoverMessage:"";
         }
         void ReleaseHeld() { if(!player)player=FindAnyObjectByType<PlayerAssemblyController>();if(player)player.DropHeldPart(); }
+        static void AnchorHeaderAction(Transform child,float x){var rect=(RectTransform)child;rect.anchorMin=rect.anchorMax=Vector2.one;rect.pivot=Vector2.up;rect.anchoredPosition=new Vector2(x,-15);}
+        public void OpenTutorial(){SetOpen(false);WorkshopTutorial.Open(gameObject);}
         public void Toggle()=>Open(IsOpen?Page.Closed:Page.Chapters);
         public void SetOpen(bool open)=>Open(open?Page.Chapters:Page.Closed);
         public void Open(Page page)
@@ -122,7 +146,7 @@ namespace EngineAssembly
             if(wasOpen && page==Page.Closed)Time.timeScale=savedTimeScale;
             if(page==Page.Chapters && CurrentPage!=Page.Chapters)browseChapterIndex=manager.CurrentChapterIndex;
             CurrentPage=page;surface.gameObject.SetActive(IsOpen);hud.gameObject.SetActive(!IsOpen);
-            Cursor.lockState=IsOpen?CursorLockMode.None:CursorLockMode.Locked;Cursor.visible=IsOpen;
+            Cursor.lockState=IsOpen || ExperienceMenu.MobileWorkshopRequested?CursorLockMode.None:CursorLockMode.Locked;Cursor.visible=IsOpen;
             if(IsOpen)Rebuild();
         }
         void OnDisable() { if(IsOpen)Time.timeScale=savedTimeScale;Cursor.lockState=CursorLockMode.None;Cursor.visible=true; }
@@ -132,11 +156,12 @@ namespace EngineAssembly
             if(!surface)return;
             foreach(Transform child in surface) { child.gameObject.SetActive(false);Destroy(child.gameObject); }
             hud.gameObject.SetActive(!IsOpen);
-            Label(surface,"ENGINE / LAB",18,Mint,48,30,420,28,true);
-            Label(surface,manager.Mode==WorkshopMode.Edit?"EDITOR WORKSPACE":"THREE-CYLINDER WORKSHOP",13,Muted,935,34,450,24);
+            var shade=Box(surface,WorkshopTheme.Overlay,0,0,1440,900);shade.name="Workshop menu scrim";Stretch(shade);
+            Label(surface,"ENGINE / LAB",18,OverlayText,48,30,420,28,true);
+            Label(surface,manager.Mode==WorkshopMode.Edit?"EDITOR WORKSPACE":"THREE-CYLINDER WORKSHOP",13,OverlayMuted,935,34,450,24);
             string title=CurrentPage==Page.Chapters?"Choose your chapter":CurrentPage==Page.Pause?"Workshop paused":CurrentPage==Page.Settings?"Settings":CurrentPage==Page.Controls?"Controls":CurrentPage==Page.Author?"Chapter editor":"Recipe library";
-            Label(surface,title,42,White,48,74,1120,60,true);
-            Label(surface,CurrentPage==Page.Chapters?"Build an engine, one system at a time.":CurrentPage==Page.Author?"Arrange the sequence. Give equal priorities to interchangeable fasteners.":CurrentPage==Page.Settings?"Choose how precisely each part needs to be placed.":"Take your time. Your current assembly stays here.",18,Muted,50,139,1220,40);
+            Label(surface,title,42,OverlayText,48,74,1120,60,true);
+            Label(surface,CurrentPage==Page.Chapters?"Choose a section to assemble.":CurrentPage==Page.Author?"Set the order and save the recipe.":CurrentPage==Page.Settings?"Choose how precisely each part needs to be placed.":"Your assembly is paused.",18,OverlayMuted,50,139,1220,40);
             ActionCard(surface,"RETURN  /  ESC",()=>SetOpen(false),1190,80,200,46);
             if(CurrentPage==Page.Chapters)Chapters();
             else if(CurrentPage==Page.Pause)PauseMenu();
@@ -144,8 +169,8 @@ namespace EngineAssembly
             else if(CurrentPage==Page.Author)Author();
             else if(CurrentPage==Page.Library)Library();
             else if(CurrentPage==Page.Controls)Controls();
-            var line=Box(surface,WorkshopTheme.Border,48,832,1344,1);line.name="Footer rule";
-            notice=Label(surface,string.IsNullOrEmpty(message)?(dirty?"Unsaved recipe changes — use Save JSON in the chapter editor.":"TAB  Chapters     F6  "+(manager.Mode==WorkshopMode.Edit?"Switch to play":"Switch to editor")+"     ESC  Pause"):message,14,string.IsNullOrEmpty(message)?Muted:new Color(1,.66f,.4f),48,848,1344,38);
+            var line=Box(surface,new Color(1,1,1,.3f),48,832,1344,1);line.name="Footer rule";
+            notice=Label(surface,string.IsNullOrEmpty(message)?(dirty?"Unsaved recipe changes - use Save JSON in the chapter editor.":"TAB  Chapters     F6  "+(manager.Mode==WorkshopMode.Edit?"Switch to play":"Switch to editor")+"     ESC  Pause"):message,14,string.IsNullOrEmpty(message)?OverlayMuted:new Color(1,.78f,.48f),48,848,1344,38);
         }
         public void BrowseChapter(int delta)
         {
@@ -157,58 +182,84 @@ namespace EngineAssembly
             if(manager.Recipe==null){Label(surface,"Load an assembly recipe to begin.",22,White,50,230,900,60);return;}
             browseChapterIndex=Mathf.Clamp(browseChapterIndex,0,manager.Recipe.chapters.Count-1);
             var list=Scroll(surface,48,208,1344,500,3,428,284);list.name="Chapter card grid";
+            var tutorial=Card(list,428,284,OpenTutorial);tutorial.name="Section 0 card";
+            Box(tutorial.transform,WorkshopTheme.AccentWash,12,12,404,156);
+            Label(tutorial.transform,"00",76,Mint,32,24,168,100,true);
+            Label(tutorial.transform,"LEARN THE\nWORKSHOP",24,White,194,36,206,90,true);
+            Label(tutorial.transform,"SECTION 0 · CONTROLS AND FEATURES",12,Mint,16,176,396,22,true);
+            Label(tutorial.transform,"Start with the essentials",23,White,16,200,396,44,true);
+            Label(tutorial.transform,"OPEN PLATFORM GUIDE →",13,Mint,16,254,396,22,true);
             for(int i=0;i<manager.Recipe.chapters.Count;i++)
             {
-                int index=i;var chapter=manager.Recipe.chapters[i];bool repair=chapter.id==PCRepairChapter.ChapterId;
+                int index=i;var chapter=manager.Recipe.chapters[i];bool repair=chapter.id==PCRepairChapter.ChapterId;bool display=chapter.id==PCDisplayChapter.ChapterId;
                 if(repair && manager.Mode==WorkshopMode.Edit)continue;
                 int count=manager.Recipe.parts.Count(p=>p.chapterId==chapter.id);
-                var card=Card(list,428,284,()=>{ReleaseHeld();manager.SelectChapter(index);SetOpen(false);},repair || count>0 || manager.Mode==WorkshopMode.Edit);
+                var card=Card(list,428,284,()=>{ReleaseHeld();manager.SelectChapter(index);SetOpen(false);},display || repair || count>0 || manager.Mode==WorkshopMode.Edit);
                 card.name="Chapter card · "+chapter.id;
                 if(index==browseChapterIndex){card.normal=Hover;card.GetComponent<UnityEngine.UI.Image>().color=Hover;}
                 var photo=Box(card.transform,WorkshopTheme.Background,12,12,404,156);photo.name="Chapter image frame";
                 photo.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic=false;
                 var art=Rect("Chapter image",photo);Stretch(art);
-                var raw=art.gameObject.AddComponent<UnityEngine.UI.RawImage>();raw.texture=artwork?artwork.PresentationImage(manager.Recipe.title,repair?"chapter-5":chapter.id):null;raw.color=raw.texture?Color.white:Hover;raw.raycastTarget=false;
+                var raw=art.gameObject.AddComponent<UnityEngine.UI.RawImage>();raw.texture=ChapterImage(chapter.id);raw.color=raw.texture?Color.white:Hover;raw.raycastTarget=false;
                 art.gameObject.AddComponent<CroppedArtwork>();
                 if(!raw.texture)Label(photo,repair?"REPAIR":(index+1).ToString("00"),repair?40:64,Mint,20,16,364,80,true);
-                Label(card.transform,repair?"BONUS · REPLACE AN IDLER BEARING":"CHAPTER "+(index+1).ToString("00")+" · "+(count==0?"DRAFT":count+" PARTS"),12,Mint,16,176,396,22,true);
+                Label(card.transform,display?"EXPLORE · HEAR HOW EACH PART WORKS":repair?"BONUS · REPLACE AN IDLER BEARING":"CHAPTER "+(index+1).ToString("00")+" · "+(count==0?"DRAFT":count+" PARTS"),12,Mint,16,176,396,22,true);
                 Label(card.transform,chapter.title,23,White,16,200,396,44,true);
-                Label(card.transform,manager.Mode==WorkshopMode.Edit?"OPEN IN EDITOR →":repair || count>0?"PLAY CHAPTER →":"EMPTY DRAFT",13,Mint,16,254,396,22,true);
+                Label(card.transform,manager.Mode==WorkshopMode.Edit?"OPEN IN EDITOR →":display?"EXPLORE ENGINE →":repair || count>0?"PLAY CHAPTER →":"EMPTY DRAFT",13,Mint,16,254,396,22,true);
             }
             if(manager.Mode==WorkshopMode.Edit)
             {
                 ActionCard(surface,"EDIT CHAPTERS",()=>Open(Page.Author),48,742,420,54,true);
-                ActionCard(surface,"+ ADD CHAPTER",()=>{manager.AddChapter("Chapter "+(manager.Recipe.chapters.Count(c=>c.id!=PCRepairChapter.ChapterId)+1));browseChapterIndex=manager.CurrentChapterIndex;dirty=true;Open(Page.Author);},510,742,420,54);
+                ActionCard(surface,"+ ADD CHAPTER",()=>{manager.AddChapter("Chapter "+(manager.Recipe.chapters.Count(c=>c.id!=PCRepairChapter.ChapterId && c.id!=PCDisplayChapter.ChapterId)+1));browseChapterIndex=manager.CurrentChapterIndex;dirty=true;Open(Page.Author);},510,742,420,54);
                 ActionCard(surface,"JSON LIBRARY",()=>Open(Page.Library),972,742,420,54);
             }
             else
             {
                 if(!manager.RepairActive)ActionCard(surface,manager.Task==AssemblyTask.Assemble?"TASK: ASSEMBLE":"TASK: DISASSEMBLE",()=>{ReleaseHeld();manager.SetTask(manager.Task==AssemblyTask.Assemble?AssemblyTask.Disassemble:AssemblyTask.Assemble);Rebuild();},48,742,620,54);
-                else Label(surface,"Repair follows its own removal and replacement steps.",16,Muted,48,753,620,42);
+                else Label(surface,"Repair follows its own removal and replacement steps.",16,OverlayMuted,48,753,620,42);
                 ActionCard(surface,manager.ChapterComplete?"CONTINUE →":"RESUME CURRENT →",()=>{if(manager.ChapterComplete){ReleaseHeld();manager.ContinueChapter();}SetOpen(false);},772,742,620,54,true);
             }
+        }
+        Texture2D ChapterImage(string id)
+        {
+            if(!artwork)return null;
+            var assigned=artwork.PresentationImage(manager.Recipe.title,id);
+            return assigned?assigned:artwork.PresentationImage(manager.Recipe.title,id==PCRepairChapter.ChapterId?"chapter-5":id==PCDisplayChapter.ChapterId?"chapter-9":id);
         }
         void PauseMenu()
         {
             string[] labels={"CONTINUE","NEXT STEP · AUTO INSTALL","OPEN CHAPTERS","SETTINGS","MAIN MENU","QUIT GAME"};
             Action[] actions={()=>SetOpen(false),()=>{SetOpen(false);GetComponent<AssemblyStepAssist>()?.NextStep();},()=>Open(Page.Chapters),()=> { settingsBack=Page.Pause;Open(Page.Settings); },ExperienceMenu.GoHome,Quit};
-            for(int i=0;i<labels.Length;i++)ActionCard(surface,labels[i],actions[i],440,200+i*98,560,74,i==0);
+            for(int i=0;i<labels.Length;i++)ActionCard(surface,labels[i],actions[i],48,218+i*80,590,66,i==0);
             var stepCard=surface.GetComponentsInChildren<WorkshopCard>().First(c=>c.GetComponentsInChildren<TextMeshProUGUI>().Any(t=>t.text=="NEXT STEP · AUTO INSTALL"));
             var assist=GetComponent<AssemblyStepAssist>();stepCard.interactable=assist && assist.Available;
+            var preview=Box(surface,Panel,694,218,698,466);preview.name="Current chapter preview";
+            var frame=Box(preview,WorkshopTheme.Background,16,16,666,260);frame.name="Chapter photograph";
+            frame.gameObject.AddComponent<UnityEngine.UI.Mask>().showMaskGraphic=false;
+            var picture=Rect("Chapter artwork",frame);Stretch(picture);
+            var photo=picture.gameObject.AddComponent<UnityEngine.UI.RawImage>();
+            var chapter=manager.Recipe.chapters[manager.CurrentChapterIndex];
+            photo.texture=ChapterImage(chapter.id);
+            photo.color=photo.texture?Color.white:WorkshopTheme.AccentWash;photo.raycastTarget=false;
+            picture.gameObject.AddComponent<CroppedArtwork>();
+            Label(preview,"CURRENT SECTION  /  "+(manager.CurrentChapterIndex+1).ToString("00"),13,Mint,24,293,650,26,true);
+            Label(preview,chapter.title,27,White,24,330,650,43,true);
+            Label(preview,manager.ChapterInstalledCount+" of "+manager.ChapterPartCount+" parts installed",18,Muted,24,390,650,34);
         }
         public void CycleDifficulty(int delta){manager.SetDifficulty((SnapDifficulty)(((int)manager.Difficulty+delta+3)%3));Rebuild();}
         void Settings()
         {
-            var panel=Box(surface,Panel,220,240,1000,286);
-            Label(panel,"SNAP DIFFICULTY",14,Mint,28,25,744,30,true);
-            ActionCard(panel,"‹",()=>CycleDifficulty(-1),28,78,70,68);
-            var value=Label(panel,manager.Difficulty.ToString(),34,White,120,86,744,54,true);value.alignment=TextAlignmentOptions.Center;
-            ActionCard(panel,"›",()=>CycleDifficulty(1),902,78,70,68);
+            var panel=Box(surface,Panel,220,240,1000,144);panel.name="Placement settings";
+            Label(panel,"PART PLACEMENT",17,Mint,28,23,400,30,true);
+            ActionCard(panel,"‹",()=>CycleDifficulty(-1),688,18,48,44);
+            var value=Label(panel,manager.Difficulty.ToString(),21,White,750,23,150,32,true);value.alignment=TextAlignmentOptions.Center;
+            ActionCard(panel,"›",()=>CycleDifficulty(1),924,18,48,44);
             string description=manager.Difficulty==SnapDifficulty.Hard?"Align position and rotation in placement mode, then click or release.":manager.Difficulty==SnapDifficulty.Medium?"Move the part to its ghost in placement mode. Rotation aligns automatically.":"Carry the part, look at its visible ghost and click. No orientation required.";
-            Label(panel,description,20,Muted,28,186,944,70);
-            ActionCard(surface,"CONTROLS",()=>Open(Page.Controls),220,570,1000,68);
-            WorkshopVolumeSlider.Create(surface,220,650,1000);
-            ActionCard(surface,"BACK",()=>Open(settingsBack),220,755,230,52);
+            Label(panel,description,18,Muted,28,77,944,50);
+            ActionCard(surface,"CONTROLS",()=>Open(Page.Controls),220,410,1000,60);
+            var sound=Box(surface,Panel,220,496,1000,95);sound.name="Sound settings";
+            WorkshopVolumeSlider.Create(sound,28,10,944);
+            ActionCard(surface,"BACK",()=>Open(settingsBack),220,620,230,52);
         }
         void Controls()
         {
@@ -275,7 +326,7 @@ namespace EngineAssembly
             {
                 var a=asset;if(a)ActionCard(list,"BUILT IN  /  "+a.name,()=>Run(()=> { manager.LoadRecipe(AssemblyRecipeStore.Parse(a.text));dirty=false;Open(Page.Author); }),0,0,1310,62);
             }
-            Label(surface,"JSON files: "+AssemblyRecipeStore.DirectoryPath,14,Muted,48,737,1344,60);
+            Label(surface,"JSON files: "+AssemblyRecipeStore.DirectoryPath,14,OverlayMuted,48,737,1344,60);
         }
         static void Quit()
         {

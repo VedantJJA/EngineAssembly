@@ -75,28 +75,7 @@
             <action
                 android:name="com.google.android.play.core.install.BIND_INSTALL_SERVICE" />
         </intent>
-
-        <provider
-            android:authorities="org.khronos.openxr.runtime_broker;org.khronos.openxr.system_runtime_broker" />
-
-        <intent>
-
-            <action
-                android:name="org.khronos.openxr.OpenXRRuntimeService" />
-        </intent>
-
-        <intent>
-
-            <action
-                android:name="org.khronos.openxr.OpenXRApiLayerService" />
-        </intent>
     </queries>
-
-    <uses-permission
-        android:name="org.khronos.openxr.permission.OPENXR" />
-
-    <uses-permission
-        android:name="org.khronos.openxr.permission.OPENXR_SYSTEM" />
 
     <uses-permission
         android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
@@ -150,11 +129,11 @@
 
         <meta-data
             android:name="unity.strip-engine-code"
-            android:value="true" />
+            android:value="false" />
 
         <meta-data
             android:name="unity.run-without-focus"
-            android:value="false" />
+            android:value="true" />
 
         <meta-data
             android:name="unity.auto-set-game-state"

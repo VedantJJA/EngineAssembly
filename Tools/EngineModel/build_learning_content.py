@@ -6,6 +6,13 @@ from collections import OrderedDict
 from beginner_instructions import CAPTIONS, EXPLANATIONS
 
 root = Path(__file__).resolve().parents[2]
+# Preserve the reviewed split cue catalogue; the legacy grouping below predates
+# distinct fastener sizes and the beginner lessons.
+existing=root/'Assets/Resources/EngineLearning.json'
+if existing.exists() and json.loads(existing.read_text(encoding='utf-8-sig')).get('version',0)>=3:
+    from rewrite_learning_lessons import main
+    main()
+    raise SystemExit(0)
 recipe = json.loads((root/'Assets/AssemblyRecipes/three-cylinder.json').read_text(encoding='utf-8-sig'))
 parts = recipe['parts']
 by_id = {p['id']: p for p in parts}

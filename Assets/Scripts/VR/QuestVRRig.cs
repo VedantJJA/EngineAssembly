@@ -61,7 +61,7 @@ namespace EngineAssembly
             if(!session || !session.Active)return;BindUI();
             var hp=session.Input("Head/Position").ReadValue<Vector3>();var hr=session.Input("Head/Rotation").ReadValue<Quaternion>();if(Quaternion.Dot(hr,hr)>.1f){head.transform.localPosition=hp+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);head.transform.localRotation=hr;}
             PoseHand(left);PoseHand(right);guard.Refresh();
-            if(session.Input("Left/Menu").WasPressedThisFrame() && ui)ui.Open(ui.IsOpen?AssemblyWorkshopUI.Page.Closed:AssemblyWorkshopUI.Page.Pause);
+            if(session.Input("Left/Menu").WasPressedThisFrame()){if(WorkshopTutorial.IsOpen)WorkshopTutorial.Active.Close();else if(ui)ui.Open(ui.IsOpen?AssemblyWorkshopUI.Page.Closed:AssemblyWorkshopUI.Page.Pause);}
             if(Time.timeScale<=0 || ui && ui.IsOpen){ReleaseLever(left);ReleaseLever(right);StopTeleport();return;}
             if(!manager)return;
             if(transform.position.y<-8)Teleport(spawn);
@@ -82,6 +82,7 @@ namespace EngineAssembly
         void Interact(Hand hand,Hand other)
         {
             if(!hand.tracked)return;var trigger=session.Input(hand.name+"/Trigger");var grip=session.Input(hand.name+"/Grip");var ray=new Ray(hand.aim.position,hand.aim.forward);
+            if(manager && manager.DisplayActive){if(!hand.ray.TryGetCurrentUIRaycastResult(out _) && trigger.WasPressedThisFrame())manager.GetComponent<PCDisplayChapter>()?.Inspect(ray);return;}
             if(hand.lever){if(!hand.lever.Held || !(hand.leverGrip?grip:trigger).IsPressed())ReleaseLever(hand);else hand.lever.SetValue((hand.grip.position.y-hand.leverY)/.1f);return;}
             // Physical controls use controller proximity and grip/touch. Distant
             // ray interaction remains available, but never selects a different lift.

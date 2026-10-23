@@ -88,7 +88,8 @@ namespace EngineAssembly
             s.lever.RefreshColliders();
             var button=Shape("Flip push button",s.panel,PrimitiveType.Cylinder,new Vector3(.14f,0,-.08f),new Vector3(.11f,.017f,.11f),red,true);button.localRotation=Quaternion.Euler(90,0,0);
             // The collider is expressed in the button's small visual mesh scale.
-            var buttonArea=button.gameObject.AddComponent<BoxCollider>();buttonArea.size=new Vector3(1f,2f,1f);
+            var primitiveCollider=button.GetComponent<Collider>();primitiveCollider.enabled=false;Destroy(primitiveCollider);
+            var buttonArea=button.gameObject.AddComponent<MeshCollider>();buttonArea.sharedMesh=button.GetComponent<MeshFilter>().sharedMesh;buttonArea.convex=true;
             s.flip=button.gameObject.AddComponent<LiftControlHandle>();s.flip.Configure(this,index,LiftControlHandle.ControlKind.Flip,null,buttonArea);
             Text(s.panel,"UP",new Vector3(-.18f,.10f,-.079f),.023f);Text(s.panel,"DOWN",new Vector3(-.18f,-.10f,-.079f),.023f);Text(s.panel,"FLIP",new Vector3(.14f,0,-.115f),.028f);
             PositionHardware(s,index);

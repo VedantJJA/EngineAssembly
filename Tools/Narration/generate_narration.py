@@ -78,11 +78,22 @@ def cues():
         dict(id="repair-complete", text="Repair complete. The replacement bearing is fitted and the timing drive is rebuilt.", folder="Repair"),
         dict(id="flip-upright", text="Turn the active workpiece upright before fitting the next part. Press F, or press the flip button beside its lift.", folder="Assembly"),
         dict(id="flip-upside-down", text="Turn the active workpiece upside down before fitting the next part. Press F, or press the flip button beside its lift.", folder="Assembly"),
-        dict(id="inventory-stack", text="You can carry several matching parts together. Pick them up one at a time, then place each at its highlighted position.", folder="Assembly"),
-        dict(id="repeat-piston", text="Build the remaining piston units using the same steps.", folder="Assembly"),
-        dict(id="repeat-valve", text="Repeat this fitting step for the remaining matching valve parts.", folder="Assembly"),
-        dict(id="repeat-matching", text="Repeat this step for the remaining matching parts.", folder="Assembly"),
+        dict(id="repeat-piston", text="Build the remaining piston units using the same steps.", folder="Assembly",sourceIndex=187),
+        dict(id="repeat-valve", text="Repeat this fitting step for the remaining matching valve parts.", folder="Assembly",sourceIndex=188),
+        dict(id="repeat-matching", text="Repeat this step for the remaining matching parts.", folder="Assembly",sourceIndex=189),
     ]
+    for detail in data['details']:
+        identity = detail['voiceId']
+        if identity not in shared:
+            shared[identity] = detail['description']
+            result.append(dict(id=identity, text=detail['description'].replace('\n\n', ' '), folder='Display',
+                               sourceIndex=5000+int(identity[7:15],16)%1000000))
+    operation = json.loads((ROOT / "Assets/Resources/EngineOperationNarration.json").read_text(encoding="utf-8"))
+    for index, cue in enumerate(operation["cues"]):
+        result.append(dict(id=cue["id"], text=cue["text"], folder="Operation", sourceIndex=2000000+index))
+    tutorial = json.loads((ROOT / "Assets/Resources/WorkshopTutorial.json").read_text(encoding="utf-8"))
+    for index, cue in enumerate(tutorial["lessons"]):
+        result.append(dict(id=cue["id"], text=cue["text"], folder="Tutorial", sourceIndex=3000000+index))
     identity = reference_identity()
     # Keep the original repair/completion seeds stable when new assembly cues
     # are inserted. New assembly cue indices use a separate range above.
@@ -94,6 +105,9 @@ def cues():
         index = item["sourceIndex"]
         item.update(file=f"{item['folder']}/{item['id']}.wav", seed=SEED+index,
                     textHash=digest(item["text"], index), voiceIdentity=identity)
+    text_path=ROOT/'Assets/Resources/NarrationText.json'
+    existing={c['id']:c for c in json.loads(text_path.read_text()).get('cues',[])} if text_path.exists() else {}
+    atomic_json(text_path, {'cues': [existing[i['id']] if i['id'] in existing and existing[i['id']]['text']==i['text'] else dict(id=i['id'],text=i['text']) for i in result]})
     return result
 
 def atomic_json(path, value):
@@ -210,6 +224,17 @@ def main():
                                      audioSHA256=file_hash(path), promptSHA256=prompt_hash)
         save()
         del wavs, audio
+    if len(completed)==len(items):
+        expected={item['file'] for item in items}
+        archive=ROOT/'Backups/Narration'/time.strftime('%Y%m%d-%H%M%S-RetiredCues')
+        for old in OUTPUT.rglob('*.wav'):
+            relative=old.relative_to(OUTPUT)
+            if relative.as_posix() in expected:continue
+            destination=archive/relative
+            if not old.resolve().is_relative_to(OUTPUT.resolve()) or not destination.resolve().is_relative_to((ROOT/'Backups/Narration').resolve()):raise RuntimeError('Narration archive escaped its folder')
+            destination.parent.mkdir(parents=True,exist_ok=True);shutil.move(old,destination)
+            meta=old.with_suffix('.wav.meta')
+            if meta.exists():shutil.move(meta,destination.with_suffix('.wav.meta'))
     save("complete" if len(completed) == len(items) else "partial")
 
 if __name__ == "__main__":

@@ -14,7 +14,10 @@
     "Camera permission is packaged",
     "ARCore remains optional after manifest merging",
     "Unity's Android activity is preserved",
+    "Phone starts without native VR pre-initialization",
+    "Phone retains its normal on-screen display buffer",
     "APK archive passes CRC integrity checks",
+    "Phone APK excludes native headset runtime libraries",
     "All packaged native libraries use ARM64",
     "libVuforiaEngine.so is packaged as a native ELF library",
     "libVuforiaUnityPlayer.so is packaged as a native ELF library",
@@ -28,6 +31,6 @@
     "Development APK signature verifies"
   ],
   "error": "",
-  "bytes": 143186993,
-  "sha256": "472ca35780ab2aa8c746207820852497e12c7a30058a31836497ce152caa7ae5"
+  "bytes": 190593081,
+  "sha256": "3f77a8f8859533c9488d7577da72eb9b21c64bc00148b409ca5b5cad624eac97"
 }
