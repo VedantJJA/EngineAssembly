@@ -44,7 +44,7 @@ namespace EngineAssembly
         }
         void CreateCanvas()
         {
-            var go=new GameObject("AR status canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));go.transform.SetParent(transform,false);
+            var go=new GameObject("AR status canvas",typeof(RectTransform),typeof(Canvas),typeof(WorkshopCanvasRegistration),typeof(CanvasScaler),typeof(GraphicRaycaster));go.transform.SetParent(transform,false);
             canvas=go.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=200;
             var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.matchWidthOrHeight=.5f;
             safe=Rect("Safe area",go.transform);safe.anchorMin=Vector2.zero;safe.anchorMax=Vector2.one;safe.offsetMin=safe.offsetMax=Vector2.zero;

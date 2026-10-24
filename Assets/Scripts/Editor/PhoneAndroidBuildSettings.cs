@@ -25,6 +25,7 @@ namespace EngineAssembly.Editor
         [MenuItem("Tools/Engine Assembly/Android/Configure Phone (AR and standard view)")]
         public static void Configure()
         {
+            WorkshopPerformanceSetup.Configure();
             var general = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildTargetGroup.Android);
             if (general)
             {
@@ -41,6 +42,7 @@ namespace EngineAssembly.Editor
             var openXR = OpenXRSettings.GetSettingsForBuildTargetGroup(BuildTargetGroup.Android);
             if (openXR)
             {
+                var foveation=openXR.GetFeature<UnityEngine.XR.OpenXR.Features.FoveatedRenderingFeature>();if(foveation)foveation.enabled=false;
                 foreach (var feature in openXR.GetFeatures<UnityEngine.XR.OpenXR.Features.OpenXRFeature>())
                 {
                     // Both the current and legacy Quest features can alter the launcher.

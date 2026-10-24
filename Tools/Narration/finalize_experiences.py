@@ -22,7 +22,7 @@ try:
     texts=json.loads((ROOT/'Assets/Resources/NarrationText.json').read_text())['cues']
     (ROOT/'Tools/Narration/caption-alignment-report.json').write_text(json.dumps(dict(total=len(texts),aligned=sum(bool(c.get('words')) for c in texts),estimated=[c['id'] for c in texts if not c.get('words')]),indent=2))
     status('preparing-verified-build-assets')
-    for folder in ['Assets/Scripts','Assets/Shaders','Assets/Resources','Assets/Audio/Narration/English','Assets/AssemblyRecipes','Assets/UI','Assets/Art/Materials/Engine','ProjectSettings']:
+    for folder in ['Assets/Scripts','Assets/Shaders','Assets/Resources','Assets/Audio/Narration/English','Assets/AssemblyRecipes','Assets/UI','Assets/Settings','Tools/Android','Assets/Art/Materials/Engine','ProjectSettings']:
         shutil.copytree(ROOT/folder,CLONE/folder,dirs_exist_ok=True)
     for method,folder,name,verifier in [
         ('VuforiaAndroidBuild','Android','EngineAssembly-AR.apk','verify_android_apk.py'),

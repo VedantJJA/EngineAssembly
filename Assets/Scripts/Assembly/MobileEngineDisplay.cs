@@ -19,11 +19,15 @@ namespace EngineAssembly
         [SerializeField] Transform engineRoot;
         [SerializeField] Camera viewCamera;
         [SerializeField] TextAsset recipeAsset;
-        sealed class Visual { public PartDefinition definition;public Transform transform;public MeshRenderer renderer;public MeshCollider collider;public Vector3 insertionOffset;public Vector3[] samples; }
+        sealed class Visual { public PartDefinition definition;public Transform transform;public MeshRenderer renderer;public MeshCollider collider;public Vector3 insertionOffset;public Vector3[] samples;public string carrierId; }
         readonly Dictionary<string,Visual> visuals=new Dictionary<string,Visual>();
         readonly Dictionary<Collider,Visual> colliderVisuals=new Dictionary<Collider,Visual>();
         readonly HashSet<Visual> cutaway=new HashSet<Visual>();
         readonly Dictionary<string,Transform> groups=new Dictionary<string,Transform>();
+        readonly Dictionary<string,SubAssemblyDefinition> groupDefinitions=new Dictionary<string,SubAssemblyDefinition>(),carrierDefinitions=new Dictionary<string,SubAssemblyDefinition>();
+        readonly HashSet<string> bases=new HashSet<string>();
+        readonly Dictionary<string,EnginePartDetail> details=new Dictionary<string,EnginePartDetail>();
+        readonly List<Renderer> contextRenderers=new List<Renderer>();
         readonly Dictionary<string,int> indices=new Dictionary<string,int>();
         List<PartDefinition> timeline;
         AssemblyRecipe recipe;
@@ -49,7 +53,7 @@ namespace EngineAssembly
         Vector2 lastPointer,startPointer,multiCenter;
         float lastSpan;
         Vector2Int lastSize;Rect lastSafe;
-        string selectedId;
+        string selectedId;string instructionKey;bool instructionComplete,instructionBusy;int progressIndex=-1;
         SubAssemblyDefinition displayWorkspace;
         PartDefinition currentStep;
         int plannedStep=-1;
@@ -79,9 +83,10 @@ namespace EngineAssembly
             spatialRig.CameraChanged+=SetPresentationCamera;
             recipe=AssemblyRecipeStore.Parse(recipeAsset.text);timeline=EngineLearningContent.Timeline(recipe);
             for(int i=0;i<timeline.Count;i++)indices[timeline[i].id]=i;
+            foreach(var part in recipe.parts){if(part.isBase)bases.Add(part.id);details[part.id]=DisplayPlaybackSettings.Description(part);}
             foreach(var group in recipe.subAssemblies)
             {
-                var t=new GameObject(group.rootPartId+" display fixture").transform;t.SetParent(engineRoot,false);groups[group.id]=t;
+                groupDefinitions[group.id]=group;carrierDefinitions[group.rootPartId]=group;var t=new GameObject(group.rootPartId+" display fixture").transform;t.SetParent(engineRoot,false);groups[group.id]=t;
             }
             foreach(var filter in engineRoot.GetComponentsInChildren<MeshFilter>().ToArray())
             {
@@ -93,7 +98,7 @@ namespace EngineAssembly
                 filter.transform.SetLocalPositionAndRotation(d.targetPosition,d.targetRotation);
                 var collider=filter.GetComponent<MeshCollider>();if(!collider)collider=filter.gameObject.AddComponent<MeshCollider>();collider.sharedMesh=filter.sharedMesh;
                 visuals[d.id]=new Visual{definition=d,transform=filter.transform,renderer=renderer,collider=collider,
-                    insertionOffset=AssemblyMotion.DisplayInsertionOffset(d,filter.sharedMesh.bounds,filter.transform.localScale)};
+                    insertionOffset=AssemblyMotion.DisplayInsertionOffset(d,filter.sharedMesh.bounds,filter.transform.localScale),carrierId=string.IsNullOrEmpty(d.subAssemblyId)?null:groupDefinitions[d.subAssemblyId].rootPartId};
                 colliderVisuals[collider]=visuals[d.id];
             }
             if(visuals.Count!=recipe.parts.Count-recipe.subAssemblies.Count)throw new InvalidOperationException("Display recipe does not cover the visual model.");
@@ -117,14 +122,14 @@ namespace EngineAssembly
         }
         public float PartProgress(string id)
         {
-            if(!indices.TryGetValue(id,out int index))return recipe.parts.Any(p=>p.id==id && p.isBase)?1:0;
+            if(!indices.TryGetValue(id,out int index))return bases.Contains(id)?1:0;
             return Mathf.Clamp01(position*timeline.Count-index);
         }
-        public void SetTimeline(float value)
+        public void SetTimeline(float value,bool synchronizePhysics=true)
         {
             if(!ready)return;if(operation.Active){explanation?.Cancel();operation.Stop();}Mode=DisplayMode.InfoTimeline;position=Mathf.Clamp01(value);scrubber.SetValue(position);
             int done=Mathf.FloorToInt(position*timeline.Count+.00001f),index=Mathf.Clamp(done,0,timeline.Count-1);
-            currentStep=timeline[index];var workspace=recipe.subAssemblies.FirstOrDefault(g=>g.id==currentStep.subAssemblyId);
+            currentStep=timeline[index];SubAssemblyDefinition workspace=null;if(!string.IsNullOrEmpty(currentStep.subAssemblyId))groupDefinitions.TryGetValue(currentStep.subAssemblyId,out workspace);
             if(workspace!=displayWorkspace){displayWorkspace=workspace;pan=Vector3.zero;selectedId=null;plannedStep=-1;}
             foreach(var group in recipe.subAssemblies)
             {
@@ -132,43 +137,59 @@ namespace EngineAssembly
                 var transform=groups[group.id];
                 // Separate display stage: only the unit being built occupies this area.
                 // Complete units rejoin the engine when their carrier installation begins.
-                transform.localPosition=group==displayWorkspace?Vector3.zero:carrier.targetPosition+Vector3.up*Mathf.Clamp(group.focusRadius*.3f,.025f,.18f)*(t>0?1-t:0);
-                transform.localRotation=group==displayWorkspace?Quaternion.identity:carrier.targetRotation;
+                var pos=group==displayWorkspace?Vector3.zero:carrier.targetPosition+Vector3.up*Mathf.Clamp(group.focusRadius*.3f,.025f,.18f)*(t>0?1-t:0);
+                var rotation=group==displayWorkspace?Quaternion.identity:carrier.targetRotation;
+                if(transform.localPosition!=pos || transform.localRotation!=rotation)transform.SetLocalPositionAndRotation(pos,rotation);
             }
             foreach(var visual in visuals.Values)
             {
                 float t=PartProgress(visual.definition.id);bool visible=t>0;
                 if(displayWorkspace!=null)visible&=visual.definition.subAssemblyId==displayWorkspace.id;
                 else if(!string.IsNullOrEmpty(visual.definition.subAssemblyId))
-                    visible&=PartProgress(recipe.subAssemblies.First(g=>g.id==visual.definition.subAssemblyId).rootPartId)>0;
-                visual.renderer.enabled=visible;visual.collider.enabled=visible;
-                visual.transform.localPosition=visual.definition.targetPosition+visual.insertionOffset*(1-InsertionProgress(t));
-                visual.transform.localRotation=visual.definition.targetRotation;
+                    visible&=PartProgress(visual.carrierId)>0;
+                if(visual.renderer.enabled!=visible)visual.renderer.enabled=visible;
+                bool queryVisible=visible && !cutaway.Contains(visual);if(visual.collider.enabled!=queryVisible)visual.collider.enabled=queryVisible;
+                var pos=visual.definition.targetPosition+visual.insertionOffset*(1-InsertionProgress(t));
+                if(visual.transform.localPosition!=pos || visual.transform.localRotation!=visual.definition.targetRotation)visual.transform.SetLocalPositionAndRotation(pos,visual.definition.targetRotation);
             }
-            progress.text=done+" / "+timeline.Count+"   ·   "+recipe.chapters.First(c=>c.id==currentStep.chapterId).title;
+            if(progressIndex!=done){progressIndex=done;progress.text=done+" / "+timeline.Count+"   ·   "+recipe.chapters.First(c=>c.id==currentStep.chapterId).title;}
             if(selectedId!=null && (!visuals.TryGetValue(selectedId,out var selected) || !selected.renderer.enabled))selectedId=null;
             var bounds=WorkspaceBounds();var fitting=FittingBounds();
             float frameRadius=position>=1?bounds.extents.magnitude:Mathf.Max(fitting.extents.magnitude*1.6f,bounds.extents.magnitude*.32f);
             focus=engineRoot.InverseTransformPoint(position>=1?bounds.center:Vector3.Lerp(bounds.center,fitting.center,.78f));radius=Mathf.Max(.045f,frameRadius);
-            Physics.SyncTransforms();
-            if(plannedStep!=index || position>=1){PlanInsertionView();plannedStep=index;}
-            section.SetContext(cutaway.Select(v=>(Renderer)v.renderer));
-            foreach(var faded in cutaway)faded.collider.enabled=false;
+            if(plannedStep!=index || position>=1)
+            {
+                // Restore previous cutaways before choosing the next view. Only a new
+                // step needs physics queries; ordinary playback moves renderers directly.
+                foreach(var faded in cutaway)faded.collider.enabled=faded.renderer.enabled;
+                Physics.SyncTransforms();PlanInsertionView();plannedStep=index;
+                contextRenderers.Clear();foreach(var faded in cutaway){faded.collider.enabled=false;contextRenderers.Add(faded.renderer);}
+                section.SetContext(contextRenderers);instructionKey=null;
+            }
             if(selectedId==null)ShowInstruction(currentStep);
-            UpdatePlaybackLabel();UpdateCamera();Physics.SyncTransforms();
+            UpdatePlaybackLabel();UpdateCamera();if(synchronizePhysics)Physics.SyncTransforms();
         }
         static float InsertionProgress(float fraction)=>Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,.76f,fraction));
         public float CurrentStepSeconds=>recipe.subAssemblies.Any(g=>g.rootPartId==currentStep?.id)?5:currentStep!=null && (currentStep.id.Contains("Bolt") || currentStep.id.Contains("Screw") || currentStep.id.Contains("Nut"))?2.6f:3.8f;
         Bounds FittingBounds()
         {
-            var carrier=recipe.subAssemblies.FirstOrDefault(g=>g.rootPartId==currentStep.id);
-            var fitting=visuals.Values.Where(v=>v.definition.id==currentStep.id || carrier!=null && v.definition.subAssemblyId==carrier.id).ToArray();
-            if(fitting.Length==0)return WorkspaceBounds();var bounds=fitting[0].renderer.bounds;foreach(var visual in fitting.Skip(1))bounds.Encapsulate(visual.renderer.bounds);return bounds;
+            carrierDefinitions.TryGetValue(currentStep.id,out var carrier);Bounds bounds=default;bool found=false;
+            foreach(var visual in visuals.Values)
+            {
+                if(visual.definition.id!=currentStep.id && (carrier==null || visual.definition.subAssemblyId!=carrier.id))continue;
+                if(!found){bounds=visual.renderer.bounds;found=true;}else bounds.Encapsulate(visual.renderer.bounds);
+            }
+            return found?bounds:WorkspaceBounds();
         }
         Bounds WorkspaceBounds()
         {
-            var context=visuals.Values.Where(v=>displayWorkspace==null || v.definition.subAssemblyId==displayWorkspace.id).ToArray();
-            var bounds=context[0].renderer.bounds;foreach(var visual in context.Skip(1))bounds.Encapsulate(visual.renderer.bounds);return bounds;
+            Bounds bounds=default;bool found=false;
+            foreach(var visual in visuals.Values)
+            {
+                if(displayWorkspace!=null && visual.definition.subAssemblyId!=displayWorkspace.id)continue;
+                if(!found){bounds=visual.renderer.bounds;found=true;}else bounds.Encapsulate(visual.renderer.bounds);
+            }
+            return bounds;
         }
         IEnumerable<Vector3> SurfaceSamples(Visual visual)
         {
@@ -221,8 +242,11 @@ namespace EngineAssembly
         }
         void ShowInstruction(PartDefinition current)
         {
-            var detail=DisplayPlaybackSettings.Description(current);
+            var detail=details[current.id];
             string voice=detail.voiceId;if(playing && TimelineAudioEnabled && spokenStep!=voice){spokenStep=voice;speech.Speak(voice);}
+            bool complete=position>=1,busy=speech.IsBusy;
+            if(instructionKey==current.id && instructionComplete==complete && instructionBusy==busy)return;
+            instructionKey=current.id;instructionComplete=complete;instructionBusy=busy;
             title.text=position>=1?"Complete engine":displayWorkspace!=null?"SUBASSEMBLY · "+recipe.parts.First(p=>p.id==displayWorkspace.rootPartId).displayName:"ASSEMBLY SEQUENCE";
             if(!speech.IsBusy)description.text=position>=1?"Tap a component to hear its purpose. Play the timeline to watch the engine being assembled.":detail.description;
             partMeta.text=position>=1?(recipe.parts.Count-recipe.subAssemblies.Count)+" physical components · "+recipe.subAssemblies.Count+" completed subassemblies":current.displayName;
@@ -231,7 +255,7 @@ namespace EngineAssembly
         public bool SelectPart(string id)
         {
             if(!ready || !visuals.TryGetValue(id,out var visual) || !visual.renderer.enabled)return false;
-            selectedId=id;playing=false;explanation.Cancel();if(operation.Active)operation.Paused=true;UpdatePlaybackLabel();var detail=EngineLearningContent.Detail(visual.definition);
+            selectedId=id;instructionKey=null;playing=false;explanation.Cancel();if(operation.Active)operation.Paused=true;UpdatePlaybackLabel();var detail=EngineLearningContent.Detail(visual.definition);
             title.text=detail.title;description.text=detail.description;
             speech.Speak(detail.voiceId);
             partMeta.text=recipe.chapters.First(c=>c.id==visual.definition.chapterId).title+"   ·   Assembly step "+visual.definition.order.ToString("000");return true;
@@ -239,6 +263,7 @@ namespace EngineAssembly
         public bool TapPart(Vector2 point)
         {
             if(!ready || !viewCamera.pixelRect.Contains(point) || OverUI(point))return false;
+            Physics.SyncTransforms();
             foreach(var hit in Physics.RaycastAll(viewCamera.ScreenPointToRay(point),100,~0,QueryTriggerInteraction.Ignore).OrderBy(h=>h.distance))
             {
                 var selected=visuals.FirstOrDefault(pair=>pair.Value.collider==hit.collider);if(selected.Key!=null && !operation.IsClipped(selected.Value.renderer,hit.point))return SelectPart(selected.Key);
@@ -312,7 +337,7 @@ namespace EngineAssembly
                     string nextVoice=index+1<timeline.Count?DisplayPlaybackSettings.Description(timeline[index+1]).voiceId:null;
                     if(nextVoice==null || nextVoice!=spokenStep)next=(index+.9999f)/timeline.Count;
                 }
-                SetTimeline(next);
+                SetTimeline(next,false);
             }
             if(position>=1 && playing){playing=false;UpdatePlaybackLabel();}
             if(operation.Active){ShowOperatingInstruction();UpdatePlaybackLabel();}
@@ -391,7 +416,7 @@ namespace EngineAssembly
         void CreateUI()
         {
             heading=Resources.Load<TMP_FontAsset>("WorkshopHeading");body=Resources.Load<TMP_FontAsset>("WorkshopBody");
-            var root=Rect("Engine display canvas",transform);canvas=root.gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=100;
+            var root=Rect("Engine display canvas",transform);canvas=root.gameObject.AddComponent<Canvas>();root.gameObject.AddComponent<WorkshopCanvasRegistration>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=100;
             var scaler=root.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1080,1920);scaler.matchWidthOrHeight=.5f;root.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             if(!FindAnyObjectByType<EventSystem>()){
                 var events=new GameObject("Display event system",typeof(EventSystem));

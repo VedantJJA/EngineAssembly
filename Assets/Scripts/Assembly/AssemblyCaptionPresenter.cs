@@ -10,7 +10,7 @@ namespace EngineAssembly
         AssemblyManager manager;
         TextMeshProUGUI caption,context;
         TextMeshProUGUI stepTitle;
-        bool mobile,shown=true;
+        bool mobile,shown=true,wasVisible;Vector2Int layoutSize;TextMeshProUGUI[] labels;UnityEngine.UI.Image background;MobileAssemblyController mobileController;AssemblyWorkshopUI desktopUI;AssemblyNarrator narrator;string titleCue,titleChapter;
         public bool InstructionsVisible=>shown;
         public void ToggleInstructions()=>shown=!shown;
         public string CurrentCueId { get; private set; }
@@ -57,20 +57,22 @@ namespace EngineAssembly
         void LateUpdate()
         {
             if(!manager || manager.Recipe==null)return;
-            if(this.mobile)
+            if(this.mobile && layoutSize!=new Vector2Int(Screen.width,Screen.height))
             {
+                layoutSize=new Vector2Int(Screen.width,Screen.height);
                 var rect=(RectTransform)transform;bool landscape=Screen.width>Screen.height;
                 rect.anchorMin=landscape?new Vector2(.02f,1):new Vector2(.025f,1);rect.anchorMax=landscape?new Vector2(.02f,1):new Vector2(.975f,1);rect.pivot=landscape?Vector2.up:new Vector2(.5f,1);
                 rect.sizeDelta=new Vector2(landscape?590:0,194);rect.anchoredPosition=new Vector2(0,landscape?-126:-194);
             }
-            var mobile=manager.GetComponent<MobileAssemblyController>();
-            var desktopUI=manager.GetComponent<AssemblyWorkshopUI>();
+            if(!mobileController)mobileController=manager.GetComponent<MobileAssemblyController>();var mobile=mobileController;
+            if(!desktopUI)desktopUI=manager.GetComponent<AssemblyWorkshopUI>();
             if(!this.mobile && (!desktopUI || !desktopUI.IsOpen) && InputHelper.IsKeyDown(KeyCode.P))ToggleInstructions();
             bool visible=shown && !manager.DisplayActive && manager.Mode==WorkshopMode.Assembly && (!mobile || !mobile.ChapterMenuOpen);
-            GetComponent<UnityEngine.UI.Image>().enabled=visible;
-            foreach(var text in GetComponentsInChildren<TextMeshProUGUI>())text.enabled=visible;if(!visible)return;
+            if(labels==null){labels=GetComponentsInChildren<TextMeshProUGUI>();background=GetComponent<UnityEngine.UI.Image>();wasVisible=!visible;}
+            if(wasVisible!=visible){wasVisible=visible;background.enabled=visible;foreach(var text in labels)text.enabled=visible;}if(!visible)return;
             if(manager.RepairActive)
             {
+                titleCue=null;
                 var repair=manager.Repair;CurrentCueId=repair.Complete?"repair-complete":"repair-step-"+repair.CompletedSteps;
                 if(stepTitle)stepTitle.text=repair.Complete?"REPAIR COMPLETE":"REPAIR · STEP "+(repair.CompletedSteps+1).ToString("00")+" / "+repair.StepCount;
                 SetCaption(repair.Complete?"Repair complete. The replacement bearing is fitted and the timing drive is rebuilt.":repair.CurrentStep.instruction);
@@ -79,13 +81,14 @@ namespace EngineAssembly
             }
             if(manager.ChapterComplete)
             {
+                titleCue=null;
                 if(stepTitle)stepTitle.text="CHAPTER COMPLETE";
                 CurrentCueId="complete";SetCaption(manager.Task==AssemblyTask.Assemble?"Chapter complete. Your section is assembled.":"Section disassembled.");
                 context.text=mobile?"Tap CONTINUE for the next chapter.":"Press ENTER to continue to the next chapter.";return;
             }
             var next=manager.NextHintPart();if(!next){SetCaption("Choose an assembly chapter to begin.");context.text="";return;}
             var cue=EngineLearningContent.ForPart(next.Definition);CurrentCueId=cue.id;
-            if(stepTitle){var steps=EngineLearningContent.Data.steps.Where(s=>s.chapterId==manager.CurrentChapterId).ToList();stepTitle.text="STEP "+(steps.FindIndex(s=>s.id==cue.id)+1).ToString("00")+" / "+steps.Count.ToString("00");}
+            if(stepTitle && (titleCue!=cue.id || titleChapter!=manager.CurrentChapterId)){titleCue=cue.id;titleChapter=manager.CurrentChapterId;var steps=EngineLearningContent.Data.steps.Where(s=>s.chapterId==manager.CurrentChapterId).ToList();stepTitle.text="STEP "+(steps.FindIndex(s=>s.id==cue.id)+1).ToString("00")+" / "+steps.Count.ToString("00");}
             int total=cue.partIds.Count(id=>manager.FindPart(id)),done=cue.partIds.Count(manager.IsPlaced);
             if(manager.Task==AssemblyTask.Disassemble)
                 SetCaption("Remove "+next.PartDisplayName+" from its mounting position. Work in reverse assembly order.");
@@ -93,7 +96,7 @@ namespace EngineAssembly
             context.text="Next: "+next.PartDisplayName+(total>1?"   ·   "+done+" / "+total:"");
             if(!manager.OrientationReady(next.Definition))context.text=next.Definition.orientation==AssemblyOrientation.UpsideDown?"Turn this workpiece upside down · F":"Turn this workpiece upright · F";
         }
-        void SetCaption(string text){var narrator=manager.GetComponent<AssemblyNarrator>();if(narrator && narrator.Source && narrator.Source.isPlaying && NarrationText.Find(narrator.CurrentCueId)!=null)return;caption.text=text;}
+        void SetCaption(string text){if(!narrator)narrator=manager.GetComponent<AssemblyNarrator>();if(narrator && narrator.Source && narrator.Source.isPlaying && NarrationText.Find(narrator.CurrentCueId)!=null)return;caption.text=text;}
         public static string AccessibleCaption(string text)=>text.Replace("Turn the engine upright. ","").Replace("Turn the engine upside down. ","").Replace("Turn the block upside down. ","").Replace("Turn the workpiece upright. ","").Replace("Turn the workpiece upside down. ","");
     }
 }

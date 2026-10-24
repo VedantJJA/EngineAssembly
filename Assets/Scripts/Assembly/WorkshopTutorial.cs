@@ -48,7 +48,7 @@ namespace EngineAssembly
             previousScale=Time.timeScale;previousLock=Cursor.lockState;previousCursor=Cursor.visible;
             Time.timeScale=0;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
             speech=gameObject.AddComponent<NarrationSpeech>();speech.PlayWhilePaused=true;
-            var canvas=gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=500;
+            var canvas=gameObject.AddComponent<Canvas>();gameObject.AddComponent<WorkshopCanvasRegistration>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=500;
             var scaler=gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.matchWidthOrHeight=.5f;
             bool portrait=Platform!="VR" && Screen.height>Screen.width;scaler.referenceResolution=portrait?new Vector2(1080,1600):new Vector2(1440,900);
             gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();

@@ -1,0 +1,60 @@
+{
+    "passed": true,
+    "environment": "Unity Editor comparison, D3D11, Mobile quality. Not phone or headset FPS.",
+    "error": "",
+    "samples": [
+        {
+            "operation": "Phone ghost refresh, late chapter",
+            "medianMs": 0.7504000000000001,
+            "p95Ms": 1.0084,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Next assembly step, late chapter",
+            "medianMs": 0.10210000000000001,
+            "p95Ms": 0.13090000000000003,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Phone timeline, within one part",
+            "medianMs": 0.328,
+            "p95Ms": 0.5003000000000001,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Engine motion and section",
+            "medianMs": 0.099,
+            "p95Ms": 0.1709,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Quest UI binding, unchanged scene",
+            "medianMs": 0.0004,
+            "p95Ms": 0.0005,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Quest ghost refresh",
+            "medianMs": 0.0091,
+            "p95Ms": 0.010100000000000002,
+            "bytesPerCall": 0.0
+        }
+    ],
+    "renderedTriangles": 255135,
+    "enabledColliders": 177,
+    "checks": [
+        "Ghost queries follow the active build immediately after phone rotation and pan",
+        "No ghost physics remains active when no item is selected",
+        "Optimized recommendation preserves chapter order 0",
+        "Optimized recommendation preserves chapter order 1",
+        "Optimized recommendation preserves chapter order 2",
+        "Optimized recommendation preserves chapter order 3",
+        "Optimized recommendation preserves chapter order 4",
+        "Optimized recommendation preserves chapter order 5",
+        "Optimized recommendation preserves chapter order 6",
+        "Optimized recommendation preserves chapter order 7",
+        "Optimized recommendation preserves chapter order 8",
+        "Phone and Quest have valid lightweight render profiles",
+        "New VR tutorial binds to controller rays after the original canvases were cached"
+    ]
+}

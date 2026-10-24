@@ -59,7 +59,7 @@ namespace EngineAssembly.Editor
                 // Keep all menu destinations and both phone fallbacks available.
                 var scenes=EditorBuildSettings.scenes.Where(s=>s.enabled).Select(s=>s.path).ToArray();
                 report.apk=Path.GetFullPath("Builds/Android/EngineAssembly-AR.apk");Directory.CreateDirectory(Path.GetDirectoryName(report.apk));
-                var build=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=scenes,locationPathName=report.apk,target=BuildTarget.Android,options=BuildOptions.Development});
+                var build=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=scenes,locationPathName=report.apk,target=BuildTarget.Android,options=BuildOptions.None});
                 report.result=build.summary.result.ToString();report.seconds=build.summary.totalTime.TotalSeconds;report.bytes=File.Exists(report.apk)?new FileInfo(report.apk).Length:0;report.passed=build.summary.result==BuildResult.Succeeded;
                 if(!report.passed)report.error=string.Join("\n",build.steps.SelectMany(s=>s.messages).Where(m=>m.type==LogType.Error || m.type==LogType.Exception).Select(m=>m.content));
 #else

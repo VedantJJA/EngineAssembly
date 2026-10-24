@@ -44,6 +44,7 @@ try:
         check(feature is not None and feature.get(attr + "required") == "false", f"{name} hardware is optional in the final merged manifest")
     check(any(item.get(attr + "name") == "android.permission.CAMERA" for item in manifest.findall("uses-permission")), "Camera permission is packaged")
     app = manifest.find("application")
+    check(app.get(attr + "debuggable", "false") == "false", "Phone APK is a release player without Android debugging overhead")
     check(any(item.get(attr + "name") == "com.google.ar.core" and item.get(attr + "value") == "optional" for item in app.findall("meta-data")), "ARCore remains optional after manifest merging")
     check(any("com.unity3d.player.UnityPlayer" in item.get(attr + "name", "") for item in app.findall("activity")), "Unity's Android activity is preserved")
     with zipfile.ZipFile(apk) as archive:
@@ -62,7 +63,7 @@ try:
         for scene in ("MainMenu", "MobileAssemblyAR", "MobileDisplayAR", "MobileAssemblyARFallback", "MobileDisplayARFallback"):
             check(f"Assets/Scenes/{scene}.unity".encode() in scene_data, f"{scene} is registered in the built player")
     signing = subprocess.check_output([str(java), "-jar", str(build_tools / "lib/apksigner.jar"), "verify", "--verbose", str(apk)], text=True)
-    check("Verified using v2 scheme (APK Signature Scheme v2): true" in signing, "Development APK signature verifies")
+    check("Verified using v2 scheme (APK Signature Scheme v2): true" in signing, "APK signature verifies")
     report.update(passed=True, bytes=apk.stat().st_size, sha256=hashlib.sha256(apk.read_bytes()).hexdigest())
 except Exception as error:
     report["error"] = str(error)

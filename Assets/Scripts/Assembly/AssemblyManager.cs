@@ -477,10 +477,32 @@ namespace EngineAssembly
         {
             if(RepairActive)return Repair.NextPart;
             if(Recipe==null)return null;
-            var candidates=assemblyParts.Where(p=>p && p.gameObject.activeInHierarchy && p.ChapterId==CurrentChapterId && !p.Definition.isBase && !p.IsBusy);
-            if(Task==AssemblyTask.Disassemble && Mode==WorkshopMode.Assembly)return candidates.Where(p=>p.IsSnapped && CanRemove(p,out _)).OrderByDescending(p=>p.Definition.order).FirstOrDefault();
-            var next=RecommendedParts(candidates.Where(p=>!p.IsSnapped)).ToList();
-            return next.FirstOrDefault(p=>p.TargetSocket && CanInstall(p,p.TargetSocket,out _))??next.FirstOrDefault();
+            AssemblyPart fallback=null,available=null;
+            bool removing=Task==AssemblyTask.Disassemble && Mode==WorkshopMode.Assembly;
+            foreach(var part in assemblyParts)
+            {
+                if(!part || !part.gameObject.activeInHierarchy || part.ChapterId!=CurrentChapterId || part.Definition.isBase || part.IsBusy)continue;
+                if(removing)
+                {
+                    if(part.IsSnapped && (!available || part.Definition.order>available.Definition.order) && CanRemove(part,out _))available=part;
+                    continue;
+                }
+                if(part.IsSnapped)continue;
+                if(!fallback || CompareRecommendation(part,fallback)<0)fallback=part;
+                if((!available || CompareRecommendation(part,available)<0) && part.TargetSocket && CanInstall(part,part.TargetSocket,out _))available=part;
+            }
+            return available??fallback;
+        }
+        int CompareRecommendation(AssemblyPart a,AssemblyPart b)
+        {
+            int order=a.Definition.order.CompareTo(b.Definition.order);if(order!=0)return order;
+            int family=RecommendationFamily(a).CompareTo(RecommendationFamily(b));if(family!=0)return family;
+            return Recipe.parts.IndexOf(a.Definition).CompareTo(Recipe.parts.IndexOf(b.Definition));
+        }
+        static int RecommendationFamily(AssemblyPart part)
+        {
+            if(part.ChapterId!="chapter-4" || !part.PartId.Contains("_Valves_"))return 0;
+            int family=0;foreach(char c in part.PartId){if(c=='_')return family;if(c<'0' || c>'9')return 0;family=family*10+c-'0';}return 0;
         }
         public IOrderedEnumerable<AssemblyPart> RecommendedParts(IEnumerable<AssemblyPart> parts)=>parts.OrderBy(p=>p.Definition.order)
             .ThenBy(p=>p.ChapterId=="chapter-4" && p.PartId.Contains("_Valves_") && int.TryParse(p.PartId.Split('_')[0],out var family)?family:0)

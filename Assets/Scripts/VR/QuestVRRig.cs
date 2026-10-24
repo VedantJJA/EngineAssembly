@@ -12,13 +12,14 @@ namespace EngineAssembly
     public sealed class QuestVRRig : MonoBehaviour
     {
         sealed class Hand
-        {public string name;public Transform grip,aim,visual;public bool tracked,leverGrip;public XRRayInteractor ray;public LineRenderer line;public AssemblyPart held;public LiftControlHandle lever,pressedButton;public float leverY;public Vector3 contact;public Quaternion rotation;}
+        {public string name;public Transform grip,aim,visual;public bool tracked,leverGrip;public XRRayInteractor ray;public LineRenderer line;public AssemblyPart held;public LiftControlHandle lever,pressedButton;public float leverY;public Vector3 contact;public Quaternion rotation;public InputAction trackedAction,position,rotationAction,aimPosition,aimRotation,trigger,gripAction,stick,primary;}
         QuestVRSession session;Hand left,right;Camera head;CharacterController controller;AssemblyPickupQuery pickup;HeldPlayerCollisionGuard guard;AssemblyManager manager;AssemblyWorkshopUI ui;
         readonly HashSet<Canvas> bound=new HashSet<Canvas>();Material rayMaterial;LineRenderer arc;Transform marker;float falling;bool turnLatched,teleporting,teleportValid;Vector3 teleportPoint,spawn;
+        EventSystem events;XRUIInputModule inputModule;int canvasRevision=-1;InputAction headPosition,headRotation,menu;readonly Vector3[] teleportPoints=new Vector3[29];readonly Collider[] teleportObstacles=new Collider[64];
         public Camera HeadCamera=>head;public bool TeleportValid=>teleportValid;
         public void Configure(QuestVRSession owner)
         {
-            session=owner;manager=FindAnyObjectByType<AssemblyManager>();ui=FindAnyObjectByType<AssemblyWorkshopUI>();var player=FindAnyObjectByType<PlayerAssemblyController>();
+            session=owner;headPosition=session.Input("Head/Position");headRotation=session.Input("Head/Rotation");menu=session.Input("Left/Menu");manager=FindAnyObjectByType<AssemblyManager>();ui=FindAnyObjectByType<AssemblyWorkshopUI>();var player=FindAnyObjectByType<PlayerAssemblyController>();
             spawn=player?player.transform.position:Vector3.zero;transform.position=spawn;
             foreach(var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None)){if(camera.GetComponent<AudioListener>())camera.GetComponent<AudioListener>().enabled=false;camera.enabled=false;}
             if(player){player.DropHeldPart(false);player.enabled=false;player.GetComponent<CharacterController>().enabled=false;}
@@ -32,7 +33,7 @@ namespace EngineAssembly
         }
         Hand CreateHand(string name)
         {
-            var hand=new Hand{name=name};hand.grip=new GameObject(name+" tracked controller").transform;hand.grip.SetParent(transform,false);hand.aim=new GameObject(name+" controller UI ray").transform;hand.aim.SetParent(transform,false);
+            var hand=new Hand{name=name,trackedAction=session.Input(name+"/Tracked"),position=session.Input(name+"/Position"),rotationAction=session.Input(name+"/Rotation"),aimPosition=session.Input(name+"/AimPosition"),aimRotation=session.Input(name+"/AimRotation"),trigger=session.Input(name+"/Trigger"),gripAction=session.Input(name+"/Grip"),stick=session.Input(name+"/Stick"),primary=session.Input(name+"/Primary")};hand.grip=new GameObject(name+" tracked controller").transform;hand.grip.SetParent(transform,false);hand.aim=new GameObject(name+" controller UI ray").transform;hand.aim.SetParent(transform,false);
             var dot=GameObject.CreatePrimitive(PrimitiveType.Sphere);dot.name="Controller pointer origin";dot.transform.SetParent(hand.grip,false);dot.transform.localScale=Vector3.one*.025f;Destroy(dot.GetComponent<Collider>());dot.GetComponent<Renderer>().sharedMaterial=rayMaterial;hand.visual=dot.transform;
             hand.ray=hand.aim.gameObject.AddComponent<XRRayInteractor>();hand.ray.maxRaycastDistance=8;hand.ray.enableUIInteraction=true;
             hand.ray.selectInput.inputSourceMode=XRInputButtonReader.InputSourceMode.ManualValue;
@@ -44,9 +45,14 @@ namespace EngineAssembly
         LineRenderer Line(string name,Transform parent,float width){var line=new GameObject(name).AddComponent<LineRenderer>();line.transform.SetParent(parent,false);line.useWorldSpace=true;line.widthMultiplier=width;line.sharedMaterial=rayMaterial;line.positionCount=2;return line;}
         public void BindUI()
         {
-            var events=FindAnyObjectByType<EventSystem>();if(!events)events=new GameObject("VR Event System").AddComponent<EventSystem>();
-            foreach(var old in events.GetComponents<BaseInputModule>())if(!(old is XRUIInputModule)){old.enabled=false;Destroy(old);}
-            var module=events.GetComponent<XRUIInputModule>();if(!module)module=events.gameObject.AddComponent<XRUIInputModule>();module.enableXRInput=true;
+            if(inputModule && canvasRevision==WorkshopCanvasRegistration.Revision)return;
+            if(!events)events=FindAnyObjectByType<EventSystem>();if(!events)events=new GameObject("VR Event System").AddComponent<EventSystem>();
+            if(!inputModule)
+            {
+                foreach(var old in events.GetComponents<BaseInputModule>())if(!(old is XRUIInputModule)){old.enabled=false;Destroy(old);}
+                inputModule=events.GetComponent<XRUIInputModule>();if(!inputModule)inputModule=events.gameObject.AddComponent<XRUIInputModule>();inputModule.enableXRInput=true;
+            }
+            canvasRevision=WorkshopCanvasRegistration.Revision;bound.RemoveWhere(c=>!c);
             foreach(var canvas in FindObjectsByType<Canvas>(FindObjectsSortMode.None))
             {
                 if(bound.Contains(canvas) || canvas.name.Contains("AR status"))continue;bound.Add(canvas);
@@ -59,29 +65,29 @@ namespace EngineAssembly
         void Update()
         {
             if(!session || !session.Active)return;BindUI();
-            var hp=session.Input("Head/Position").ReadValue<Vector3>();var hr=session.Input("Head/Rotation").ReadValue<Quaternion>();if(Quaternion.Dot(hr,hr)>.1f){head.transform.localPosition=hp+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);head.transform.localRotation=hr;}
+            var hp=headPosition.ReadValue<Vector3>();var hr=headRotation.ReadValue<Quaternion>();if(Quaternion.Dot(hr,hr)>.1f){head.transform.localPosition=hp+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);head.transform.localRotation=hr;}
             PoseHand(left);PoseHand(right);guard.Refresh();
-            if(session.Input("Left/Menu").WasPressedThisFrame()){if(WorkshopTutorial.IsOpen)WorkshopTutorial.Active.Close();else if(ui)ui.Open(ui.IsOpen?AssemblyWorkshopUI.Page.Closed:AssemblyWorkshopUI.Page.Pause);}
+            if(menu.WasPressedThisFrame()){if(WorkshopTutorial.IsOpen)WorkshopTutorial.Active.Close();else if(ui)ui.Open(ui.IsOpen?AssemblyWorkshopUI.Page.Closed:AssemblyWorkshopUI.Page.Pause);}
             if(Time.timeScale<=0 || ui && ui.IsOpen){ReleaseLever(left);ReleaseLever(right);StopTeleport();return;}
             if(!manager)return;
             if(transform.position.y<-8)Teleport(spawn);
-            Move(session.Input("Left/Stick").ReadValue<Vector2>(),Time.deltaTime);
-            var stick=session.Input("Right/Stick").ReadValue<Vector2>();if(Mathf.Abs(stick.x)>.7f && !turnLatched){transform.RotateAround(head.transform.position,Vector3.up,Mathf.Sign(stick.x)*30);turnLatched=true;}else if(Mathf.Abs(stick.x)<.3f)turnLatched=false;
+            Move(left.stick.ReadValue<Vector2>(),Time.deltaTime);
+            var stick=right.stick.ReadValue<Vector2>();if(Mathf.Abs(stick.x)>.7f && !turnLatched){transform.RotateAround(head.transform.position,Vector3.up,Mathf.Sign(stick.x)*30);turnLatched=true;}else if(Mathf.Abs(stick.x)<.3f)turnLatched=false;
             if(stick.y>.65f){teleporting=true;PreviewTeleport(right.aim.position,right.aim.forward);}else if(teleporting && stick.y<.3f){if(teleportValid)Teleport(teleportPoint);StopTeleport();}
             Interact(left,right);Interact(right,left);
         }
         void PoseHand(Hand hand)
         {
-            bool tracked=session.Input(hand.name+"/Tracked").IsPressed();hand.tracked=tracked;hand.visual.gameObject.SetActive(tracked);hand.aim.gameObject.SetActive(tracked);if(!tracked){ReleaseLever(hand);return;}
-            hand.grip.localPosition=session.Input(hand.name+"/Position").ReadValue<Vector3>()+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);var rotation=session.Input(hand.name+"/Rotation").ReadValue<Quaternion>();if(Quaternion.Dot(rotation,rotation)>.1f)hand.grip.localRotation=rotation;
-            var aimRotation=session.Input(hand.name+"/AimRotation").ReadValue<Quaternion>();hand.aim.SetPositionAndRotation(hand.grip.position,hand.grip.rotation);if(Quaternion.Dot(aimRotation,aimRotation)>.1f){hand.aim.localPosition=session.Input(hand.name+"/AimPosition").ReadValue<Vector3>()+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);hand.aim.localRotation=aimRotation;}
+            bool tracked=hand.trackedAction.IsPressed();hand.tracked=tracked;hand.visual.gameObject.SetActive(tracked);hand.aim.gameObject.SetActive(tracked);if(!tracked){ReleaseLever(hand);return;}
+            hand.grip.localPosition=hand.position.ReadValue<Vector3>()+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);var rotation=hand.rotationAction.ReadValue<Quaternion>();if(Quaternion.Dot(rotation,rotation)>.1f)hand.grip.localRotation=rotation;
+            var aimRotation=hand.aimRotation.ReadValue<Quaternion>();hand.aim.SetPositionAndRotation(hand.grip.position,hand.grip.rotation);if(Quaternion.Dot(aimRotation,aimRotation)>.1f){hand.aim.localPosition=hand.aimPosition.ReadValue<Vector3>()+(session.FloorTracking?Vector3.zero:Vector3.up*1.65f);hand.aim.localRotation=aimRotation;}
             Vector3 end=hand.aim.position+hand.aim.forward*5;if(hand.ray.TryGetCurrentUIRaycastResult(out var uiHit))end=uiHit.worldPosition;else if(Physics.Raycast(hand.aim.position,hand.aim.forward,out var hit,5))end=hit.point;
             hand.line.SetPosition(0,hand.aim.position);hand.line.SetPosition(1,end);
             if(hand.held && hand.held.IsSelected){var r=hand.grip.rotation*hand.rotation;hand.held.MoveHeld(hand.grip.TransformPoint(new Vector3(0,-.035f,.18f))-r*Vector3.Scale(hand.contact,hand.held.transform.lossyScale),r);}else hand.held=null;
         }
         void Interact(Hand hand,Hand other)
         {
-            if(!hand.tracked)return;var trigger=session.Input(hand.name+"/Trigger");var grip=session.Input(hand.name+"/Grip");var ray=new Ray(hand.aim.position,hand.aim.forward);
+            if(!hand.tracked)return;var trigger=hand.trigger;var grip=hand.gripAction;var ray=new Ray(hand.aim.position,hand.aim.forward);
             if(manager && manager.DisplayActive){if(!hand.ray.TryGetCurrentUIRaycastResult(out _) && trigger.WasPressedThisFrame())manager.GetComponent<PCDisplayChapter>()?.Inspect(ray);return;}
             if(hand.lever){if(!hand.lever.Held || !(hand.leverGrip?grip:trigger).IsPressed())ReleaseLever(hand);else hand.lever.SetValue((hand.grip.position.y-hand.leverY)/.1f);return;}
             // Physical controls use controller proximity and grip/touch. Distant
@@ -114,7 +120,7 @@ namespace EngineAssembly
                 {hand.held=part;hand.contact=part.transform.InverseTransformPoint(AssemblyHeldView.WorldBounds(part).center);hand.rotation=Quaternion.Inverse(hand.grip.rotation)*part.transform.rotation;guard.Track(part.transform,part,null);part.transform.SetParent(hand.grip,true);}
             }
             if(hand.held && !grip.IsPressed())ReleasePart(hand);
-            if(session.Input(hand.name+"/Primary").WasPressedThisFrame())manager?.GetComponent<AssemblyStepAssist>()?.NextStep();
+            if(hand.primary.WasPressedThisFrame())manager?.GetComponent<AssemblyStepAssist>()?.NextStep();
         }
         void ReleaseLever(Hand hand){if(hand.lever)hand.lever.Release();hand.lever=null;}
         void ReleasePart(Hand hand){if(hand.held){hand.held.transform.SetParent(null,true);hand.held.Release(false);hand.held=null;}}
@@ -128,14 +134,16 @@ namespace EngineAssembly
         {
             float floor=manager && manager.GetComponent<WorkpieceLift>()?manager.GetComponent<WorkpieceLift>().GroundHeight:0;
             if(normal.y<.7f || Mathf.Abs(point.y-floor)>.18f)return false;float h=Mathf.Clamp(head.transform.localPosition.y,1.1f,2.1f);
-            return !Physics.OverlapCapsule(point+Vector3.up*(controller.radius+.025f),point+Vector3.up*(h-controller.radius),controller.radius).Any(c=>!c.transform.IsChildOf(transform) && !c.isTrigger);
+            int count=Physics.OverlapCapsuleNonAlloc(point+Vector3.up*(controller.radius+.025f),point+Vector3.up*(h-controller.radius),controller.radius,teleportObstacles,~0,QueryTriggerInteraction.Ignore);
+            if(count==teleportObstacles.Length)return false;
+            for(int i=0;i<count;i++)if(!teleportObstacles[i].transform.IsChildOf(transform))return false;return true;
         }
         public void Teleport(Vector3 point){var offset=Vector3.ProjectOnPlane(head.transform.position-transform.position,Vector3.up);controller.enabled=false;transform.position=point-offset;controller.enabled=true;falling=0;}
         void PreviewTeleport(Vector3 start,Vector3 direction)
         {
-            var points=new List<Vector3>{start};var position=start;var velocity=direction*6+Vector3.up*2;teleportValid=false;
-            for(int i=0;i<28;i++){var next=position+velocity*.06f;velocity+=Vector3.down*9.81f*.06f;if(Physics.Linecast(position,next,out var hit,~0,QueryTriggerInteraction.Ignore) && !hit.transform.IsChildOf(transform)){points.Add(hit.point);teleportPoint=hit.point;teleportValid=CanTeleport(hit.point,hit.normal);break;}points.Add(next);position=next;}
-            arc.enabled=true;arc.positionCount=points.Count;arc.SetPositions(points.ToArray());arc.startColor=arc.endColor=teleportValid?Color.cyan:Color.red;marker.gameObject.SetActive(teleportValid);if(teleportValid)marker.position=teleportPoint+Vector3.up*.012f;
+            int count=1;teleportPoints[0]=start;var position=start;var velocity=direction*6+Vector3.up*2;teleportValid=false;
+            for(int i=0;i<28;i++){var next=position+velocity*.06f;velocity+=Vector3.down*9.81f*.06f;if(Physics.Linecast(position,next,out var hit,~0,QueryTriggerInteraction.Ignore) && !hit.transform.IsChildOf(transform)){teleportPoints[count++]=hit.point;teleportPoint=hit.point;teleportValid=CanTeleport(hit.point,hit.normal);break;}teleportPoints[count++]=next;position=next;}
+            arc.enabled=true;arc.positionCount=count;for(int i=0;i<count;i++)arc.SetPosition(i,teleportPoints[i]);arc.startColor=arc.endColor=teleportValid?Color.cyan:Color.red;marker.gameObject.SetActive(teleportValid);if(teleportValid)marker.position=teleportPoint+Vector3.up*.012f;
         }
         void StopTeleport(){teleporting=false;teleportValid=false;if(arc)arc.enabled=false;if(marker)marker.gameObject.SetActive(false);}
         void OnDestroy(){if(left!=null){ReleasePart(left);ReleaseLever(left);}if(right!=null){ReleasePart(right);ReleaseLever(right);}if(marker)Destroy(marker.gameObject);if(rayMaterial)Destroy(rayMaterial);}

@@ -198,7 +198,7 @@ namespace EngineAssembly
                     Pose(spring,valve.springAnchor-valve.springRotation*Vector3.Scale(valve.springAnchorMesh,rootScale),valve.springRotation);
                 }
             }
-            RefreshSection();Physics.SyncTransforms();
+            RefreshSection();
         }
         static Color GasColour(float phase,float compressed)
         {
@@ -216,11 +216,11 @@ namespace EngineAssembly
             // Remove each fastener as a whole on the opened side. A plane through a
             // screw otherwise leaves a small unsupported stem floating at the cut.
             float side=eye.x>=crank.x?1:-1;
-            foreach(var fastener in fixedFasteners)fastener.renderer.enabled=fastener.visible && (!SectionEnabled || (fastener.center.x-crank.x)*side<-.0001f);
-            foreach(var node in hiddenInMotion)node.renderer.enabled=false;
+            foreach(var fastener in fixedFasteners){bool shown=fastener.visible && (!SectionEnabled || (fastener.center.x-crank.x)*side<-.0001f);if(fastener.renderer.enabled!=shown)fastener.renderer.enabled=shown;}
+            foreach(var node in hiddenInMotion)if(node.renderer.enabled)node.renderer.enabled=false;
             // Plumbing is supported by the removed intake housing. Remove the
             // complete fittings with the cutaway, then restore them in exterior view.
-            foreach(var pipe in sectionPipes)pipe.renderer.enabled=pipe.visible && !SectionEnabled;
+            foreach(var pipe in sectionPipes){bool shown=pipe.visible && !SectionEnabled;if(pipe.renderer.enabled!=shown)pipe.renderer.enabled=shown;}
             foreach(var cam in camLobePhases.Keys)section.SetCamPose(cam.renderer,root,cam.position,(cylinders[0].pin.z+cylinders[1].pin.z)*.5f,(cylinders[1].pin.z+cylinders[2].pin.z)*.5f,camLobePhases[cam],true);
         }
         public bool IsClipped(Renderer renderer,Vector3 point)=>Active && (!renderer || !renderer.enabled || section.IsClipped(renderer,point));

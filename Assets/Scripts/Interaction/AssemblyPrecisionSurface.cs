@@ -11,6 +11,7 @@ namespace EngineAssembly
         Collider[] hulls;
         MeshRenderer source;
         Rigidbody body;
+        bool hasState,lastVisible,lastPrecise;
         public void Configure(MeshCollider collider) { surface=collider;source=GetComponent<MeshRenderer>();Refresh(); }
         void Awake() { source=GetComponent<MeshRenderer>();Refresh(); }
         void OnEnable()=>Refresh();
@@ -32,8 +33,10 @@ namespace EngineAssembly
             }
             bool visible=source && source.enabled && source.gameObject.activeInHierarchy && (!body || body.detectCollisions);
             bool precise=visible && (!body || body.isKinematic);
-            surface.enabled=precise;
-            foreach(var hull in hulls??new Collider[0])if(hull)hull.enabled=visible && !precise;
+            if(hasState && lastVisible==visible && lastPrecise==precise && surface.enabled==precise)return;
+            if(surface.enabled!=precise)surface.enabled=precise;
+            if(hulls!=null)foreach(var hull in hulls)if(hull && hull.enabled!=(visible && !precise))hull.enabled=visible && !precise;
+            hasState=true;lastVisible=visible;lastPrecise=precise;
         }
     }
 }

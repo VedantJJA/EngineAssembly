@@ -24,7 +24,7 @@ namespace EngineAssembly.Editor
                 PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
                 PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android,"com.engineassembly.quest");EditorUserBuildSettings.buildAppBundle=false;
                 report.apk=Path.GetFullPath("Builds/Quest/EngineAssembly-Quest2.apk");Directory.CreateDirectory(Path.GetDirectoryName(report.apk));
-                var build=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=EditorBuildSettings.scenes.Where(s=>s.enabled).Select(s=>s.path).ToArray(),target=BuildTarget.Android,locationPathName=report.apk,options=BuildOptions.Development});
+                var build=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=EditorBuildSettings.scenes.Where(s=>s.enabled).Select(s=>s.path).ToArray(),target=BuildTarget.Android,locationPathName=report.apk,options=BuildOptions.None});
                 report.result=build.summary.result.ToString();report.passed=build.summary.result==BuildResult.Succeeded;report.seconds=build.summary.totalTime.TotalSeconds;report.bytes=File.Exists(report.apk)?new FileInfo(report.apk).Length:0;
                 if(!report.passed)report.error=string.Join("\n",build.steps.SelectMany(s=>s.messages).Where(m=>m.type==LogType.Error || m.type==LogType.Exception).Select(m=>m.content));
             }

@@ -405,7 +405,7 @@ namespace EngineAssembly
         {
             font=Resources.Load<TMP_FontAsset>("WorkshopBody");heading=Resources.Load<TMP_FontAsset>("WorkshopHeading");
             var root=NewRect("Mobile Assembly Canvas",transform);
-            canvas=root.gameObject.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=100;
+            canvas=root.gameObject.AddComponent<Canvas>();root.gameObject.AddComponent<WorkshopCanvasRegistration>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=100;
             var scaler=root.gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1080,1920);scaler.matchWidthOrHeight=.5f;
             root.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             if(!FindAnyObjectByType<EventSystem>())

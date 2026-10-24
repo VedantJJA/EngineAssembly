@@ -44,6 +44,7 @@ namespace EngineAssembly
             if(Active)
             {
                 var inputs=new System.Collections.Generic.List<XRInputSubsystem>();SubsystemManager.GetSubsystems(inputs);foreach(var input in inputs)FloorTracking|=input.TrySetTrackingOriginMode(TrackingOriginModeFlags.Floor);
+                var displays=new System.Collections.Generic.List<XRDisplaySubsystem>();SubsystemManager.GetSubsystems(displays);foreach(var display in displays)if(display.running)WorkshopPerformanceProfiles.ConfigureXR(display);
                 BindScene();
             }
             else if(manager){manager.StopSubsystems();manager.DeinitializeLoader();}

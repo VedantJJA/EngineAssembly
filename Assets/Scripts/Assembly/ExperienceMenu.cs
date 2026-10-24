@@ -27,7 +27,7 @@ namespace EngineAssembly
             Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
             body=Resources.Load<TMP_FontAsset>("WorkshopBody");heading=Resources.Load<TMP_FontAsset>("WorkshopHeading");
             AudioListener.volume=PlayerPrefs.GetFloat("Assembly.Volume",1);
-            var canvasObject=new GameObject("Experience menu canvas",typeof(RectTransform),typeof(Canvas),typeof(UnityEngine.UI.CanvasScaler),typeof(UnityEngine.UI.GraphicRaycaster));canvasObject.transform.SetParent(transform,false);
+            var canvasObject=new GameObject("Experience menu canvas",typeof(RectTransform),typeof(Canvas),typeof(WorkshopCanvasRegistration),typeof(UnityEngine.UI.CanvasScaler),typeof(UnityEngine.UI.GraphicRaycaster));canvasObject.transform.SetParent(transform,false);
             canvasObject.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvasObject.GetComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1440,900);scaler.matchWidthOrHeight=.5f;
             if(!FindAnyObjectByType<EventSystem>())

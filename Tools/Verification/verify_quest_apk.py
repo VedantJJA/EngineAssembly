@@ -24,6 +24,7 @@ try:
     manifest = subprocess.check_output([str(java), f'-Dcom.android.sdklib.toolsdir={tools}', '-classpath', str(tools/'lib/apkanalyzer-classpath.jar'), 'com.android.tools.apk.analyzer.ApkAnalyzerCli', 'manifest', 'print', str(apk)], text=True, encoding='utf-8')
     root = ET.fromstring(manifest)
     attr = '{http://schemas.android.com/apk/res/android}'
+    check(root.find('application').get(attr+'debuggable','false') == 'false', 'Quest APK is a release player without Android debugging overhead')
     check(root.attrib['package'] == 'com.engineassembly.quest', 'Quest has a separate application identifier from the phone build')
     check(int(root.find('uses-sdk').attrib[attr+'minSdkVersion']) >= 29, 'Quest build targets Android API 29 or newer')
     categories = {node.attrib.get(attr+'name') for node in root.iter('category')}
@@ -44,7 +45,7 @@ try:
         for scene in ['MainMenu', 'RepairVRFallback', 'AssemblyWorkshop']:
             check(scene.encode() in data, f'{scene} is registered in the Quest player')
     subprocess.check_call([str(java), '-jar', str(sdk/'build-tools/36.0.0/lib/apksigner.jar'), 'verify', str(apk)], stdout=subprocess.DEVNULL)
-    check(True, 'Quest development APK signature verifies')
+    check(True, 'Quest APK signature verifies')
     report.update(passed=True, bytes=apk.stat().st_size, sha256=hashlib.sha256(apk.read_bytes()).hexdigest())
 except Exception as error:
     report['error'] = str(error)

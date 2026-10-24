@@ -31,7 +31,7 @@ namespace EngineAssembly
 
         void Awake()
         {
-            var root=new GameObject("Mobile workshop touch HUD",typeof(RectTransform),typeof(Canvas),typeof(UnityEngine.UI.CanvasScaler),typeof(UnityEngine.UI.GraphicRaycaster));
+            var root=new GameObject("Mobile workshop touch HUD",typeof(RectTransform),typeof(Canvas),typeof(WorkshopCanvasRegistration),typeof(UnityEngine.UI.CanvasScaler),typeof(UnityEngine.UI.GraphicRaycaster));
             root.transform.SetParent(transform,false);
             canvas=root.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=110;
             scaler=root.GetComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1440,900);scaler.matchWidthOrHeight=.5f;

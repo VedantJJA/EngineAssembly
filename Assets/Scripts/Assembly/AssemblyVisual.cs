@@ -16,6 +16,7 @@ namespace EngineAssembly
         float flashUntil;
         bool overlay;
         bool xray;
+        Color lastColour;bool hasColour;
         static Material material;
         static Material xrayMaterial;
         public void ShowGhost(AssemblyPart part, AssemblySocket target, Color color, bool throughWalls=false)
@@ -61,6 +62,7 @@ namespace EngineAssembly
         }
         void Tint(Color color)
         {
+            if(hasColour && lastColour==color)return;hasColour=true;lastColour=color;
             if(block==null) block=new MaterialPropertyBlock();
             block.SetColor("_BaseColor",color);block.SetColor("_RimColor",new Color(color.r,color.g,color.b,.8f));
             block.SetFloat("_SurfaceOffset",overlay?.0005f:0);
@@ -75,13 +77,13 @@ namespace EngineAssembly
         {
             if(!visualRoot || !owner) return;
             var pose=socket?owner.GetTargetPose(socket):new Pose(owner.transform.position,owner.transform.rotation);
-            visualRoot.transform.SetPositionAndRotation(pose.position,pose.rotation);
-            visualRoot.transform.localScale=owner.transform.lossyScale;
+            var t=visualRoot.transform;if(t.position!=pose.position || t.rotation!=pose.rotation)t.SetPositionAndRotation(pose.position,pose.rotation);
+            var scale=owner.transform.lossyScale;if(t.localScale!=scale)t.localScale=scale;
         }
         public void Clear()
         {
             if(visualRoot) { visualRoot.SetActive(false); if(Application.isPlaying) Destroy(visualRoot);else DestroyImmediate(visualRoot); }
-            visualRoot=null;renderers.Clear();socket=null;flashUntil=0;
+            visualRoot=null;renderers.Clear();socket=null;flashUntil=0;hasColour=false;
         }
         void OnDisable()=>Clear();
         void OnDestroy()=>Clear();

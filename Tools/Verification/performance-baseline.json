@@ -1,0 +1,45 @@
+{
+    "passed": true,
+    "environment": "Unity Editor comparison, D3D11, Mobile quality. Not phone or headset FPS.",
+    "error": "",
+    "samples": [
+        {
+            "operation": "Phone ghost refresh, late chapter",
+            "medianMs": 2.6642,
+            "p95Ms": 3.5559000000000005,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Next assembly step, late chapter",
+            "medianMs": 0.13470000000000002,
+            "p95Ms": 0.1648,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Phone timeline, within one part",
+            "medianMs": 0.5461,
+            "p95Ms": 0.7774000000000001,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Engine motion and section",
+            "medianMs": 0.43060000000000006,
+            "p95Ms": 0.6299,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Quest UI binding, unchanged scene",
+            "medianMs": 0.11610000000000001,
+            "p95Ms": 0.20350000000000002,
+            "bytesPerCall": 0.0
+        },
+        {
+            "operation": "Quest ghost refresh",
+            "medianMs": 0.19690000000000003,
+            "p95Ms": 0.2585,
+            "bytesPerCall": 0.0
+        }
+    ],
+    "renderedTriangles": 255135,
+    "enabledColliders": 185
+}

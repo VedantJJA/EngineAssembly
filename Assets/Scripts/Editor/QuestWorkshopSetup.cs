@@ -17,6 +17,7 @@ namespace EngineAssembly.Editor
         [MenuItem("Tools/Engine Assembly/VR/Configure Quest 2 and lift art")]
         public static void Configure()
         {
+            WorkshopPerformanceSetup.Configure();
             Directory.CreateDirectory("Assets/XR/Settings");Directory.CreateDirectory("Assets/Resources/Lift");AssetDatabase.Refresh();
             var per=AssetDatabase.LoadAssetAtPath<XRGeneralSettingsPerBuildTarget>("Assets/XR/Settings/WorkshopXRSettings.asset");if(!per){per=ScriptableObject.CreateInstance<XRGeneralSettingsPerBuildTarget>();AssetDatabase.CreateAsset(per,"Assets/XR/Settings/WorkshopXRSettings.asset");}
             EditorBuildSettings.AddConfigObject(XRGeneralSettings.k_SettingsKey,per,true);
@@ -28,6 +29,9 @@ namespace EngineAssembly.Editor
                 if(!XRPackageMetadataStore.AssignLoader(general.Manager,"UnityEngine.XR.OpenXR.OpenXRLoader",target))throw new Exception("Unable to assign OpenXR loader for "+target);
                 var settings=OpenXRSettings.GetSettingsForBuildTargetGroup(target);var touch=settings.GetFeature<OculusTouchControllerProfile>();if(touch)touch.enabled=true;
                 var quest=settings.GetFeature<MetaQuestFeature>();if(quest)quest.enabled=target==BuildTargetGroup.Android;
+                var foveation=settings.GetFeature<UnityEngine.XR.OpenXR.Features.FoveatedRenderingFeature>();
+                if(foveation){foveation.enabled=target==BuildTargetGroup.Android;var config=new SerializedObject(foveation);config.FindProperty("useEyeTracking").boolValue=false;config.ApplyModifiedPropertiesWithoutUndo();}
+                settings.foveatedRenderingApi=OpenXRSettings.BackendFovationApi.SRPFoveation;
                 settings.renderMode=OpenXRSettings.RenderMode.SinglePassInstanced;EditorUtility.SetDirty(settings);EditorUtility.SetDirty(general);EditorUtility.SetDirty(general.Manager);
             }
             XRGeneralSettings.Instance=per.SettingsForBuildTarget(BuildTargetGroup.Standalone);EditorUtility.SetDirty(per);

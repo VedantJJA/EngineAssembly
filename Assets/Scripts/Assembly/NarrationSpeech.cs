@@ -41,7 +41,7 @@ namespace EngineAssembly
         public TextMeshProUGUI Label;
         public AssemblyNarrator Assembly;
         public NarrationSpeech Speaker;
-        string lastText,lastId;int lastWord=-2;
+        string lastText,lastId,tokenText;int lastWord=-2;string[] tokens;SpokenCue tokenCue;float tokenWeight;readonly System.Text.StringBuilder builder=new System.Text.StringBuilder(1024);
         void LateUpdate()
         {
             if(!Assembly && !Speaker){var manager=GetComponentInParent<AssemblyManager>();if(manager)Assembly=manager.GetComponent<AssemblyNarrator>();}
@@ -49,15 +49,16 @@ namespace EngineAssembly
             string id=Assembly?Assembly.CurrentCueId:Speaker?Speaker.CueId:null;
             if(!Label || !Label.enabled || !audio || !audio.clip || !audio.isPlaying)return;
             var cue=NarrationText.Find(id);if(cue==null)return;
-            var tokens=cue.text.Split(new[]{' ','\n','\r'},StringSplitOptions.RemoveEmptyEntries);
+            if(tokenCue!=cue || tokenText!=cue.text){tokenCue=cue;tokenText=cue.text;tokens=cue.text.Split(new[]{' ','\n','\r'},StringSplitOptions.RemoveEmptyEntries);tokenWeight=0;foreach(var token in tokens)tokenWeight+=Mathf.Max(2,token.Length);lastWord=-2;}
             int active=0;
             if(cue.words!=null && cue.words.Length==tokens.Length){active=-1;while(active+1<cue.words.Length && audio.time>=cue.words[active+1].start)active++;}
-            else {float weight=tokens.Sum(t=>Mathf.Max(2,t.Length));float target=weight*audio.time/Mathf.Max(.1f,audio.clip.length);float total=0;while(active<tokens.Length-1 && total+Mathf.Max(2,tokens[active].Length)<target)total+=Mathf.Max(2,tokens[active++].Length);}
+            else {float target=tokenWeight*audio.time/Mathf.Max(.1f,audio.clip.length);float total=0;while(active<tokens.Length-1 && total+Mathf.Max(2,tokens[active].Length)<target)total+=Mathf.Max(2,tokens[active++].Length);}
             // A rolling phrase keeps long educational explanations readable.
             int first=Mathf.Max(0,(active/28)*28),last=Mathf.Min(tokens.Length,first+28);
             if(lastId==id && lastWord==active && Label.text==lastText)return;
             string dark=ColorUtility.ToHtmlStringRGB(WorkshopTheme.Text),muted="788797";
-            lastText=string.Join(" ",Enumerable.Range(first,last-first).Select(i=>"<color=#"+(i<=active?dark:muted)+">"+tokens[i]+"</color>"));Label.text=lastText;lastId=id;lastWord=active;
+            builder.Clear();for(int i=first;i<last;i++){if(i>first)builder.Append(' ');builder.Append("<color=#").Append(i<=active?dark:muted).Append('>').Append(tokens[i]).Append("</color>");}
+            lastText=builder.ToString();Label.text=lastText;lastId=id;lastWord=active;
         }
     }
 }

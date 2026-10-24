@@ -3,6 +3,7 @@
   "apk": "C:\\Users\\Vedant\\EngineAssembly\\Builds\\Quest\\EngineAssembly-Quest2.apk",
   "checks": [
     "Quest APK exists",
+    "Quest APK is a release player without Android debugging overhead",
     "Quest has a separate application identifier from the phone build",
     "Quest build targets Android API 29 or newer",
     "Quest launcher includes the VR category",
@@ -16,9 +17,9 @@
     "MainMenu is registered in the Quest player",
     "RepairVRFallback is registered in the Quest player",
     "AssemblyWorkshop is registered in the Quest player",
-    "Quest development APK signature verifies"
+    "Quest APK signature verifies"
   ],
   "error": "",
-  "bytes": 199735015,
-  "sha256": "e79783690d07041befbb313b72e0f4ae78ecbb8c4f77e4cb272edcc4d70e70bb"
+  "bytes": 156948445,
+  "sha256": "1851df7243d54f573b53a801f2e924f9476c959f89d9a42ee32c69d07c63c3ac"
 }
