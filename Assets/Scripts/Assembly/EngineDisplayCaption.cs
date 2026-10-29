@@ -27,8 +27,8 @@ namespace EngineAssembly
         {
             var size=new Vector2Int(Screen.width,Screen.height);if(laidOut && layoutSize==size)return;laidOut=true;layoutSize=size;
             var rect=(RectTransform)transform;if(!mobile){rect.anchorMin=rect.anchorMax=Vector2.one;rect.pivot=Vector2.one;rect.sizeDelta=new Vector2(540,248);rect.anchoredPosition=new Vector2(-28,-144);return;}
-            bool landscape=Screen.width>Screen.height;rect.anchorMin=landscape?new Vector2(.02f,1):new Vector2(.025f,1);rect.anchorMax=landscape?new Vector2(.02f,1):new Vector2(.975f,1);rect.pivot=landscape?Vector2.up:new Vector2(.5f,1);rect.sizeDelta=new Vector2(landscape?590:0,194);rect.anchoredPosition=new Vector2(0,landscape?-126:-226);
+            bool landscape=Screen.width>Screen.height;rect.anchorMin=landscape?new Vector2(.02f,1):new Vector2(.025f,1);rect.anchorMax=landscape?new Vector2(.02f,1):new Vector2(.975f,1);rect.pivot=landscape?Vector2.up:new Vector2(.5f,1);rect.sizeDelta=new Vector2(landscape?590:0,194);rect.anchoredPosition=new Vector2(0,landscape?-126:GetComponentInParent<MobileARSession>()?-194:-112);
         }
-        void LateUpdate()=>Layout();
+        void LateUpdate(){Layout();var image=GetComponent<UnityEngine.UI.Image>();if(image)image.enabled=WorkshopGuidance.Captions;Heading.enabled=Text.enabled=Context.enabled=WorkshopGuidance.Captions;}
     }
 }

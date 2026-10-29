@@ -82,12 +82,26 @@ Shader "EngineAssembly/Surface Triplanar"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 EngineDisplayClip(input.positionWS,input.positionCS.xy);
                 float3 normal=normalize(input.normalOS)*IS_FRONT_VFACE(facing,1,-1);
-                float3 weights=pow(abs(normal),4);weights/=max(dot(weights,1),.0001);
                 float3 signs=step(0,normal)*2-1;
                 float3 p=input.positionOS*_TextureScale;
                 float2 uvX=float2(-signs.x*p.z,p.y);
                 float2 uvY=float2(-signs.y*p.x,p.z);
                 float2 uvZ=float2(signs.z*p.x,p.y);
+                // Android and Quest keep texture, roughness and normal detail, but
+                // sample only the dominant object-space projection. Desktop keeps
+                // blended triplanar sampling for smooth projection transitions.
+                #if defined(SHADER_API_MOBILE)
+                    float3 dominant=abs(normal);
+                    float axis=dominant.x>=dominant.y && dominant.x>=dominant.z?0:dominant.y>=dominant.z?1:2;
+                    float2 uv=axis<.5?uvX:axis<1.5?uvY:uvZ;
+                    half3 colour=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv).rgb;
+                    half roughness=SAMPLE_TEXTURE2D(_RoughnessMap,sampler_RoughnessMap,uv).r;
+                    float2 detailSample=SAMPLE_TEXTURE2D(_DetailNormal,sampler_DetailNormal,uv).rg*2-1;
+                    float3 detail=axis<.5?float3(0,detailSample.y,-signs.x*detailSample.x)
+                        :axis<1.5?float3(-signs.y*detailSample.x,0,detailSample.y)
+                        :float3(signs.z*detailSample.x,detailSample.y,0);
+                #else
+                    float3 weights=pow(abs(normal),4);weights/=max(dot(weights,1),.0001);
                 half3 colour=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uvX).rgb*weights.x
                             +SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uvY).rgb*weights.y
                             +SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uvZ).rgb*weights.z;
@@ -100,6 +114,7 @@ Shader "EngineAssembly/Surface Triplanar"
                 float3 detail=float3(0,nx.y,-signs.x*nx.x)*weights.x
                              +float3(-signs.y*ny.x,0,ny.y)*weights.y
                              +float3(signs.z*nz.x,nz.y,0)*weights.z;
+                #endif
                 normal=normalize(normal+detail*_NormalStrength);
                 SurfaceData surface=(SurfaceData)0;
                 surface.albedo=_BaseColor.rgb*lerp(1,colour,_TextureStrength);

@@ -38,7 +38,7 @@ namespace EngineAssembly
         AssemblyManager manager;AssemblyPart replacement;string originalSocketGeometry;
         readonly List<string> inventory=new List<string>();
         readonly Dictionary<Renderer,MaterialPropertyBlock> originalColours=new Dictionary<Renderer,MaterialPropertyBlock>();
-        public static readonly Color BrokenColour=new Color(.82f,.12f,.16f),NewColour=new Color(.10f,.58f,.28f);
+        public static readonly Color BrokenColour=new Color(1f,.68f,.70f),NewColour=new Color(.66f,.92f,.73f);
         public IReadOnlyList<string> InventoryPartIds=>inventory;
         bool running;
         float supplyX,supplyZ,supplyDepth;
@@ -74,9 +74,11 @@ namespace EngineAssembly
             var table=manager.TrayFrame.GetComponent<Renderer>();var tableBounds=table?table.bounds:new Bounds(manager.TrayFrame.position,new Vector3(4,1,3));
             supplyX=tableBounds.min.x+.25f;supplyZ=tableBounds.min.z+.25f;supplyDepth=0;
             replacement.ResetLoose(manager.TrayFrame,definition.trayPosition,definition.trayRotation);
-            // A distinct supply position avoids overlap with the reused, removed bearing.
-            StageOnTable(replacement,0);
-            CompletedSteps=0;running=true;manager.Report(CurrentStep.instruction);
+            CompletedSteps=0;running=true;
+            if(!manager.GetComponent<MobileAssemblyController>() && manager.GetComponent<WorkpieceLift>() is WorkpieceLift lift && lift.TryRepairSurface(out var surface))
+                StageCentered(replacement,new Vector3(surface.center.x+surface.extents.x*.65f,surface.max.y+.005f,surface.center.z+surface.extents.z*.65f));
+            else StageOnTable(replacement,0);
+            manager.Report(CurrentStep.instruction);
         }
         public void End()
         {
@@ -97,10 +99,19 @@ namespace EngineAssembly
         public bool StoreRemoved(AssemblyPart part)
         {
             if(CurrentStep==null || CurrentStep.install || part!=NextPart || part.IsSnapped || part.IsSelected || part.IsBusy)return false;
+            bool mobile=manager.GetComponent<MobileAssemblyController>();
+            if(part.PartId==UnitId)
+            {
+                if(mobile)StageUnit(part);
+                else
+                {
+                    var lift=manager.GetComponent<WorkpieceLift>();
+                    if(!lift || !lift.DockRepairUnit(part)){manager.Report("Set the idler on the small repair lift before opening it.");return false;}
+                    SetAsidePosition=AssemblyHeldView.WorldBounds(part).center;
+                }
+            }
+            else if(mobile){part.Body.isKinematic=true;part.Body.useGravity=false;if(part.PartId==FaultyId)part.gameObject.SetActive(false);}
             if(!inventory.Contains(part.PartId))inventory.Add(part.PartId);
-            if(part.PartId==UnitId)StageUnit(part);
-            else if(part.PartId==FaultyId){part.Body.isKinematic=true;part.Body.useGravity=false;part.gameObject.SetActive(false);}
-            else StageOnTable(part,CompletedSteps+1);
             Advance();return true;
         }
         void Colour(AssemblyPart part,Color colour)

@@ -38,7 +38,7 @@ namespace EngineAssembly
         public string FallbackScene=>fallbackScene;
         public ARTrackingProvider Provider=>provider;
         public void Configure(ARTrackingProvider tracking,string fallback){provider=tracking;fallbackScene=fallback;}
-        public static bool CanInteract(GameObject host){if(WorkshopTutorial.IsOpen)return false;var session=host.GetComponent<MobileARSession>();return !session || session.AllowsInteraction;}
+        public static bool CanInteract(GameObject host){if(WorkshopTutorial.BlocksInput)return false;var session=host.GetComponent<MobileARSession>();return !session || session.AllowsInteraction;}
         IEnumerator Start()
         {
             rig=GetComponent<SpatialExperienceRig>();assembly=GetComponent<MobileAssemblyController>();display=GetComponent<MobileEngineDisplay>();
@@ -50,7 +50,7 @@ namespace EngineAssembly
             {
                 storage=GetComponent<AssemblyManager>().TrayFrame;storageParent=storage.parent;storagePosition=storage.localPosition;storageRotation=storage.localRotation;storageScale=storage.localScale;
             }
-            overlay=gameObject.AddComponent<MobileAROverlay>();overlay.CreateSession(Place,Reposition,UsePhoneView);
+            overlay=gameObject.AddComponent<MobileAROverlay>();overlay.CreateSession(Place,Reposition,UsePhoneView,Rescan);
             ready=true;ShowContent(false);SetInteraction(false);
             initializationDeadline=Time.realtimeSinceStartup+initializationTimeout;
             if(!provider || !provider.CanRunHere){Fail(ARFailure.UnsupportedPlatform);yield break;}
@@ -85,10 +85,10 @@ namespace EngineAssembly
         }
         void ProviderReady()
         {
-            if(closed || !provider.TrackingCamera)return;
+            if(closed || State!=SessionState.Starting || !provider.TrackingCamera)return;
             try{rig.BeginTrackedSession(provider.TrackingCamera,new Pose(Vector3.zero,Quaternion.identity));}
             catch(System.Exception error){Debug.LogWarning("AR camera setup failed: "+error.GetType().Name);Fail(ARFailure.Initialization);return;}
-            State=SessionState.Scanning;overlay.SetPlacementLabel("PLACE ENGINE");overlay.SetStatus("Find a surface", "Move your phone slowly over a clear, well-lit floor. The engine will float at working height.",false,false);
+            State=SessionState.Scanning;overlay.SetScanning(true);overlay.SetPlacementLabel("PLACE ENGINE");overlay.SetStatus("Move your phone",provider.TrackingGuidance,false,false);
         }
         void Update()
         {
@@ -97,7 +97,10 @@ namespace EngineAssembly
             // coroutine, so the checking screen cannot remain indefinitely.
             if(State==SessionState.Starting){if(!waitingForCameraPermission && Time.realtimeSinceStartup>=initializationDeadline)Fail(ARFailure.Initialization);return;}
             if(State==SessionState.Scanning)
-                overlay.SetStatus(provider.HasSurface?"Surface found":"Find a surface",provider.HasSurface?"Place the floating engine here. Subassemblies appear beside it.":"Move slowly over a textured floor in good light.",provider.HasSurface,false);
+            {
+                bool surface=provider.HasSurface;overlay.SetStatus(surface?"Surface detected":"Move your phone",surface?"The blue square marks a surface. Tap PLACE ENGINE to anchor the workspace here.":provider.TrackingGuidance,surface,false);
+                overlay.SetTargetScreenPoint(surface && provider.SurfacePosition.HasValue?provider.TrackingCamera.WorldToScreenPoint(provider.SurfacePosition.Value):(Vector3?)null);
+            }
             else if(State==SessionState.Placed && !provider.TrackingReliable)
             {State=SessionState.TrackingLost;SetInteraction(false);overlay.SetStatus("Tracking paused","Move your phone slowly back toward the engine to recover tracking.",false,true);}
             else if(State==SessionState.TrackingLost && provider.TrackingReliable)
@@ -105,8 +108,11 @@ namespace EngineAssembly
         }
         public void Place()
         {
-            if(State!=SessionState.Scanning || !provider.HasSurface)return;
-            var anchor=provider.PlaceAnchor();if(!anchor)return;
+            if(closed || State!=SessionState.Scanning || !provider || !provider.HasSurface)return;
+            Transform anchor;
+            try{anchor=provider.PlaceAnchor();}
+            catch(System.Exception error){Debug.LogWarning("AR anchor creation failed: "+error.GetType().Name);overlay.SetStatus("Move your phone","The surface changed. Scan a clear area and try placing again.",false,false);provider.BeginRepositioning();return;}
+            if(!anchor){overlay.SetStatus("Move your phone","Keep the phone steady over the surface and try placing again.",false,false);return;}
             if(!workspaceSurface)
             {
                 workspaceSurface=new GameObject("AR elevated workspace frame").transform;
@@ -118,10 +124,10 @@ namespace EngineAssembly
                 RememberHome(engine);
                 if(assembly){assembly.AttachPresentationSources();assembly.ArrangeTrackedWorkspaces();}
                 placedOnce=true;
-                State=SessionState.Placed;ShowContent(true);SetInteraction(true);AnchoredStatus();Physics.SyncTransforms();return;
+                State=SessionState.Placed;overlay.SetScanning(false);ShowContent(true);SetInteraction(true);AnchoredStatus();Physics.SyncTransforms();return;
             }
             workspaceSurface.SetParent(anchor,false);workspaceSurface.SetLocalPositionAndRotation(Vector3.up*workspaceHeight,Quaternion.identity);
-            State=SessionState.Placed;ShowContent(true);SetInteraction(true);AnchoredStatus();Physics.SyncTransforms();
+            State=SessionState.Placed;overlay.SetScanning(false);ShowContent(true);SetInteraction(true);AnchoredStatus();Physics.SyncTransforms();
         }
         void AnchoredStatus()=>overlay.SetStatus("Engine anchored","Gestures control only the active build: 1 finger rotates; 2 fingers move; pinch changes size.",false,true);
         public void SeatBuild(Transform build,Vector3 surfacePoint)
@@ -149,7 +155,7 @@ namespace EngineAssembly
         public void Reposition()
         {
             if(State!=SessionState.Placed && State!=SessionState.TrackingLost || assembly && GetComponent<AssemblyManager>().AssemblyParts.AnyBusy())return;
-            provider.BeginRepositioning();State=SessionState.Scanning;ShowContent(false);SetInteraction(false);
+            provider.BeginRepositioning();State=SessionState.Scanning;overlay.SetScanning(true);overlay.SetStatus("Find a surface",provider.TrackingGuidance,false,false);ShowContent(false);SetInteraction(false);
         }
         void ShowContent(bool show)
         {
@@ -173,10 +179,11 @@ namespace EngineAssembly
         }
         void SetInteraction(bool allowed)
         {
-            if(uiGroup){uiGroup.alpha=placedOnce?1:0;uiGroup.interactable=allowed;uiGroup.blocksRaycasts=allowed;}
+            if(uiGroup){uiGroup.alpha=allowed?1:0;uiGroup.interactable=allowed;uiGroup.blocksRaycasts=allowed;}
             if(gameRaycaster)gameRaycaster.enabled=allowed;
         }
         public void UsePhoneView()=>Fail(ARFailure.UnsupportedPlatform);
+        public void Rescan(){if(State!=SessionState.Scanning || !provider)return;provider.RestartSurfaceSearch();overlay.SetStatus("Move your phone",provider.TrackingGuidance,false,false);}
         public void Zoom(float ratio,Vector3 focus)
         {
             if(!AllowsInteraction || ratio<=0)return;
@@ -190,6 +197,7 @@ namespace EngineAssembly
         public void Fail(ARFailure reason)
         {
             if(closed)return;closed=true;State=SessionState.Fallback;
+            Debug.LogWarning("AR session switched to phone view: "+reason);
             // A missing licence or a denied camera is not an unsupported phone.
             string message=reason==ARFailure.UnsupportedDevice?"Your device does not support AR. Opening the standard phone view.":reason==ARFailure.CameraDenied?"Camera access is required for AR. Opening the standard phone view.":reason==ARFailure.UnsupportedPlatform?"Opening the standard phone view.":"AR is unavailable right now. Opening the standard phone view.";
             MobileAROverlay.QueueFallback(fallbackScene,message);RestoreContent();ShutdownProvider();
@@ -201,7 +209,10 @@ namespace EngineAssembly
             if(storage){storage.SetParent(storageParent,false);storage.SetLocalPositionAndRotation(storagePosition,storageRotation);storage.localScale=storageScale;}
             if(rig && rig.ContentAnchor){rig.ContentAnchor.SetParent(anchorParent,false);rig.ContentAnchor.SetLocalPositionAndRotation(initialAnchorPosition,initialAnchorRotation);rig.ContentAnchor.localScale=initialAnchorScale;ShowContent(true);if(rig.IsTracked)rig.EndTrackedSession();}
         }
-        void ShutdownProvider(){if(!provider)return;provider.Ready-=ProviderReady;provider.Failed-=Fail;try{provider.Shutdown();}catch(System.Exception error){Debug.LogWarning("AR cleanup failed: "+error.GetType().Name);}}
-        void OnDestroy(){closed=true;RestoreContent();ShutdownProvider();}
+        bool providerStopped;
+        void ShutdownProvider(){if(!provider || providerStopped)return;providerStopped=true;provider.Ready-=ProviderReady;provider.Failed-=Fail;try{provider.Shutdown();}catch(System.Exception error){Debug.LogWarning("AR cleanup failed: "+error.GetType().Name);}}
+        // Fallback restores content explicitly before loading another scene. During
+        // destruction the original parent is dying too, so reparenting is invalid.
+        void OnDestroy(){closed=true;ShutdownProvider();}
     }
 }

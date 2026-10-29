@@ -21,6 +21,7 @@ namespace EngineAssembly
         static Material xrayMaterial;
         public void ShowGhost(AssemblyPart part, AssemblySocket target, Color color, bool throughWalls=false)
         {
+            if(!WorkshopGuidance.Hints){Clear();return;}
             if (!target) { Clear(); return; }
             if (!visualRoot || owner != part || overlay || xray!=throughWalls) Build(part,false,throughWalls);
             socket=target; flashUntil=0;

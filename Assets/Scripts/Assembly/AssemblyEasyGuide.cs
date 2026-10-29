@@ -11,6 +11,7 @@ namespace EngineAssembly
         sealed class Target { public AssemblyPart part; public AssemblyVisual visual; public GameObject query; public Collider[] colliders;public bool isGhost,placeable; public readonly List<SurfaceSample> samples=new List<SurfaceSample>(); }
         struct SurfaceSample { public Transform frame;public Vector3 point; }
         readonly List<Target> targets = new List<Target>();
+        readonly List<AssemblyPart> carried=new List<AssemblyPart>();
         readonly Dictionary<Collider,Target> hits = new Dictionary<Collider,Target>();
         readonly Dictionary<AssemblyPart,Target> byPart=new Dictionary<AssemblyPart,Target>();
         readonly Dictionary<AssemblyPart,MeshRenderer[]> visibleGeometry=new Dictionary<AssemblyPart,MeshRenderer[]>();
@@ -26,8 +27,8 @@ namespace EngineAssembly
         {
             if (!manager || manager.Recipe==null) return;
             bool active=manager.Interaction==WorkshopInteraction.Build && manager.Mode==WorkshopMode.Assembly && manager.Task==AssemblyTask.Assemble && !manager.DisplayActive;
-            bool selected=false;if(active)foreach(var part in manager.AssemblyParts)if(part && part.IsSelected){selected=true;break;}
-            if(!selected)
+            carried.Clear();if(active)foreach(var part in manager.AssemblyParts)if(part && part.IsSelected)carried.Add(part);
+            if(carried.Count==0)
             {
                 if(queriesActive){foreach(var target in targets){if(target.query)target.query.SetActive(false);target.visual.Clear();}queriesActive=false;}
                 LookTarget=null;return;
@@ -43,7 +44,9 @@ namespace EngineAssembly
             knownCount=manager.AssemblyParts.Count;knownVisit=manager.ChapterVisit;knownRecipe=manager.Recipe;bool sync=false;
             foreach (var part in manager.AssemblyParts)
             {
-                bool eligible=active && part && part.gameObject.activeInHierarchy && part.IsSelected && part.TargetSocket;
+                bool eligible=active && part && part.gameObject.activeInHierarchy && (manager.RepairActive || part.ChapterId==manager.CurrentChapterId) && !part.IsSnapped && !part.IsBusy
+                    && part.TargetSocket && part.TargetSocket.isActiveAndEnabled && MatchingHeldPart(part)
+                    && (part.IsSelected || manager.CanInstall(part,part.TargetSocket,out _));
                 if(eligible && manager.TargetFrame(part.Definition).GetComponentInParent<PickupablePlatform>() is PickupablePlatform platform && platform.IsFlipping)eligible=false;
                 if(!part)continue;byPart.TryGetValue(part,out var target);
                 bool occluder=active && part && part.gameObject.activeInHierarchy && part.IsSnapped && !manager.IsCarriedMember(part) && HasVisibleGeometry(part);
@@ -208,7 +211,18 @@ namespace EngineAssembly
             }
             return false;
         }
-        public bool Place(Ray ray,float distance,Camera camera=null) { var part=Aim(ray,distance,camera);return part && part.IsSelected && (manager.Difficulty==SnapDifficulty.Easy?part.GuidedSnap(part.TargetSocket):part.SnapToSocket(part.TargetSocket)); }
+        public AssemblyPart MatchingHeldPart(AssemblyPart target)
+        {
+            if(target && target.IsSelected)return target;
+            if(!target || manager.RepairActive)return null;
+            foreach(var item in carried)if(item && item.IsSelected && AssemblyInventory.Matches(item,target))return item;
+            return null;
+        }
+        public bool Place(Ray ray,float distance,Camera camera=null,AssemblyPart held=null)
+        {
+            var target=Aim(ray,distance,camera);if(!target)return false;
+            return AssemblyEquivalentPlacement.Place(held?held:MatchingHeldPart(target),target);
+        }
         bool HasVisibleGeometry(AssemblyPart part)
         {
             if(!visibleGeometry.TryGetValue(part,out var meshes)){meshes=part.GetComponentsInChildren<MeshRenderer>(true);visibleGeometry[part]=meshes;}

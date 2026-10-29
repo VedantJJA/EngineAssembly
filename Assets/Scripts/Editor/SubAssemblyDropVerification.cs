@@ -67,6 +67,9 @@ namespace EngineAssembly.Editor
             {
                 var root=manager.FindPart(group.rootPartId);int chapter=manager.Recipe.chapters.FindIndex(c=>c.id==root.Definition.chapterId);
                 manager.SelectChapter(chapter);manager.SetDifficulty(SnapDifficulty.Easy,false);
+                // Allow the normal first-frame lift/supply-table staging to
+                // finish before building and handling the unit.
+                yield return null;yield return null;
                 foreach(var data in manager.Recipe.parts.Where(p=>p.chapterId==manager.CurrentChapterId && p.order<root.Definition.order).OrderBy(p=>p.order))
                 {var part=manager.FindPart(data.id);part.InstallImmediate(part.TargetSocket);}
                 Assert(manager.GroupComplete(group),"Completed unit: "+root.PartId);
@@ -79,7 +82,7 @@ namespace EngineAssembly.Editor
                     root.MoveHeld(root.transform.position,Quaternion.identity);player.DropHeldPart(false);Physics.SyncTransforms();
                     Assert(!root.Body.isKinematic && root.Body.useGravity && root.GetComponent<BoxCollider>().enabled,"Dropped unit has a dynamic handling body: "+root.PartId);
                     Assert(members.All(p=>!p.Body.detectCollisions && p.GetComponentsInChildren<Collider>(true).Where(c=>c.attachedRigidbody==p.Body).All(c=>!c.enabled)),"Member surfaces cannot self-collide during handling: "+root.PartId);
-                    var start=root.transform.position;float maxSpeed=0,maxUp=0;
+                    var start=root.transform.position;float maxSpeed=0,maxUp=0;float startTime=Time.fixedTime;
                     for(int frame=0;frame<85;frame++)
                     {
                         yield return new WaitForFixedUpdate();yield return null;
@@ -87,7 +90,13 @@ namespace EngineAssembly.Editor
                         if(float.IsNaN(root.transform.position.x) || root.transform.position.y>start.y+.2f || maxUp>1 || maxSpeed>16)throw new Exception("Unstable drop "+root.PartId+" speed="+maxSpeed+" upward="+maxUp);
                         if(!local.All(pair=>Vector3.Distance(pair.Key.transform.position,root.transform.TransformPoint(pair.Value))<.004f) || !rotations.All(pair=>Quaternion.Angle(pair.Key.transform.rotation,root.transform.rotation*pair.Value)<.1f))throw new Exception("Member geometry drift on drop: "+root.PartId);
                     }
-                    Assert(root.GetComponent<BoxCollider>().bounds.min.y>-.1f && root.GetComponent<BoxCollider>().bounds.min.y<.12f,"Unit settles on floor without flying or falling through: "+root.PartId+" cycle "+drop);
+                    var box=root.GetComponent<BoxCollider>();
+                    bool settled=box.enabled && root.Body.detectCollisions && !root.Body.isKinematic && box.bounds.min.y>-.1f && box.bounds.min.y<.12f;
+                    string diagnostics=settled?"":" min="+box.bounds.min.ToString("F4")+" max="+box.bounds.max.ToString("F4")+" center="+box.bounds.center.ToString("F4")+" CADOrigin="+root.transform.position.ToString("F4")+" velocity="+root.Body.linearVelocity.ToString("F4")+" kinematic="+root.Body.isKinematic+" gravity="+root.Body.useGravity+" detectCollisions="+root.Body.detectCollisions+" colliderEnabled="+box.enabled+" elapsedFixedSeconds="+(Time.fixedTime-startTime).ToString("F4");
+                    Assert(settled,"Unit settles on floor without flying or falling through: "+root.PartId+" cycle "+drop+diagnostics);
+                    var lift=manager.GetComponent<WorkpieceLift>();
+                    if(lift)for(int station=1;station<lift.StationCount;station++)if(lift.StationFrame(station)==root.transform)
+                        Assert(!lift.StationBase(station).gameObject.activeInHierarchy,"The lift releases a loose dynamic carrier instead of holding it above the floor: "+root.PartId);
                 }
                 root.InstallImmediate(root.TargetSocket);yield return null;
                 Assert(!root.GetComponent<BoxCollider>().enabled && !root.GetComponent<SubAssembly>().UsesHandlingPhysics,"Handling proxy removed on installation: "+root.PartId);

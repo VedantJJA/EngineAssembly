@@ -113,7 +113,7 @@ namespace EngineAssembly
             State = AssemblyPartState.Held;
             SetPhysics(true);
             transform.SetParent(null, true);
-            onSelected.Invoke(); return true;
+            WorkshopPractice.PickedUp(this);if(Manager)Manager.GetComponent<AssemblyNarrator>()?.PartPickedUp(this);onSelected.Invoke(); return true;
         }
         public void Select() => BeginGrab();
         public void Deselect() => Release();
@@ -121,7 +121,7 @@ namespace EngineAssembly
         {
             if (!IsSelected) return false;
             bool snapped = attemptSnap && (!Manager || (Manager.Interaction == WorkshopInteraction.Build && Manager.Difficulty != SnapDifficulty.Easy)) && TrySnap();
-            if (!snapped) { State = AssemblyPartState.Loose; SetPhysics(false); if (visual) visual.Clear(); }
+            if (!snapped) { State = AssemblyPartState.Loose; SetPhysics(false); if (visual) visual.Clear(); WorkshopPractice.Dropped(this); }
             onDeselected.Invoke(); return snapped;
         }
         public void MoveHeld(Vector3 position, Quaternion rotation)
@@ -187,8 +187,12 @@ namespace EngineAssembly
             if (!socket.Reserve(this)) return false;
             if(proximity && Manager && Manager.Mode==WorkshopMode.Assembly && Manager.Interaction==WorkshopInteraction.Build)
             {
-                var player=FindAnyObjectByType<PlayerAssemblyController>();var guide=Manager.GetComponent<AssemblyEasyGuide>();
-                if(player && player.ViewCamera && guide && !guide.VisibleFrom(this,player.ViewCamera))
+                var guide=Manager.GetComponent<AssemblyEasyGuide>();Camera viewer=null;
+                if(QuestVRSession.Instance && QuestVRSession.Instance.Active)
+                {var rig=FindAnyObjectByType<QuestVRRig>();if(rig)viewer=rig.HeadCamera;}
+                else
+                {var player=FindAnyObjectByType<PlayerAssemblyController>();if(player && player.isActiveAndEnabled)viewer=player.ViewCamera;}
+                if(viewer && guide && !guide.VisibleFrom(this,viewer))
                 {
                     socket.ReleaseReservation(this);RejectionReason="Move until you can see the target surface.";onSnapRejected.Invoke();return false;
                 }
@@ -239,6 +243,9 @@ namespace EngineAssembly
             if (!Body.isKinematic) { Body.linearVelocity = Vector3.zero; Body.angularVelocity = Vector3.zero; }
             var precision=GetComponent<AssemblyPrecisionSurface>();if(precision)precision.PreparePhysics(kinematic);
             Body.isKinematic = kinematic; Body.useGravity = !kinematic && useGravityWhenLoose;
+            // CAD spring wires and valve surfaces can cross a thin floor in one
+            // discrete step. Apply to mouse, touch and controller releases alike.
+            if(!kinematic)Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
             if(precision)precision.RefreshPhysics();
             // Interpolating a kinematic child in world space fights its moving socket parent.
             Body.interpolation = kinematic ? RigidbodyInterpolation.None : RigidbodyInterpolation.Interpolate;

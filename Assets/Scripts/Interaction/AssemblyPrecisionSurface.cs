@@ -11,6 +11,7 @@ namespace EngineAssembly
         Collider[] hulls;
         MeshRenderer source;
         Rigidbody body;
+        AssemblyPart part;
         bool hasState,lastVisible,lastPrecise;
         public void Configure(MeshCollider collider) { surface=collider;source=GetComponent<MeshRenderer>();Refresh(); }
         void Awake() { source=GetComponent<MeshRenderer>();Refresh(); }
@@ -25,11 +26,21 @@ namespace EngineAssembly
         {
             if(!surface)return;
             if(!source)source=GetComponent<MeshRenderer>();
+            if(!part)part=GetComponentInParent<AssemblyPart>();
             body=GetComponentInParent<Rigidbody>();
             if(!group)
             {
                 group=GetComponentInChildren<GeneratedColliderGroup>(true);
                 hulls=group?group.GetComponentsInChildren<Collider>(true):new Collider[0];
+            }
+            // The display has independent exact selection meshes. Keeping the
+            // simulation surfaces active while hundreds of parts move makes
+            // PhysX rebuild their broadphase unnecessarily on standalone XR.
+            if(part && part.Manager && part.Manager.DisplayActive)
+            {
+                if(surface.enabled)surface.enabled=false;
+                if(hulls!=null)foreach(var hull in hulls)if(hull && hull.enabled)hull.enabled=false;
+                hasState=false;return;
             }
             bool visible=source && source.enabled && source.gameObject.activeInHierarchy && (!body || body.detectCollisions);
             bool precise=visible && (!body || body.isKinematic);

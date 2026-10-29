@@ -13,6 +13,9 @@ namespace EngineAssembly.Editor
         public static void Run()
         {
             const string folder="Assets/Audio/Narration/English",path="Assets/Resources/NarrationLibrary.asset";
+            // Import changed exports once. Reimporting every unchanged clip here
+            // triggered a complete asset refresh per line on every build/check.
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             var manifest=JsonUtility.FromJson<Manifest>(File.ReadAllText(folder+"/manifest.json"));
             var text=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Resources/NarrationText.json");
             var required=text?JsonUtility.FromJson<SpokenCatalogue>(text.text).cues.Select(c=>c.id).ToHashSet():null;
@@ -21,7 +24,7 @@ namespace EngineAssembly.Editor
             var cues=manifest.clips.Select(entry=>
             {
                 string clipPath=folder+"/"+entry.file;
-                AssetDatabase.ImportAsset(clipPath,ImportAssetOptions.ForceSynchronousImport);
+                if(!AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath))AssetDatabase.ImportAsset(clipPath,ImportAssetOptions.ForceSynchronousImport);
                 var importer=(AudioImporter)AssetImporter.GetAtPath(clipPath);
                 if(!importer)throw new InvalidOperationException("Narration file missing: "+clipPath);
                 var settings=importer.defaultSampleSettings;

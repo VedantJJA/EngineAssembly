@@ -32,6 +32,7 @@ namespace EngineAssembly
         bool placementMode,crouched,platformWasFlipping,hoveredAllowed;
         float pitch,fallSpeed,holdDistance=1.5f,standingHeight,standingEye,normalFov;
         public AssemblyPart CurrentHeldPart=>heldPart;
+        public AssemblyPart HoveredPart=>hoveredPart;
         public AssemblyInventory Inventory=>inventory;
         public bool IsHoldingPart=>heldPart;
         public bool Holds(AssemblyPart part)=>inventory && inventory.Contains(part);
@@ -45,6 +46,7 @@ namespace EngineAssembly
         public bool IsInEditMode=>AssemblyManager.Instance && AssemblyManager.Instance.Mode==WorkshopMode.Edit;
         public bool IsEditModeActive=>IsInEditMode;
         public Camera ViewCamera=>playerCamera;
+        public Ray InteractionRay=>playerCamera.ViewportPointToRay(new Vector3(.5f,.5f,0));
         public string HoverMessage { get; private set; }="";
         public PlacementTool Tool { get; private set; }
         public bool PlacementMode=>heldPart && placementMode && (!heldPart.Manager || heldPart.Manager.Difficulty!=SnapDifficulty.Easy);
@@ -55,6 +57,7 @@ namespace EngineAssembly
             controller=GetComponent<CharacterController>();if(!playerCamera)playerCamera=GetComponentInChildren<Camera>();if(!playerCamera)playerCamera=Camera.main;
             standingHeight=controller.height;standingEye=playerCamera?playerCamera.transform.localPosition.y:1.65f;normalFov=playerCamera?playerCamera.fieldOfView:60;
             hover=gameObject.AddComponent<AssemblyVisual>();pickupQuery=gameObject.AddComponent<AssemblyPickupQuery>();collisionGuard=gameObject.AddComponent<HeldPlayerCollisionGuard>();inventory=gameObject.AddComponent<AssemblyInventory>();
+            AssemblyPlayerCollision.Attach(controller);
             spawnPosition=transform.position;spawnRotation=transform.rotation;
             if(ExperienceMenu.MobileWorkshopRequested)mobileControls=gameObject.AddComponent<MobileWorkshopControls>();
         }
@@ -69,14 +72,13 @@ namespace EngineAssembly
             if(!workshopUI)workshopUI=FindAnyObjectByType<AssemblyWorkshopUI>();
             bool menu=workshopUI && workshopUI.IsOpen || WorkshopTutorial.BlocksInput;
             bool displayMode=AssemblyManager.Instance && AssemblyManager.Instance.DisplayActive;
-            bool displayPointer=displayMode && !MouseHeld(1);
-            bool hudPointer=InputHelper.IsKeyHeld(KeyCode.LeftAlt);
-            var desiredLock=menu || mobileControls || displayPointer || hudPointer?CursorLockMode.None:CursorLockMode.Locked;
+            bool hudPointer=InputHelper.IsKeyHeld(KeyCode.LeftAlt) || displayMode && AssemblyManager.Instance.GetComponent<PCDisplayChapter>() is PCDisplayChapter display && display.SettingsOpen;
+            var desiredLock=menu || mobileControls || hudPointer?CursorLockMode.None:CursorLockMode.Locked;
             if(Cursor.lockState!=desiredLock)Cursor.lockState=desiredLock;
-            if(Cursor.visible!=(menu || displayPointer || hudPointer))Cursor.visible=menu || displayPointer || hudPointer;
+            if(Cursor.visible!=(menu || hudPointer))Cursor.visible=menu || hudPointer;
             if(menu || hudPointer){ClearHover();return;}
             if(mobileControls){UpdateMobile();return;}
-            if(InputHelper.IsKeyDown(KeyCode.R))AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.ReplayCurrent();
+            if(!WorkshopTutorial.IsOpen && InputHelper.IsKeyDown(KeyCode.R))AssemblyManager.Instance?.GetComponent<AssemblyNarrator>()?.ReplayCurrent();
             if(LiftControlHandle.DesktopHolding && LiftControlHandle.ProcessDesktop(playerCamera,false,MouseHeld(0),MouseDelta().y,pickupDistance)){ClearHover();HoverMessage="Hold and drag up / down · Release to stop";return;}
             var lift=AssemblyManager.Instance?AssemblyManager.Instance.GetComponent<WorkpieceLift>():null;
             if(lift && InputHelper.IsKeyDown(KeyCode.LeftArrow))lift.Cycle(-1);
@@ -87,15 +89,21 @@ namespace EngineAssembly
             if((PlacementMode || heldPlatform) && InputHelper.IsKeyDown(KeyCode.T))TogglePlacementTool();
             var delta=MouseDelta();bool manipulating=(PlacementMode || heldPlatform) && MouseHeld(1);
             playerCamera.fieldOfView=Mathf.Lerp(playerCamera.fieldOfView,!displayMode && !manipulating && MouseHeld(1)?zoomFieldOfView:normalFov,12*Time.deltaTime);
-            if(!manipulating && (!displayMode || MouseHeld(1))){transform.Rotate(Vector3.up,delta.x*mouseSensitivity);pitch=Mathf.Clamp(pitch-delta.y*mouseSensitivity,-85,85);playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);}
+            if(!manipulating){transform.Rotate(Vector3.up,delta.x*mouseSensitivity);pitch=Mathf.Clamp(pitch-delta.y*mouseSensitivity,-85,85);playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);}
             UpdateCrouch(InputHelper.IsKeyHeld(KeyCode.LeftControl)||InputHelper.IsKeyHeld(KeyCode.C));
             float x=(InputHelper.IsKeyHeld(KeyCode.D)?1:0)-(InputHelper.IsKeyHeld(KeyCode.A)?1:0),z=(InputHelper.IsKeyHeld(KeyCode.W)?1:0)-(InputHelper.IsKeyHeld(KeyCode.S)?1:0);
             if(controller.isGrounded && fallSpeed<0)fallSpeed=-2;
-            if(controller.isGrounded && !crouched && InputHelper.IsKeyDown(KeyCode.Space))fallSpeed=Mathf.Sqrt(jumpHeight*-2*gravity);
+            if(controller.isGrounded && !crouched && InputHelper.IsKeyDown(KeyCode.Space)){fallSpeed=Mathf.Sqrt(jumpHeight*-2*gravity);WorkshopPractice.Record("jump");}
             fallSpeed+=gravity*Time.deltaTime;
             var direction=Vector3.ClampMagnitude(transform.right*x+transform.forward*z,1)*(crouched?crouchSpeed:InputHelper.IsKeyHeld(KeyCode.LeftShift)?sprintSpeed:walkSpeed);
+            if(direction.sqrMagnitude>.01f && InputHelper.IsKeyHeld(KeyCode.LeftShift))WorkshopPractice.Record("sprint",Time.deltaTime);
             if(controller.enabled)controller.Move((direction+Vector3.up*fallSpeed)*Time.deltaTime);
-            if(displayMode){if(MouseDown(0) && (!UnityEngine.EventSystems.EventSystem.current || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(playerCamera.ScreenPointToRay(InputHelper.GetMousePosition()));HoverMessage="Click a component · Hold right mouse to look around";return;}
+            if(displayMode)
+            {
+                if(MouseDown(0) && (!UnityEngine.EventSystems.EventSystem.current || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))
+                {var ray=InteractionRay;var control=DisplaySceneControl.RayControl(ray,pickupDistance);if(control)control.Activate();else AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(ray);}
+                HoverMessage="Aim + click to inspect · Hold ALT for playback controls";return;
+            }
             var aimedControl=LiftControlHandle.RayControl(playerCamera.ViewportPointToRay(new Vector3(.5f,.5f,0)),pickupDistance);
             if(aimedControl && MouseDown(0))
             {
@@ -120,7 +128,7 @@ namespace EngineAssembly
                     var position=playerCamera.transform.TransformPoint(new Vector3(placementOffset.x,placementOffset.y,holdDistance))-rotation*Vector3.Scale(contactLocal,Held.lossyScale);
                     if(heldPart)heldPart.MoveHeld(position,rotation);else heldPlatform.MoveHeld(position,rotation);
                 }
-                foreach(var item in inventory.Items)if(item!=heldPart){inventory.Hide(item);item.MoveHeld(new Vector3(0,-1000,0),item.transform.rotation);}
+                foreach(var item in inventory.Items)if(item!=heldPart){inventory.Hide(item);item.MoveHeld(heldPart.transform.position,heldPart.transform.rotation);}
                 if(aimedControl){ShowControlPrompt(aimedControl);return;}
                 var ray=new Ray(playerCamera.transform.position,playerCamera.transform.forward);
                 var manager=AssemblyManager.Instance;var guide=manager?manager.GetComponent<AssemblyEasyGuide>():null;
@@ -150,9 +158,10 @@ namespace EngineAssembly
             playerCamera.transform.localRotation=Quaternion.Euler(pitch,0,0);
             UpdateCrouch(mobileControls.CrouchHeld);
             if(controller.isGrounded && fallSpeed<0)fallSpeed=-2;
-            if(controller.isGrounded && !crouched && mobileControls.ConsumeJump())fallSpeed=Mathf.Sqrt(jumpHeight*-2*gravity);
+            if(controller.isGrounded && !crouched && mobileControls.ConsumeJump()){fallSpeed=Mathf.Sqrt(jumpHeight*-2*gravity);WorkshopPractice.Record("jump");}
             fallSpeed+=gravity*Time.deltaTime;
             var direction=Vector3.ClampMagnitude(transform.right*movement.x+transform.forward*movement.y,1)*(crouched?crouchSpeed:mobileControls.SprintHeld?sprintSpeed:walkSpeed);
+            if(direction.sqrMagnitude>.01f && mobileControls.SprintHeld)WorkshopPractice.Record("sprint",Time.deltaTime);
             if(controller.enabled)controller.Move((direction+Vector3.up*fallSpeed)*Time.deltaTime);
             if(Held)
             {
@@ -166,7 +175,7 @@ namespace EngineAssembly
             }
             if(!mobileControls.ConsumeTap(out var screen))return;
             var ray=playerCamera.ScreenPointToRay(screen);
-            if(AssemblyManager.Instance && AssemblyManager.Instance.DisplayActive){AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(ray);return;}
+            if(AssemblyManager.Instance && AssemblyManager.Instance.DisplayActive){var control=DisplaySceneControl.RayControl(ray,pickupDistance);if(control)control.Activate();else AssemblyManager.Instance.GetComponent<PCDisplayChapter>()?.Inspect(ray);return;}
             if(Held)
             {
                 var manager=AssemblyManager.Instance;
@@ -178,13 +187,15 @@ namespace EngineAssembly
         }
         public void Manipulate(Vector2 delta,ref Quaternion rotation)
         {
+            WorkshopPractice.Record("manipulate",delta.magnitude);
+            WorkshopPractice.Record(Tool==PlacementTool.Move?"manipulate-move":"manipulate-rotate",delta.magnitude);
             if(Tool==PlacementTool.Rotate)rotation=Quaternion.AngleAxis(-delta.x*.5f,playerCamera.transform.up)*Quaternion.AngleAxis(delta.y*.5f,playerCamera.transform.right)*rotation;
             else if(InputHelper.IsKeyHeld(KeyCode.LeftShift))holdDistance=Mathf.Clamp(holdDistance+delta.y*.008f,minHoldDistance,maxHoldDistance);
             else placementOffset+=new Vector3(delta.x,delta.y,0)*.003f;
         }
         void HoverForCollection(Ray ray,bool click)
         {
-            if(!pickupQuery.Raycast(ray,pickupDistance,pickupLayerMask,out var part,out var contact,out var hit)){ClearHover();return;}
+            if(!pickupQuery.PickupRaycast(ray,pickupDistance,pickupLayerMask,AssemblyManager.Instance,playerCamera,out var part,out var contact,out var hit,heldPart)){ClearHover();return;}
             if(part && part.Manager)part=part.Manager.InteractionPart(part);
             var platform=hit.collider?hit.collider.GetComponentInParent<PickupablePlatform>():null;
             if(!part){ClearHover();if(!Held && platform && click)GrabPlatform(platform,hit.point);return;}
@@ -198,17 +209,19 @@ namespace EngineAssembly
         void Collect(AssemblyPart part,Vector3 contact)
         {
             bool first=inventory.Count==0;if(!inventory.Collect(part))return;
-            if(first){heldPart=part;CaptureContact(contact);}else {inventory.Hide(part);part.MoveHeld(new Vector3(0,-1000,0),part.transform.rotation);collisionGuard.Track(part.transform,part,null);}
+            if(first){heldPart=part;CaptureContact(contact);}else {inventory.Hide(part);part.MoveHeld(heldPart.transform.position,part.transform.rotation);collisionGuard.Track(part.transform,part,null);}
             ClearHover();
         }
         public bool TryPlace(Ray ray)
         {
             var manager=heldPart?heldPart.Manager:null;var guide=manager?manager.GetComponent<AssemblyEasyGuide>():null;
             if(!guide)return false;var target=guide.Aim(ray,pickupDistance,playerCamera);
-            if(!target || !inventory.Contains(target))return false;
-            if(target!=heldPart)Activate(target,true);
-            bool snapped=guide.Place(ray,pickupDistance,playerCamera);
-            if(snapped){inventory.Remove(target);if(inventory.Count>0)Activate(inventory.Items.OrderBy(p=>p.Definition.order).First(),true);else heldPart=null;}
+            if(!target)return false;
+            var consumed=inventory.Contains(target)?target:inventory.Items.FirstOrDefault(p=>AssemblyInventory.Matches(p,target));
+            if(!consumed)return false;
+            if(consumed!=heldPart)Activate(consumed,true);
+            bool snapped=guide.Place(ray,pickupDistance,playerCamera,consumed);
+            if(snapped){inventory.Remove(consumed);if(inventory.Count>0)Activate(inventory.Items.OrderBy(p=>p.Definition.order).First(),true);else heldPart=null;}
             return snapped;
         }
         void Activate(AssemblyPart part,bool transferPose=false)
@@ -227,26 +240,46 @@ namespace EngineAssembly
         void CaptureContact(Vector3 point){if(heldPart && heldPart.GetComponent<SubAssembly>())point=AssemblyHeldView.WorldBounds(heldPart).center;holdDistance=Mathf.Clamp(Vector3.Distance(playerCamera.transform.position,point),minHoldDistance,maxHoldDistance);contactLocal=Held.InverseTransformPoint(point);heldViewRotation=Quaternion.Inverse(playerCamera.transform.rotation)*Held.rotation;placementMode=false;placementOffset=Vector3.zero;collisionGuard.Track(Held,heldPart,heldPlatform);}
         void ClearHover(){if(hoveredPart && hover)hover.Clear();hoveredPart=null;HoverMessage="";}
         public void FlipWorkpiece(){var manager=AssemblyManager.Instance;if(heldPlatform)heldPlatform.Flip(manager?manager.WorkpieceBounds(heldPlatform.transform).center:heldPlatform.GeometryCenter());else manager?.FlipWorkpiece();}
-        public void TogglePlacementTool()=>Tool=Tool==PlacementTool.Move?PlacementTool.Rotate:PlacementTool.Move;
-        public void TogglePlacementMode(){if(!heldPart || heldPart.Manager && heldPart.Manager.Difficulty==SnapDifficulty.Easy)return;placementMode=!placementMode;placementOffset=Vector3.zero;if(placementMode)holdDistance=Mathf.Clamp(1.5f,minHoldDistance,maxHoldDistance);}
+        public void TogglePlacementTool(){Tool=Tool==PlacementTool.Move?PlacementTool.Rotate:PlacementTool.Move;WorkshopPractice.Record("placement-tool");}
+        public void TogglePlacementMode(){if(!heldPart || heldPart.Manager && heldPart.Manager.Difficulty==SnapDifficulty.Easy)return;placementMode=!placementMode;placementOffset=Vector3.zero;if(placementMode){holdDistance=Mathf.Clamp(1.5f,minHoldDistance,maxHoldDistance);WorkshopPractice.Record("placement-mode");}}
         public void PickUp(AssemblyPart part){if(part && part.Manager)part=part.Manager.InteractionPart(part);if(heldPlatform || !part)return;Collect(part,AssemblyHeldView.WorldBounds(part).center);}
         void GrabPlatform(PickupablePlatform platform,Vector3 point){if(platform && platform.BeginGrab()){heldPlatform=platform;CaptureContact(point);ClearHover();}}
         public void PickUpWorkpiece(){if(Held || !AssemblyManager.Instance)return;var root=AssemblyManager.Instance.AssemblyRoot;GrabPlatform(root.GetComponent<PickupablePlatform>(),root.position);}
         public void DropHeldPart(bool attemptSnap=true)
         {
+            if(!inventory)return;
             bool carrying=CarryMode;int index=0;
-            foreach(var part in inventory.Items.ToArray())
+            var dropped=inventory.Items.ToArray();
+            // Every inventory entry is a real CAD part. Space the entire stack by
+            // its actual bounds instead of reusing four fixed release positions.
+            // The old modulo-four layout put the fifth valve on top of the first.
+            float span=.04f,radius=.02f;
+            foreach(var part in dropped)
             {
-                inventory.Reveal(part);
+                if(!part)continue;inventory.Reveal(part,true);
+                var bounds=AssemblyHeldView.WorldBounds(part);
+                span=Mathf.Max(span,bounds.size.magnitude+.035f);radius=Mathf.Max(radius,bounds.extents.magnitude);
+            }
+            int columns=Mathf.Max(1,Mathf.CeilToInt(Mathf.Sqrt(dropped.Length)));
+            var forward=playerCamera?Vector3.ProjectOnPlane(playerCamera.transform.forward,Vector3.up).normalized:transform.forward;
+            if(forward.sqrMagnitude<.1f)forward=transform.forward;
+            var right=Vector3.Cross(Vector3.up,forward);
+            var origin=(playerCamera?playerCamera.transform.position:transform.position)+forward*(radius+(controller?controller.radius:.25f)+.7f);
+            foreach(var part in dropped)
+            {
+                if(!part)continue;
                 bool primary=part==heldPart;
-                if((carrying || !primary) && playerCamera)
+                if(carrying || !primary)
                 {
-                    float radius=AssemblyHeldView.WorldBounds(part).extents.magnitude;
                     var centerLocal=part.transform.InverseTransformPoint(AssemblyHeldView.WorldBounds(part).center);
-                    var center=playerCamera.transform.TransformPoint(new Vector3((index++%4)*.12f,0,radius+controller.radius+.7f));
+                    var center=origin+right*((index%columns-(columns-1)*.5f)*span)+forward*(index/columns*span);
+                    index++;
                     part.MoveHeld(center-part.transform.rotation*Vector3.Scale(centerLocal,part.transform.lossyScale),part.transform.rotation);
                 }
+                part.transform.SetParent(null,true);
+                if(part.Body){part.Body.position=part.transform.position;part.Body.rotation=part.transform.rotation;part.Body.detectCollisions=true;}
                 part.Release(attemptSnap && primary && !carrying);
+                if(part.Body && !part.Body.isKinematic){part.Body.linearVelocity=Vector3.zero;part.Body.angularVelocity=Vector3.zero;part.Body.WakeUp();}
                 if(IsInEditMode && !part.IsSnapped){part.Manager.CaptureTray(part);part.Body.isKinematic=true;part.Body.interpolation=RigidbodyInterpolation.None;}
                 inventory.Remove(part);
             }
@@ -258,10 +291,10 @@ namespace EngineAssembly
             if(!requested && crouched)
             {
                 var bottom=transform.position+Vector3.up*controller.radius;var top=transform.position+Vector3.up*(standingHeight-controller.radius);
-                foreach(var collider in Physics.OverlapCapsule(bottom,top,controller.radius*.95f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
-                    if(collider!=controller && !collider.transform.IsChildOf(transform) && !Physics.GetIgnoreCollision(controller,collider)){requested=true;break;}
+                foreach(var collider in Physics.OverlapCapsule(bottom,top,controller.radius*.95f,~0,QueryTriggerInteraction.Ignore))
+                    if(collider!=controller && !collider.transform.IsChildOf(transform) && AssemblyPlayerCollision.CanContact(controller,collider) && !Physics.GetIgnoreCollision(controller,collider)){requested=true;break;}
             }
-            crouched=requested;controller.height=crouched?crouchHeight:standingHeight;var center=controller.center;center.y=controller.height*.5f;controller.center=center;
+            if(requested && !crouched)WorkshopPractice.Record("crouch");crouched=requested;controller.height=crouched?crouchHeight:standingHeight;var center=controller.center;center.y=controller.height*.5f;controller.center=center;
             var eye=playerCamera.transform.localPosition;eye.y=Mathf.Lerp(eye.y,crouched?standingEye-(standingHeight-crouchHeight):standingEye,15*Time.deltaTime);playerCamera.transform.localPosition=eye;
         }
         void OnDisable(){DropHeldPart(false);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}

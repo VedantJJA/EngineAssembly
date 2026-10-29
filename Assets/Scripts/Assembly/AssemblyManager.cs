@@ -32,7 +32,7 @@ namespace EngineAssembly
         public WorkshopInteraction Interaction { get; private set; }
         public AssemblyTask Task { get; private set; }
         public void SetTask(AssemblyTask task) { Task=task;if(Recipe!=null)SelectChapter(CurrentChapterIndex); }
-        public SnapDifficulty Difficulty { get; private set; } = SnapDifficulty.Hard;
+        public SnapDifficulty Difficulty { get; private set; } = SnapDifficulty.Easy;
         public void SetDifficulty(SnapDifficulty difficulty, bool remember = true)
         {
             Difficulty = difficulty;if(remember) PlayerPrefs.SetInt("Assembly.SnapDifficulty", (int)difficulty); Changed?.Invoke();
@@ -63,11 +63,11 @@ namespace EngineAssembly
         bool scaled;
         public float EngineScale=>engineScale;
         public bool RequiresWorkpieceOrientation=>!GetComponent<MobileAssemblyController>() && FindAnyObjectByType<PlayerAssemblyController>();
-        public bool ChapterComplete => RepairActive?Repair.Complete:Recipe != null && Recipe.parts.Any(p => p.chapterId == CurrentChapterId) && Recipe.parts.Where(p => p.chapterId == CurrentChapterId && !p.isBase).All(p => Task==AssemblyTask.Assemble?IsPlaced(p.id):!IsPlaced(p.id));
+        public bool ChapterComplete => RepairActive?Repair.Complete:Recipe != null && (CurrentChapterId!=WorkshopPractice.ChapterId || GetComponent<WorkshopPractice>()?.ControlsFinished==true) && Recipe.parts.Any(p => p.chapterId == CurrentChapterId) && Recipe.parts.Where(p => p.chapterId == CurrentChapterId && !p.isBase).All(p => Task==AssemblyTask.Assemble?IsPlaced(p.id):!IsPlaced(p.id));
         public int ChapterPartCount => RepairActive?Repair.StepCount:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase) ?? 0;
         public int ChapterInstalledCount => RepairActive?Repair.CompletedSteps:Recipe?.parts.Count(p => p.chapterId == CurrentChapterId && !p.isBase && IsPlaced(p.id)) ?? 0;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ClearInstance() => Instance = null;
-        void Awake() { if (!Instance) Instance = this; Difficulty=(SnapDifficulty)Mathf.Clamp(PlayerPrefs.GetInt("Assembly.SnapDifficulty",0),0,2); EnsureFrames(); }
+        void Awake() { if (!Instance) Instance = this; Difficulty=WorkshopDifficulty.Saved; EnsureFrames(); }
         void Start()
         {
             if (Recipe == null)
@@ -75,12 +75,16 @@ namespace EngineAssembly
                 try { RefreshPartsList(); LoadRecipe(initialRecipe ? AssemblyRecipeStore.Parse(initialRecipe.text) : CaptureScene()); }
                 catch (Exception ex) { Report(ex.Message); Debug.LogError(ex, this); }
             }
+            WorkshopPractice.Ensure(this);
             if (showWorkshopUI && !GetComponent<AssemblyWorkshopUI>()) gameObject.AddComponent<AssemblyWorkshopUI>();
             if (!GetComponent<AssemblyEasyGuide>()) gameObject.AddComponent<AssemblyEasyGuide>();
             if (!GetComponent<AssemblyHint>()) gameObject.AddComponent<AssemblyHint>();
             if (!GetComponent<AssemblyStepAssist>()) gameObject.AddComponent<AssemblyStepAssist>();
             if (!GetComponent<AssemblyNarrator>()) gameObject.AddComponent<AssemblyNarrator>();
+            if (!GetComponent<WorkshopSectionCompletion>()) gameObject.AddComponent<WorkshopSectionCompletion>();
             if (FindAnyObjectByType<PlayerAssemblyController>() && !GetComponent<WorkpieceLift>()) gameObject.AddComponent<WorkpieceLift>();
+            if(GetComponent<WorkshopPractice>() is WorkshopPractice practice && practice.Active)GetComponent<AssemblyWorkshopUI>()?.SetOpen(false);
+            WorkshopTeachingDirector.Ensure(gameObject);
         }
         void OnDestroy() { if (Instance == this) Instance = null; }
         void EnsureFrames()
@@ -185,7 +189,7 @@ namespace EngineAssembly
                 return matrices[part.PartId]=Matrix4x4.TRS(position,rotation,part.transform.lossyScale);
             }
             bool first=true;var result=new Bounds(frame.position,Vector3.zero);
-            foreach(var d in Recipe.parts.Where(d=>group==null || d.subAssemblyId==group.id))
+            foreach(var d in Recipe.parts.Where(d=>(CurrentChapterId==WorkshopPractice.ChapterId?d.chapterId==WorkshopPractice.ChapterId:d.chapterId!=WorkshopPractice.ChapterId) && (group==null || d.subAssemblyId==group.id)))
             {
                 var part=FindPart(d.id);if(!part || !part.TargetSocket)continue;
                 var target=TargetMatrix(part)*part.transform.worldToLocalMatrix;
@@ -331,6 +335,7 @@ namespace EngineAssembly
         public bool SelectChapter(int index)
         {
             if (Recipe == null || index < 0 || index >= Recipe.chapters.Count) return false;
+            GetComponent<WorkshopPractice>()?.BeforeChapter(index);
             GetComponent<PCDisplayChapter>()?.StopAnimation();
             ChapterVisit++;
             GetComponent<WorkpieceLift>()?.CancelTransitions();
@@ -359,7 +364,7 @@ namespace EngineAssembly
             }
             foreach (var d in Recipe.parts)
                 if (Recipe.chapters.FindIndex(c => c.id == d.chapterId) > index) byId[d.id].gameObject.SetActive(false);
-            IsPreparing = false;
+            GetComponent<WorkshopPractice>()?.ChapterSelected();IsPreparing = false;
             RefreshCarriers();
             GetComponent<WorkshopSupplyLayout>()?.StageChapter(this);
             if(CurrentChapterId==PCRepairChapter.ChapterId && Mode==WorkshopMode.Assembly){Task=AssemblyTask.Assemble;Repair?.Begin();}
@@ -368,7 +373,7 @@ namespace EngineAssembly
         public bool ContinueChapter()
         {
             if (Mode != WorkshopMode.Assembly || !ChapterComplete) { Report("Complete this chapter first."); return false; }
-            int next=Recipe.chapters.FindIndex(CurrentChapterIndex+1,c=>IsPlayableChapter(c.id));
+            int next=Recipe.chapters.FindIndex(CurrentChapterIndex+1,c=>c.id!=PCDisplayChapter.ChapterId && IsPlayableChapter(c.id));
             if (next<0) { Report("Engine assembly complete."); return false; }
             return SelectChapter(next);
         }
@@ -387,9 +392,9 @@ namespace EngineAssembly
             {
                 // Staging does not require the destination to be upright yet.
                 // Installation still checks its orientation in CanInstall.
-                if(!BuildChoiceReady(part.Definition,out reason))return false;
-                foreach(var id in AssemblyRecipe.Dependencies(part.Definition))if(!IsPlaced(id)){reason="First install "+(FindPart(id)?.PartDisplayName??id);return false;}
-                if(EarlierStepPending(part.Definition)){reason="Complete the earlier assembly step.";return false;}
+                if(!BuildChoiceReady(part.Definition,out reason))return HasMatchingDestination(part);
+                foreach(var id in AssemblyRecipe.Dependencies(part.Definition))if(!IsPlaced(id)){reason="First install "+(FindPart(id)?.PartDisplayName??id);return HasMatchingDestination(part);}
+                if(EarlierStepPending(part.Definition)){reason="Complete the earlier assembly step.";return HasMatchingDestination(part);}
                 return true;
             }
             if(Mode==WorkshopMode.Assembly && Task==AssemblyTask.Disassemble && Interaction==WorkshopInteraction.Build && !part.IsSnapped) { reason="This part is already removed.";return false; }
@@ -402,8 +407,16 @@ namespace EngineAssembly
             if(!part || !stack || !AssemblyInventory.Matches(part,stack))return false;
             if(part.Manager!=this || part.ChapterId!=CurrentChapterId || part.Definition.isBase || part.IsSnapped || part.IsSelected || part.IsBusy || Task==AssemblyTask.Disassemble)return false;
             var group=MemberGroup(part);if(group!=null && IsPlaced(group.rootPartId))return false;
-            if(Mode==WorkshopMode.Assembly && !BuildChoiceReady(part.Definition,out reason))return false;
+            if(Mode==WorkshopMode.Assembly && !BuildChoiceReady(part.Definition,out reason) && !HasMatchingDestination(part))return false;
             reason="";return true; // Future sockets stay locked by CanInstall.
+        }
+        bool HasMatchingDestination(AssemblyPart supply)
+        {
+            if(RepairActive || !supply || supply.IsSnapped || supply.IsBusy)return false;
+            foreach(var candidate in assemblyParts)
+                if(candidate && candidate!=supply && candidate.ChapterId==CurrentChapterId && !candidate.IsSnapped && !candidate.IsBusy
+                    && candidate.TargetSocket && AssemblyInventory.Matches(supply,candidate) && CanInstall(candidate,candidate.TargetSocket,out _))return true;
+            return false;
         }
         public bool CanInstall(AssemblyPart part, AssemblySocket socket, out string reason)
         {
@@ -454,10 +467,14 @@ namespace EngineAssembly
             if(RepairActive)Repair.OnInstalled(part);
             if (audioSource && snapSound) audioSource.PlayOneShot(snapSound);
             onPartSnapped.Invoke(part); Changed?.Invoke();
+            CheckChapterCompletion();
+        }
+        public void CheckChapterCompletion()
+        {
             if (Mode == WorkshopMode.Assembly && ChapterComplete && !completionSent)
             {
                 completionSent = true; onChapterCompleted.Invoke();
-                Report("Chapter complete. Continue when ready.");
+                Report(GetComponent<WorkshopSectionCompletion>()?.HandlesCompletion==true?"Section complete. The next section starts automatically.":"Chapter complete. Continue when ready.");
                 if (!Recipe.chapters.Skip(CurrentChapterIndex+1).Any(c=>Recipe.parts.Any(p=>p.chapterId==c.id))) onAssemblyCompleted.Invoke();
             }
         }
@@ -469,7 +486,7 @@ namespace EngineAssembly
             onPartUnsnapped.Invoke(part);Changed?.Invoke();
             if(Mode==WorkshopMode.Assembly && Task==AssemblyTask.Disassemble && ChapterComplete && !completionSent)
             {
-                completionSent=true;onChapterCompleted.Invoke();Report("Section disassembled. Continue when ready.");
+                completionSent=true;onChapterCompleted.Invoke();Report(GetComponent<WorkshopSectionCompletion>()?.HandlesCompletion==true?"Section disassembled. The next section starts automatically.":"Section disassembled. Continue when ready.");
                 if(!Recipe.chapters.Skip(CurrentChapterIndex+1).Any(c=>Recipe.parts.Any(p=>p.chapterId==c.id)))onAssemblyCompleted.Invoke();
             }
         }
@@ -511,7 +528,7 @@ namespace EngineAssembly
         public void Save(string filename)
         {
             if (Mode != WorkshopMode.Edit) throw new InvalidOperationException("Switch to Edit mode to save a recipe.");
-            var saved=AssemblyRecipeStore.Parse(JsonUtility.ToJson(Recipe));saved.chapters.RemoveAll(c=>c.id==PCRepairChapter.ChapterId);
+            var saved=AssemblyRecipeStore.Parse(JsonUtility.ToJson(Recipe));saved.chapters.RemoveAll(c=>c.id==PCRepairChapter.ChapterId || c.id==PCDisplayChapter.ChapterId);WorkshopPractice.Strip(saved);
             string path = AssemblyRecipeStore.Save(saved,filename); Report("Saved " + System.IO.Path.GetFileName(path));
         }
         public void CaptureTray(AssemblyPart part)

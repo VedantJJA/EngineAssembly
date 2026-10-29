@@ -22,8 +22,13 @@ try:
     texts=json.loads((ROOT/'Assets/Resources/NarrationText.json').read_text())['cues']
     (ROOT/'Tools/Narration/caption-alignment-report.json').write_text(json.dumps(dict(total=len(texts),aligned=sum(bool(c.get('words')) for c in texts),estimated=[c['id'] for c in texts if not c.get('words')]),indent=2))
     status('preparing-verified-build-assets')
-    for folder in ['Assets/Scripts','Assets/Shaders','Assets/Resources','Assets/Audio/Narration/English','Assets/AssemblyRecipes','Assets/UI','Assets/Settings','Tools/Android','Assets/Art/Materials/Engine','ProjectSettings']:
+    for folder in ['Assets/Scripts','Assets/Shaders','Assets/Resources','Assets/Audio/Narration/English','Assets/AssemblyRecipes','Assets/UI','Assets/Settings','Tools/Android','Assets/Art/Materials/Engine','Assets/Art/VRHands','ProjectSettings']:
         shutil.copytree(ROOT/folder,CLONE/folder,dirs_exist_ok=True)
+    for name in ['manifest.json','packages-lock.json']:
+        source=ROOT/'Packages'/name;target=CLONE/'Packages'/name
+        if source.read_bytes()!=target.read_bytes():shutil.copy2(source,target)
+    textures=ROOT/'Assets/Art/Textures/ambientCG'
+    if textures.exists():shutil.copytree(textures,CLONE/'Assets/Art/Textures/ambientCG',dirs_exist_ok=True)
     for method,folder,name,verifier in [
         ('VuforiaAndroidBuild','Android','EngineAssembly-AR.apk','verify_android_apk.py'),
         ('QuestAndroidBuild','Quest','EngineAssembly-Quest2.apk','verify_quest_apk.py')]:
@@ -33,6 +38,11 @@ try:
         target=ROOT/'Builds'/folder/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(CLONE/'Builds'/folder/name,target)
         if folder=='Android':shutil.copy2(target,target.with_name('EngineAssembly-Phone.apk'))
         run(Path('Tools/Verification')/verifier,target)
+    # Preserve new clip GUIDs. The Editor's narration watcher reconnects its own
+    # ScriptableObject on reopen, avoiding overwriting a memory-mapped asset.
+    for source in (CLONE/'Assets/Audio/Narration/English').rglob('*.meta'):
+        target=ROOT/source.relative_to(CLONE)
+        if not target.exists():target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
     status('complete')
 except Exception as error:
     status('failed',str(error));raise

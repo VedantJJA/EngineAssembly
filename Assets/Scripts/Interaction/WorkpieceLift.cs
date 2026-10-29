@@ -11,12 +11,12 @@ namespace EngineAssembly
         sealed class Station
         {
             public Transform frame,root,foot,deck,column,rod,panel,leftDoor,rightDoor,pit,tray;
-            public string label;public float ceiling,opening,aperture,depth;public Vector3[] support;public Vector2 traySize;public WorkshopSupplyLayout.Surface traySurface;public AssemblyPart[] trayParts;public bool gateBusy;public Vector3 parked,anchor;
+            public string label;public float ceiling,opening,aperture,depth;public Vector3[] support;public Vector2 traySize;public WorkshopSupplyLayout.Surface traySurface;public AssemblyPart[] trayParts;public bool gateBusy,repair;public Vector3 parked,anchor;
             public LiftControlHandle lever,flip;
         }
         [SerializeField] float speed=.75f,groundHeight=0;
         readonly List<Station> stations=new List<Station>();readonly List<Material> owned=new List<Material>();
-        AssemblyManager manager;Material white,grey,steel,chrome,black,red,yellow;int selected,visit=-1;float roomCeiling=float.PositiveInfinity;
+        AssemblyManager manager;Material white,grey,steel,chrome,black,red,yellow;int selected,visit=-1;bool practiceLayout;float roomCeiling=float.PositiveInfinity;
         public Transform ActiveFrame{get{RefreshStations();return stations.Count>0?stations[selected].frame:null;}}
         public string ActiveLabel{get{RefreshStations();return stations.Count>0?stations[selected].label:"Engine";}}
         public int StationCount{get{RefreshStations();return stations.Count;}}
@@ -30,6 +30,8 @@ namespace EngineAssembly
         public Color StationColor(int index){RefreshStations();return stations[index].foot.GetComponent<Renderer>().sharedMaterial.color;}
         public LiftControlHandle StationLever(int index){RefreshStations();return stations[index].lever;}
         public LiftControlHandle StationFlip(int index){RefreshStations();return stations[index].flip;}
+        public LiftControlHandle FlipControlFor(Transform frame){RefreshStations();return stations.FirstOrDefault(s=>s.frame==frame)?.flip;}
+        public bool FrameIsTurning(Transform frame){RefreshStations();return stations.Any(s=>s.frame==frame && s.gateBusy);}
         public float GateOpening(int index){RefreshStations();return stations[index].opening;}
         public bool IsTransitioning=>stations.Any(s=>s.gateBusy);
         void Awake()
@@ -43,7 +45,10 @@ namespace EngineAssembly
         Material Material(string label,Color color,float smoothness,float metal=0){var m=new Material(Shader.Find("Universal Render Pipeline/Lit")){name=label,color=color};m.SetFloat("_Smoothness",smoothness);m.SetFloat("_Metallic",metal);owned.Add(m);return m;}
         void RefreshStations()
         {
-            if(!manager || manager.Recipe==null || manager.IsPreparing)return;if(stations.Count==0)AddStation(manager.AssemblyRoot,"Main engine");
+            if(!manager || manager.Recipe==null || manager.IsPreparing)return;
+            bool practice=manager.CurrentChapterId==WorkshopPractice.ChapterId;
+            if(stations.Count>0 && practice!=practiceLayout){CancelTransitions();foreach(var old in stations){old.root.gameObject.SetActive(false);Destroy(old.root.gameObject);}stations.Clear();selected=0;}
+            if(stations.Count==0){practiceLayout=practice;AddStation(manager.AssemblyRoot,practice?"Practice board":"Main engine");}
             if(visit!=manager.ChapterVisit)
             {
                 CancelTransitions();foreach(var old in stations.Skip(1)){old.root.gameObject.SetActive(false);Destroy(old.root.gameObject);}stations.RemoveRange(1,stations.Count-1);visit=manager.ChapterVisit;selected=0;
@@ -51,18 +56,25 @@ namespace EngineAssembly
                 ArrangeSubstations();
                 int index=stations.FindIndex(s=>s.frame==manager.SuggestedWorkpieceFrame());if(index>=0)selected=index;
             }
-            if(manager.RepairActive){var unit=manager.FindPart(PCRepairChapter.UnitId);if(unit && !unit.IsSnapped && !unit.IsSelected && !unit.IsBusy && !stations.Any(s=>s.frame==unit.transform)){AddStation(unit.transform,"Repair · timing idler");ArrangeSubstations();}}
+            if(manager.RepairActive){var unit=manager.FindPart(PCRepairChapter.UnitId);if(unit && !stations.Any(s=>s.frame==unit.transform)){AddStation(unit.transform,"Repair · timing idler");ArrangeSubstations();}}
             if(selected>0 && !StationAvailable(stations[selected]))selected=0;
         }
-        static bool StationAvailable(Station s){var part=s.frame.GetComponent<AssemblyPart>();return !part || !part.IsSnapped && !part.IsSelected && !part.IsBusy;}
+        static bool StationAvailable(Station s)
+        {
+            var part=s.frame.GetComponent<AssemblyPart>();
+            // A released carrier is an independent physical object, even though
+            // its old fixture still references the same Transform. Its lift must
+            // stop moving/supporting it until chapter staging docks it again.
+            return !part || !part.IsSnapped && !part.IsSelected && !part.IsBusy && (!part.Body || part.Body.isKinematic);
+        }
         Transform Shape(string label,Transform parent,PrimitiveType shape,Vector3 local,Vector3 scale,Material material,bool collider=false)
         {var go=GameObject.CreatePrimitive(shape);go.name=label;go.transform.SetParent(parent,false);go.transform.localPosition=local;go.transform.localScale=scale;go.GetComponent<Renderer>().sharedMaterial=material;if(!collider)Destroy(go.GetComponent<Collider>());return go.transform;}
         void AddStation(Transform frame,string label)
         {
-            var root=new GameObject("Lift · "+label).transform;root.SetParent(transform,false);var s=new Station{frame=frame,root=root,label=label,ceiling=frame.position.y+2};int index=stations.Count;stations.Add(s);
+            var root=new GameObject("Lift · "+label).transform;root.SetParent(transform,false);var s=new Station{frame=frame,root=root,label=label,ceiling=frame.position.y+2,repair=manager.RepairActive && frame.GetComponent<AssemblyPart>()?.PartId==PCRepairChapter.UnitId};int index=stations.Count;stations.Add(s);
             var b=manager.PlannedWorkpieceBounds(frame);
             // A complete-unit envelope leaves room for growth and either flipped pose.
-            s.aperture=Mathf.Max(index==0?1.25f:.6f,b.size.x+.36f);s.depth=Mathf.Max(index==0?1.25f:.6f,b.size.z+.36f);
+            s.aperture=Mathf.Max(index==0?1.25f:s.repair?1:.6f,b.size.x+.36f);s.depth=Mathf.Max(index==0?1.25f:s.repair?1:.6f,b.size.z+.36f);
             if(index>0)s.support=Corners(b).Select(frame.InverseTransformPoint).ToArray();
             // Keep the main deck centered on the block; later accessories must not
             // shift the hydraulic column away from its fixed floor base.
@@ -75,7 +87,7 @@ namespace EngineAssembly
             s.leftDoor=Hatch(s,-1);s.rightDoor=Hatch(s,1);
             for(int i=0;i<8;i++)Shape("Hatch hazard marking",s.foot,PrimitiveType.Cube,new Vector3(-.35f+i*.1f,.52f,-.48f),new Vector3(.055f,.02f,.02f),i%2==0?yellow:black);
             var deckSize=index==0?new Vector2(1.05f,1.1f):new Vector2(s.aperture-.24f,s.depth-.24f);
-            s.deck=Shape("Lift deck",root,PrimitiveType.Cube,Vector3.zero,new Vector3(deckSize.x,.045f,deckSize.y),steel);s.column=Shape("Hydraulic outer sleeve",root,PrimitiveType.Cylinder,Vector3.zero,new Vector3(.16f,.25f,.16f),grey);s.rod=Shape("Hydraulic polished piston",root,PrimitiveType.Cylinder,Vector3.zero,new Vector3(.085f,.4f,.085f),chrome);
+            s.deck=Shape("Lift deck",root,PrimitiveType.Cube,Vector3.zero,new Vector3(deckSize.x,.045f,deckSize.y),steel,true);s.column=Shape("Hydraulic outer sleeve",root,PrimitiveType.Cylinder,Vector3.zero,new Vector3(.16f,.25f,.16f),grey);s.rod=Shape("Hydraulic polished piston",root,PrimitiveType.Cylinder,Vector3.zero,new Vector3(.085f,.4f,.085f),chrome);
             Shape("Hydraulic collar",s.column,PrimitiveType.Cylinder,new Vector3(0,.85f,0),new Vector3(1.2f,.13f,1.2f),steel);for(int z=-1;z<=1;z+=2)Shape("Deck reinforcement",s.deck,PrimitiveType.Cube,new Vector3(0,-.8f,z*.28f),new Vector3(.86f,.45f,.11f),grey);
             s.panel=new GameObject("Fixed control panel · "+label).transform;s.panel.SetParent(root,false);s.panel.localScale=Vector3.one*.72f;
             Shape("Control housing",s.panel,PrimitiveType.Cube,Vector3.zero,new Vector3(.5f,.28f,.11f),steel,true);Shape("Control face",s.panel,PrimitiveType.Cube,new Vector3(0,0,-.062f),new Vector3(.46f,.24f,.017f),grey);Shape("Lever travel slot",s.panel,PrimitiveType.Cube,new Vector3(-.13f,0,-.075f),new Vector3(.035f,.16f,.012f),black);
@@ -117,7 +129,7 @@ namespace EngineAssembly
             foreach(var s in stations.Skip(1))
             {
                 var group=manager.Recipe.subAssemblies.FirstOrDefault(g=>manager.FindPart(g.rootPartId).transform==s.frame);
-                s.traySize=supplies && group!=null?supplies.MeasureSubassembly(manager,group,Mathf.Max(1.1f,s.foot.localScale.x)):Vector2.zero;
+                s.traySize=!s.repair && supplies && group!=null?supplies.MeasureSubassembly(manager,group,Mathf.Max(1.1f,s.foot.localScale.x)):Vector2.zero;
             }
             float total=stations.Skip(1).Sum(s=>s.foot.localScale.z+s.traySize.y+.4f)-.4f;
             float end=stations[0].anchor.z+total*.5f;
@@ -161,7 +173,7 @@ namespace EngineAssembly
         public bool MoveStation(int index,float metres)
         {
             if(Mathf.Approximately(metres,0) || !CanOperate(index))return false;var s=stations[index];var frame=s.frame;var platform=frame.GetComponent<PickupablePlatform>();if(platform && (platform.IsFlipping || platform.IsHeld))return false;
-            var b=SupportBounds(s);float floor=frame.position.y+groundHeight+.16f-b.min.y;float top=Mathf.Max(floor,Mathf.Min(s.ceiling,frame.position.y+roomCeiling-b.max.y-.08f));float next=Mathf.Clamp(frame.position.y+metres,floor,top);float delta=next-frame.position.y;if(Mathf.Abs(delta)<.00001f)return false;frame.position+=Vector3.up*delta;return true;
+            var b=SupportBounds(s);float floor=frame.position.y+groundHeight+.16f-b.min.y;float top=Mathf.Max(floor,Mathf.Min(s.ceiling,frame.position.y+roomCeiling-b.max.y-.08f));float next=Mathf.Clamp(frame.position.y+metres,floor,top);float delta=next-frame.position.y;if(Mathf.Abs(delta)<.00001f)return false;frame.position+=Vector3.up*delta;WorkshopPractice.Record("lift",Mathf.Abs(delta));return true;
         }
         public void MoveFromInput(float direction){if(!Mathf.Approximately(direction,0))Move(direction*speed*Time.deltaTime);}
         public void MoveStationFromInput(int index,float direction){if(!Mathf.Approximately(direction,0))MoveStation(index,direction*speed*Time.deltaTime);}
@@ -179,16 +191,16 @@ namespace EngineAssembly
             float turnedBottom=Corners(support).Min(p=>(visible.center+turn*(p-visible.center)).y);
             float returnOffset=support.min.y-turnedBottom;
             float start=s.opening;for(float t=0;t<.35f;t+=Time.deltaTime){s.opening=Mathf.Lerp(start,1,Mathf.SmoothStep(0,1,t/.35f));yield return null;}s.opening=1;if(platform && platform.FlipThroughGround(visible,groundHeight,returnOffset))while(platform && platform.IsFlipping)yield return null;
-            float parked=0;for(float t=0;t<.35f;t+=Time.deltaTime){s.opening=Mathf.Lerp(1,parked,Mathf.SmoothStep(0,1,t/.35f));yield return null;}s.opening=parked;s.gateBusy=false;
+            float parked=0;for(float t=0;t<.35f;t+=Time.deltaTime){s.opening=Mathf.Lerp(1,parked,Mathf.SmoothStep(0,1,t/.35f));yield return null;}s.opening=parked;s.gateBusy=false;WorkshopPractice.Record("flip");
         }
         public void CancelTransitions(){StopAllCoroutines();foreach(var s in stations){if(s.frame)s.frame.GetComponent<PickupablePlatform>()?.CancelFlip();s.gateBusy=false;s.opening=0;s.lever?.Release();}}
         void LateUpdate()
         {
             RefreshStations();for(int i=0;i<stations.Count;i++)
             {
-                var s=stations[i];bool available=i==0 || StationAvailable(s);s.root.gameObject.SetActive(available);if(!available)continue;
+                var s=stations[i];bool available=i==0 || s.repair || StationAvailable(s);s.root.gameObject.SetActive(available);if(!available)continue;
                 if(s.tray)s.tray.gameObject.SetActive(s.trayParts!=null && s.trayParts.Any(p=>PartOnTray(p,s.traySurface)));
-                var b=SupportBounds(s);if(!s.gateBusy && b.min.y<groundHeight+.16f){s.frame.position+=Vector3.up*(groundHeight+.16f-b.min.y);b=SupportBounds(s);}
+                bool docked=!s.repair || StationAvailable(s);var b=docked?SupportBounds(s):new Bounds(s.anchor+Vector3.up*1.03f,new Vector3(.3f,.16f,.3f));if(docked && !s.gateBusy && b.min.y<groundHeight+.16f){s.frame.position+=Vector3.up*(groundHeight+.16f-b.min.y);b=SupportBounds(s);}
                 var center=new Vector3(s.anchor.x,b.center.y,s.anchor.z);var paint=i==selected?white:grey;s.foot.GetComponent<Renderer>().sharedMaterial=paint;s.column.GetComponent<Renderer>().sharedMaterial=paint;
                 // Ordinary travel stops above the closed hatch; only an explicit
                 // flip can lower the assembly through the opened doors.
@@ -204,6 +216,18 @@ namespace EngineAssembly
             return b.center.x>=tray.center.x-tray.size.x*.5f && b.center.x<=tray.center.x+tray.size.x*.5f
                 && b.center.z>=tray.center.z-tray.size.y*.5f && b.center.z<=tray.center.z+tray.size.y*.5f
                 && Mathf.Abs(b.min.y-tray.center.y-.025f)<.12f;
+        }
+        public bool TryRepairSurface(out Bounds bounds)
+        {
+            RefreshStations();var station=stations.FirstOrDefault(s=>s.repair);if(station==null){bounds=default;return false;}
+            bounds=new Bounds(station.anchor+Vector3.up*.925f,new Vector3(station.deck.localScale.x,.045f,station.deck.localScale.z));return true;
+        }
+        public bool DockRepairUnit(AssemblyPart part)
+        {
+            if(!TryRepairSurface(out var surface))return false;var b=AssemblyHeldView.WorldBounds(part);
+            if(Mathf.Abs(b.center.x-surface.center.x)>surface.extents.x || Mathf.Abs(b.center.z-surface.center.z)>surface.extents.z || Mathf.Abs(b.min.y-surface.max.y)>.035f)return false;
+            part.transform.position+=Vector3.up*(surface.max.y+.005f-b.min.y);
+            part.ResetLoose(manager.TrayFrame,manager.TrayFrame.InverseTransformPoint(part.transform.position),Quaternion.Inverse(manager.TrayFrame.rotation)*part.transform.rotation);return true;
         }
         void OnDestroy(){foreach(var m in owned)if(m)Destroy(m);}
     }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,7 @@ namespace EngineAssembly
         public bool Starting { get; private set; }
         public InputActionAsset Actions { get; private set; }
         public bool FloorTracking { get; private set; }
+        readonly Dictionary<string,InputAction> cachedInputs=new Dictionary<string,InputAction>();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Boot()
         {
@@ -31,11 +33,13 @@ namespace EngineAssembly
                 map.AddAction("Position",InputActionType.Value,path+"devicePosition",expectedControlLayout:"Vector3");map.AddAction("Rotation",InputActionType.Value,path+"deviceRotation",expectedControlLayout:"Quaternion");
                 map.AddAction("AimPosition",InputActionType.Value,path+"pointerPosition",expectedControlLayout:"Vector3");map.AddAction("AimRotation",InputActionType.Value,path+"pointerRotation",expectedControlLayout:"Quaternion");
                 map.AddAction("Tracked",InputActionType.Button,path+"isTracked");map.AddAction("Grip",InputActionType.Button,path+"gripPressed");map.AddAction("Trigger",InputActionType.Button,path+"triggerPressed");
+                map.FindAction("Trigger").AddBinding("<MetaAimHand>{"+hand+"Hand}/indexPressed");
+                map.AddAction("GripCurl",InputActionType.Value,path+"grip");map.AddAction("TriggerCurl",InputActionType.Value,path+"trigger");
                 map.AddAction("Stick",InputActionType.Value,path+"primary2DAxis",expectedControlLayout:"Vector2");map.AddAction("Menu",InputActionType.Button,path+"menuButton");map.AddAction("Primary",InputActionType.Button,path+"primaryButton");Actions.AddActionMap(map);
             }
             Actions.Enable();
         }
-        public InputAction Input(string name)=>Actions.FindAction(name,true);
+        public InputAction Input(string name){if(cachedInputs.TryGetValue(name,out var action))return action;action=Actions.FindAction(name,true);cachedInputs.Add(name,action);return action;}
         public void Request(){if(!Active && !Starting)StartCoroutine(Initialize());}
         IEnumerator Initialize()
         {

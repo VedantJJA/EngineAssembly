@@ -281,6 +281,10 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: fbe9c2bc28156f446855f3f8c2538e24, type: 3}
   - id: repeat-matching
     clip: {fileID: 8300000, guid: 8c71c708701db364daa0386c32c31f6b, type: 3}
+  - id: flip-upside-down-spatial
+    clip: {fileID: 8300000, guid: 63dd80295eb732948879dd5e51025d37, type: 3}
+  - id: flip-upright-spatial
+    clip: {fileID: 8300000, guid: 64c28656385c0a44596c62ff7b67971a, type: 3}
   - id: detail-8d2191706048
     clip: {fileID: 8300000, guid: 23aa7117ec77e4646bb3e479177f12e6, type: 3}
   - id: detail-f536e4c28236
@@ -515,6 +519,14 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 3a3784ba6183bc6499bd8132e8ffa3fc, type: 3}
   - id: engine-stroke-exhaust
     clip: {fileID: 8300000, guid: 9288ae2880502af47acdc331d0c24553, type: 3}
+  - id: engine-identify-pistons
+    clip: {fileID: 8300000, guid: 19d14eeaadf3bea498999df7a72130cb, type: 3}
+  - id: engine-identify-rods
+    clip: {fileID: 8300000, guid: a11f5186256e3d94da0753ec58406d2e, type: 3}
+  - id: engine-identify-timing
+    clip: {fileID: 8300000, guid: 1781b16b89ed12e479d895327d7de4b7, type: 3}
+  - id: engine-identify-valves
+    clip: {fileID: 8300000, guid: ea48849e6d16c564bb8d2699b0cc5e70, type: 3}
   - id: tutorial-pc-navigation
     clip: {fileID: 8300000, guid: 90e963052b17ea14294616c4428be058, type: 3}
   - id: tutorial-pc-pickup
@@ -549,3 +561,59 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 9ee9f5419f238c24a9421a6c68471d51, type: 3}
   - id: tutorial-display
     clip: {fileID: 8300000, guid: 1a64765883afe9a4787485300bc9389e, type: 3}
+  - id: tutorial-mobile-navigation
+    clip: {fileID: 8300000, guid: dc71c39a705beb34e8e4772747555194, type: 3}
+  - id: tutorial-pc-placement-advanced
+    clip: {fileID: 8300000, guid: 26414bf55833029498f16d3741c0201f, type: 3}
+  - id: tutorial-hands-navigation
+    clip: {fileID: 8300000, guid: b716b0d47e99f084fb17f93b5b08399f, type: 3}
+  - id: tutorial-hands-parts
+    clip: {fileID: 8300000, guid: 33ec803869fca9e4ba9b41ba5f6bebcd, type: 3}
+  - id: tutorial-hands-lift
+    clip: {fileID: 8300000, guid: 8927b4458b0f47442920f31c2fa5b0b1, type: 3}
+  - id: tutorial-hands-help
+    clip: {fileID: 8300000, guid: 9a9a436fc27b7d84caa85bc0d40ea81d, type: 3}
+  - id: tutorial-pc-stance
+    clip: {fileID: 8300000, guid: 78999bae203e9854899801cbf4420d5f, type: 3}
+  - id: tutorial-pc-drop
+    clip: {fileID: 8300000, guid: 2ac71d08563e96948a054e522ed567cc, type: 3}
+  - id: tutorial-pc-placement-medium
+    clip: {fileID: 8300000, guid: da8abab9844dcaa49b49a04f072bfec5, type: 3}
+  - id: tutorial-pc-fit-manual
+    clip: {fileID: 8300000, guid: a203255ec7b21d44b91acac69b31252c, type: 3}
+  - id: tutorial-pc-flip
+    clip: {fileID: 8300000, guid: ca98aa0257891654bab58234a0fa4f33, type: 3}
+  - id: tutorial-pc-menus
+    clip: {fileID: 8300000, guid: ebd263dab43e8fc4f9b87ce1c0106a98, type: 3}
+  - id: tutorial-touch-stance
+    clip: {fileID: 8300000, guid: 03e96b7230ef1164eb7dee4331a01a8a, type: 3}
+  - id: tutorial-touch-flip
+    clip: {fileID: 8300000, guid: 2ea7f9a9c1d4af04284f117385bb5320, type: 3}
+  - id: tutorial-touch-help
+    clip: {fileID: 8300000, guid: 0ebb7d5f76330684e9a13736f4d30efe, type: 3}
+  - id: tutorial-vr-teleport
+    clip: {fileID: 8300000, guid: 816ee7228ae9eb54bb07144263bb8eba, type: 3}
+  - id: tutorial-vr-flip
+    clip: {fileID: 8300000, guid: 4c03e1f3cdf059f4e9bc9d2c9f297594, type: 3}
+  - id: tutorial-hands-teleport
+    clip: {fileID: 8300000, guid: d232e3a78b35d3249af433c864481c7a, type: 3}
+  - id: tutorial-hands-flip
+    clip: {fileID: 8300000, guid: dd8c6b4dc6feff649b9fdb136be48bb0, type: 3}
+  - id: tutorial-mobile-pan
+    clip: {fileID: 8300000, guid: 34e882d28c5b60f4899be86cc13659a7, type: 3}
+  - id: tutorial-ar-pan
+    clip: {fileID: 8300000, guid: 330e52dc531a46e41b148fd2b8fead65, type: 3}
+  - id: tutorial-pc-finish
+    clip: {fileID: 8300000, guid: 83259a6200edffa47ad45431ab8d108d, type: 3}
+  - id: tutorial-touch-finish
+    clip: {fileID: 8300000, guid: c9e9355f9ef40e949ac07da82fe94c5b, type: 3}
+  - id: tutorial-vr-finish
+    clip: {fileID: 8300000, guid: 5a956808c2bb33f4c9954095c1fec6c4, type: 3}
+  - id: tutorial-hands-finish
+    clip: {fileID: 8300000, guid: 4667056bae9ee7b4c858fa5e7e2a9711, type: 3}
+  - id: tutorial-mobile-finish
+    clip: {fileID: 8300000, guid: 76857725442a1ef4d85da2d87fd03eb0, type: 3}
+  - id: tutorial-ar-finish
+    clip: {fileID: 8300000, guid: 66e20ad0f9db30945b32cbf3986c97e2, type: 3}
+  - id: tutorial-pc-fit-medium
+    clip: {fileID: 8300000, guid: e3425ae7ae15d28479dee525d13990d0, type: 3}

@@ -11,7 +11,7 @@ namespace EngineAssembly
             foreach(var own in GetComponentsInChildren<Collider>())
                 foreach(var other in item.GetComponentsInChildren<Collider>(true))
                 {
-                    if(own==other || !other.enabled || other.isTrigger)continue;
+                    if(own==other || !other.enabled || other.isTrigger || ((int)other.excludeLayers&(1<<own.gameObject.layer))!=0)continue;
                     if(pairs.Exists(p=>p.player==own && p.item==other))continue;
                     pairs.Add(new Pair{player=own,item=other,previous=Physics.GetIgnoreCollision(own,other),part=heldPart,platform=heldPlatform});
                     Physics.IgnoreCollision(own,other,true);

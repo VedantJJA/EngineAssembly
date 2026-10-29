@@ -42,11 +42,11 @@ namespace EngineAssembly.Editor
             yield return Load("AssemblyWorkshop");var manager=FindAnyObjectByType<AssemblyManager>();while(manager.Recipe==null)yield return null;yield return null;
             var ui=manager.GetComponent<AssemblyWorkshopUI>();ui.SetOpen(false);
             Check(manager.Recipe.parts.Where(p=>p.chapterId=="chapter-1" && p.order==102).All(p=>p.orientation==AssemblyOrientation.UpsideDown),"All initial bearings require the PC underside flip");
-            var narrator=manager.GetComponent<AssemblyNarrator>();var fake=ScriptableObject.CreateInstance<NarrationLibrary>();fake.cues=new[]{"chapter-1-cue-001","chapter-1-cue-002","chapter-1-cue-168","chapter-1-cue-169","flip-upside-down"}.Select(id=>new NarrationLibrary.Cue{id=id,clip=AudioClip.Create(id,24000,1,24000,false)}).ToArray();
+            var narrator=manager.GetComponent<AssemblyNarrator>();var fake=ScriptableObject.CreateInstance<NarrationLibrary>();string blockDescription=EngineLearningContent.Detail(manager.FindPart("101_Cylinder_Block_01").Definition).voiceId;fake.cues=new[]{"chapter-1-cue-001","chapter-1-cue-002","chapter-1-cue-168","chapter-1-cue-169","flip-upside-down",blockDescription}.Select(id=>new NarrationLibrary.Cue{id=id,clip=AudioClip.Create(id,24000,1,24000,false)}).ToArray();
             typeof(AssemblyNarrator).GetField("library",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(narrator,fake);manager.SelectChapter(0);yield return null;yield return null;yield return null;
             Check(narrator.CurrentCueId=="chapter-1-cue-001","Initial component lesson starts");manager.FindPart("101_Cylinder_Block_01").InstallImmediate(manager.FindPart("101_Cylinder_Block_01").TargetSocket);yield return null;
             var caption=manager.GetComponentInChildren<LiveNarrationCaption>();Check(caption && caption.Label.text.Contains("<color=#"),"Live captions bind even when the narrator is created after the HUD");
-            Check(narrator.CurrentCueId=="chapter-1-cue-001","Required flip does not interrupt current lesson");
+            yield return new WaitForSecondsRealtime(.15f);Check(narrator.CurrentCueId=="chapter-1-cue-001" && narrator.CurrentDescription!=null,"Required flip waits for the original block purpose, without injecting another recording");
             float flipDeadline=Time.realtimeSinceStartup+8;while((narrator.CurrentCueId!="flip-upside-down" || !narrator.Source.isPlaying) && Time.realtimeSinceStartup<flipDeadline)yield return null;
             Check(narrator.CurrentCueId=="flip-upside-down","Flip voice plays after the lesson and pause");
             Check(narrator.LastCueStartedAt-narrator.LastCueFinishedAt>=.70f,"Successive voice cues have a deliberate pause");

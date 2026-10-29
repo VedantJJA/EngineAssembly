@@ -42,7 +42,7 @@ namespace EngineAssembly.Editor
         IEnumerator Scenario()
         {
             var display=FindAnyObjectByType<MobileEngineDisplay>();while(!display || !display.Ready){yield return null;display=FindAnyObjectByType<MobileEngineDisplay>();}yield return null;
-            yield return VerifyTutorial(display.gameObject,"AR");
+            yield return VerifyTutorial(display.gameObject,"Mobile");
             Check(Resources.Load<Material>("EngineCycleGas"),"Combustion material is included in Resources");
             foreach(var name in new[]{"EngineAssembly/Surface Triplanar","EngineAssembly/Cycle Gas"})Check(!ShaderUtil.GetShaderMessages(Shader.Find(name)).Any(m=>m.severity==UnityEditor.Rendering.ShaderCompilerMessageSeverity.Error),name+" has no shader errors");
             var steps=EngineLearningContent.Timeline(display.Recipe);var filters=display.EngineRoot.GetComponentsInChildren<MeshFilter>(true).Where(m=>display.Recipe.parts.Any(p=>p.id==m.name)).ToArray();
@@ -83,6 +83,10 @@ namespace EngineAssembly.Editor
             display.SetTimeline(1);var poses=filters.ToDictionary(m=>m.name,m=>(m.transform.localPosition,m.transform.localRotation,m.transform.localScale,m.sharedMesh));
             display.ToggleEngineAnimation();var op=display.Operation;op.Paused=true;op.SetCrankAngle(0);
             Check(op.Active && op.MovingCylinderCount==3 && op.MovingValveCount==12,"Operating model has three linked pistons and twelve valves");
+            Check(!display.EngineRoot.GetComponentsInChildren<MeshCollider>().Any(c=>c.enabled),"Mobile operating display removes moving CAD meshes from continuous physics");
+            bool tapped=filters.Where(f=>f.GetComponent<Renderer>().enabled).Any(f=>display.TapPart(display.ViewCamera.WorldToScreenPoint(f.GetComponent<Renderer>().bounds.center)));
+            Check(tapped && !string.IsNullOrEmpty(display.SelectedPartId),"Mobile operating display can still inspect an exact visible component by tapping");
+            Check(!display.EngineRoot.GetComponentsInChildren<MeshCollider>().Any(c=>c.enabled),"Inspection restores collider suppression after its one-off raycast");
             var crank=filters.First(m=>m.name=="103_Crankshaft_01").transform;var cam=filters.First(m=>m.name.StartsWith("502_")).transform;
             var crankStart=crank.localRotation;var camStart=cam.localRotation;
             op.SetCrankAngle(90);Check(Mathf.Abs(Quaternion.Angle(crankStart,crank.localRotation)-90)<.1f && Mathf.Abs(Quaternion.Angle(camStart,cam.localRotation)-45)<.1f,"Camshafts turn at half crankshaft speed");
@@ -131,7 +135,8 @@ namespace EngineAssembly.Editor
             display.ToggleEngineAnimation();op.SetSpeed(30);float before=op.CrankAngle;yield return null;yield return null;Check(op.CrankAngle!=before,"Engine advances across real Play-mode frames");op.Paused=true;before=op.CrankAngle;yield return null;yield return null;Check(op.CrankAngle==before,"Pause holds the operating engine still");
             display.SetMode(MobileEngineDisplay.DisplayMode.InfoTimeline);display.SetTimeline(.15f);display.SetMode(MobileEngineDisplay.DisplayMode.OperatingEngine);Check(op.Paused,"Choosing Engine Motion waits for its play control");
             var play=display.GetComponentsInChildren<WorkshopCard>().First(c=>c.name=="PLAY TIMELAPSE card");play.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));yield return null;Check(!op.Paused,"Shared play card starts operating animation");
-            display.GetComponentsInChildren<WorkshopCard>().First(c=>c.name=="INFO / TIMELINE card").OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));Check(display.Mode==MobileEngineDisplay.DisplayMode.InfoTimeline && !op.Active && Mathf.Abs(display.TimelinePosition-.15f)<.0001f,"Info tab restores the assembly timeline bookmark");
+            display.GetComponentsInChildren<WorkshopCard>(true).First(c=>c.name=="INFO / TIMELINE card").OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));Check(display.Mode==MobileEngineDisplay.DisplayMode.InfoTimeline && !op.Active && Mathf.Abs(display.TimelinePosition-.15f)<.0001f,"Info tab restores the assembly timeline bookmark");
+            Check(display.EngineRoot.GetComponentsInChildren<MeshCollider>().Any(c=>c.enabled),"Returning to the timeline restores its visible selection geometry");
             before=display.TimelinePosition;play.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));yield return new WaitForSecondsRealtime(.4f);Check(display.TimelinePlaying && display.TimelinePosition>before,"Shared play card starts and advances assembly timelapse after engine motion");play.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current));Check(!display.TimelinePlaying,"Shared play card pauses assembly timelapse");
             Check(display.GetComponentInChildren<EngineDisplayCaption>() && !display.transform.Find("Engine display canvas/Safe area/Timeline dock/Part information card"),"Descriptions use assembly-style floating captions instead of a separate footer section");
             display.SetTimeline(1);display.SelectPart("908_Motor_Unit_GSwirl_01");yield return new WaitForSecondsRealtime(.35f);CaptureUI(display.ViewCamera,"display-info-caption");
@@ -156,7 +161,9 @@ namespace EngineAssembly.Editor
             pc.ToggleEngineAnimation();Check(pc.Operation.Active && pc.Operation.MovingCylinderCount==3,"PC display uses the same operating engine");
             VerifySpringTravel(pc.Operation,manager.AssemblyRoot);
             pc.Operation.SetCrankAngle(100);pc.SetMotionMode(false);Check(!pc.Operation.Active && pc.Timeline.Active,"PC info tab restores its independent assembly timeline");
-            manager.GetComponent<AssemblyWorkshopUI>().SetOpen(false);var inspected=manager.FindPart("101_Cylinder_Block_01");var inspectionBounds=AssemblyHeldView.WorldBounds(inspected);Check(pc.Inspect(new Ray(inspectionBounds.center+Vector3.back*4,Vector3.forward)),"PC display can inspect a component independently from the current timeline step");speaker=pc.GetComponent<NarrationSpeech>();string inspectedVoice=speaker.CueId;speaker.Stop();pc.ReplayVoice();yield return new WaitForSecondsRealtime(.2f);Check(speaker.CueId==inspectedVoice && speaker.Source.isPlaying,"Replay speaks the inspected part description instead of the previous timeline step");
+            manager.GetComponent<AssemblyWorkshopUI>().SetOpen(false);var inspected=manager.FindPart("101_Cylinder_Block_01");var inspectionBounds=AssemblyHeldView.WorldBounds(inspected);Check(pc.Inspect(new Ray(inspectionBounds.center+Vector3.back*4,Vector3.forward)),"PC display can inspect a component independently from the current timeline step");speaker=pc.GetComponent<NarrationSpeech>();string inspectedVoice=speaker.CueId;speaker.Stop();pc.ReplayVoice();
+            float replayDeadline=Time.realtimeSinceStartup+3;while(!speaker.Source.isPlaying && speaker.CueId==inspectedVoice && Time.realtimeSinceStartup<replayDeadline)yield return null;
+            Check(speaker.CueId==inspectedVoice && speaker.Source.isPlaying,"Replay speaks the inspected part description instead of the previous timeline step; expected="+inspectedVoice+", actual="+speaker.CueId+", clip="+(speaker.Source.clip?speaker.Source.clip.loadState.ToString():"none")+", timeScale="+Time.timeScale);
             manager.GetComponent<AssemblyWorkshopUI>().SetOpen(false);pc.Timeline.SetValue(.15f);before=pc.Timeline.Position;pc.TogglePlay();yield return new WaitForSecondsRealtime(.4f);Check(pc.Timeline.Playing && pc.Timeline.Position>before,"PC display can play the assembly timelapse");pc.TogglePlay();Check(!pc.Timeline.Playing && manager.Recipe.parts.All(p=>manager.IsPlaced(p.id)),"PC presentation timeline preserves actual assembly progress");
             speaker=pc.GetComponent<NarrationSpeech>();pc.TogglePlay();yield return new WaitForSecondsRealtime(.2f);Check(speaker.CueId==EngineLearningContent.Detail(pc.Timeline.Current).voiceId && speaker.CueId.StartsWith("detail-"),"PC auto assembly speaks part descriptions without installation commands");pc.SetTimelineAudio(false);yield return null;Check(!speaker.IsBusy,"PC timeline audio toggle stops narration");pc.SetPlaybackSpeed(4);pc.Timeline.SetValue((50+.995f)/pc.Timeline.StepCount);yield return new WaitForSecondsRealtime(.4f);Check(pc.Timeline.Position>51f/pc.Timeline.StepCount,"Silent PC playback advances without narration waits");pc.TogglePlay();pc.SetPlaybackSpeed(1);pc.SetTimelineAudio(true);pc.ExplainEngine();yield return new WaitForSecondsRealtime(.2f);Check(pc.Explanation.Active && speaker.Source.isPlaying,"PC and VR display share the spoken four-stroke tour");
             pc.SetMotionMode(true);Check(pc.Operation.Active && !pc.Timeline.Active,"PC motion tab restores the complete engine before starting its mechanism");manager.SelectChapter(0);Check(!pc.Operation.Active && !pc.Timeline.Active,"Changing PC chapter stops and restores animation before resetting the workshop");
@@ -174,15 +181,15 @@ namespace EngineAssembly.Editor
         {
             var manager=owner.GetComponent<AssemblyManager>();var chapter=manager?manager.CurrentChapterId:null;var count=manager?manager.ChapterInstalledCount:0;
             float timeScale=Time.timeScale;var tutorial=WorkshopTutorial.Open(owner);yield return null;yield return null;
-            Check(tutorial.Platform==platform && WorkshopTutorial.IsOpen && Time.timeScale==0,"Section zero selects "+platform+" controls and pauses the experience");
-            Check(!MobileARSession.CanInteract(owner),"Section zero blocks assembly gestures and world interaction");
+            Check(tutorial.Platform==platform && WorkshopTutorial.IsOpen && Mathf.Approximately(Time.timeScale,timeScale),"Section zero selects "+platform+" controls without pausing the experience");
+            Check(!WorkshopTutorial.BlocksInput && WorkshopTutorial.AllowsLocomotion,"Section zero permits practicing movement and world interaction");
             for(int i=0;i<tutorial.LessonCount;i++)
             {
                 tutorial.Show(i);yield return null;yield return null;
                 var cue=NarrationText.Find(tutorial.CurrentLessonId);Check(cue!=null && cue.words?.Length>0 && Resources.Load<NarrationLibrary>("NarrationLibrary").Find(cue.id),"Tutorial lesson has generated voice and timed captions: "+tutorial.CurrentLessonId);
             }
             tutorial.Show(0);float end=Time.realtimeSinceStartup+3;while(!tutorial.Speech.Source.isPlaying && Time.realtimeSinceStartup<end)yield return null;
-            Check(tutorial.Speech.Source.isPlaying && tutorial.Speech.PlayWhilePaused,"Tutorial narration plays while the build is paused");tutorial.Close();yield return null;yield return null;
+            Check(tutorial.Speech.Source.isPlaying && !tutorial.Speech.PlayWhilePaused,"Tutorial narration plays while the workshop remains interactive");tutorial.Close();yield return null;yield return null;
             Check(!WorkshopTutorial.IsOpen && Mathf.Approximately(Time.timeScale,timeScale),"Closing Section zero restores the previous pause state");
             if(manager)Check(manager.CurrentChapterId==chapter && manager.ChapterInstalledCount==count,"Section zero preserves the selected chapter and installed parts");
         }

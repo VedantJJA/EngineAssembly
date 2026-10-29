@@ -81,10 +81,14 @@ namespace EngineAssembly
             {
                 Text(content,"Placement difficulty",20,White,42,230,width-84,36,true);
                 string[] labels={"Hard","Medium","Easy"};string[] descriptions={"Position and orient each component.","Position each component; rotation is assisted.","Carry a component and select its visible target."};
-                int selected=PlayerPrefs.GetInt("Assembly.SnapDifficulty",0);float w=Mathf.Min(170,(width-104)/3);
+                int selected=(int)WorkshopDifficulty.Saved;float w=Mathf.Min(170,(width-104)/3);
                 for(int i=0;i<3;i++){int index=i;ActionCard(labels[i],"",()=>{PlayerPrefs.SetInt("Assembly.SnapDifficulty",index);Show(Page.Options);},40+i*(w+12),290,w,56,i==selected);}
-                Text(content,descriptions[Mathf.Clamp(selected,0,2)],18,Muted,42,370,width-84,64);
-                WorkshopVolumeSlider.Create(content,42,475,Mathf.Min(880,width-84));
+                Text(content,descriptions[Mathf.Clamp(selected,0,2)],18,Muted,42,362,width-84,44);
+                float guidanceWidth=(width-96)/2;
+                ActionCard("GHOST HINTS · "+(WorkshopGuidance.Hints?"ON":"OFF"),"",()=>{WorkshopGuidance.SetHints(!WorkshopGuidance.Hints);Show(Page.Options);},42,420,guidanceWidth,52);
+                ActionCard("DIRECTION ARROW · "+(WorkshopGuidance.Arrow?"ON":"OFF"),"",()=>{WorkshopGuidance.SetArrow(!WorkshopGuidance.Arrow);Show(Page.Options);},54+guidanceWidth,420,guidanceWidth,52);
+                ActionCard("CAPTIONS · "+(WorkshopGuidance.Captions?"ON":"OFF"),"",()=>{WorkshopGuidance.SetCaptions(!WorkshopGuidance.Captions);Show(Page.Options);},42,486,width-84,52);
+                WorkshopVolumeSlider.Create(content,42,568,Mathf.Min(880,width-84));
             }
             if(page!=Page.Home)ActionCard("BACK","",()=>Show(Page.Home),40,content.rect.height-105,180,58);
             Text(content,"EXPLORE  /  UNDERSTAND  /  BUILD",12,Muted,40,content.rect.height-35,width-80,24);
@@ -144,7 +148,7 @@ namespace EngineAssembly
             Launch("AssemblyWorkshop");
         }
         public static void LaunchDesktopWorkshop(){if(Application.isMobilePlatform && !QuestVRSession.IsQuestModel(SystemInfo.deviceModel)){LaunchMobileWorkshop();return;}MobileWorkshopRequested=false;Launch("AssemblyWorkshop");}
-        public static void Launch(string scene){if(scene!="AssemblyWorkshop")MobileWorkshopRequested=false;if(scene=="MainMenu" && Application.isMobilePlatform)Screen.orientation=ScreenOrientation.Portrait;Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;SceneManager.LoadScene(scene);if(scene=="RepairVRFallback" && QuestVRSession.Instance && !QuestVRSession.Instance.Active)QuestVRSession.Instance.Request();}
+        public static void Launch(string scene){if(scene!="AssemblyWorkshop")MobileWorkshopRequested=false;if(Application.isMobilePlatform && !QuestVRSession.IsQuestModel(SystemInfo.deviceModel)){if(scene=="MainMenu")Screen.orientation=ScreenOrientation.Portrait;else if(scene!="AssemblyWorkshop")Screen.orientation=ScreenOrientation.AutoRotation;}Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;SceneManager.LoadScene(scene);if(scene=="RepairVRFallback" && QuestVRSession.Instance && !QuestVRSession.Instance.Active)QuestVRSession.Instance.Request();}
         public static void GoHome(){RequestedChapter="";MobileRepairRequested=false;Launch("MainMenu");}
         static void Quit()
         {

@@ -32,6 +32,7 @@ namespace EngineAssembly.Editor
         Camera camera;
         public bool reliable=true,surface=true,stopped;
         public int startupBehavior;
+        public int rescans;
         public Transform anchor;
         public override Camera TrackingCamera=>camera;
         public override bool CanRunHere=>true;
@@ -41,6 +42,7 @@ namespace EngineAssembly.Editor
         public override void Begin(){if(startupBehavior==1)throw new InvalidOperationException("Simulated SDK startup exception");if(startupBehavior==2)return;camera=new GameObject("Test tracked camera").AddComponent<Camera>();camera.nearClipPlane=.01f;camera.farClipPlane=20;camera.transform.position=new Vector3(0,1,-3);ReportReady();}
         public override Transform PlaceAnchor(){anchor=new GameObject("Test world anchor").transform;anchor.position=new Vector3(.4f,0,.2f);return anchor;}
         public override void BeginRepositioning(){}
+        public override void RestartSurfaceSearch(){rescans++;surface=false;}
         public void FailAs(ARFailure failure)=>ReportFailure(failure);
         public override void Shutdown(){stopped=true;if(camera)Destroy(camera.gameObject);if(anchor)Destroy(anchor.gameObject);}
     }
@@ -76,10 +78,8 @@ namespace EngineAssembly.Editor
         IEnumerator Scenario()
         {
 #if ENGINE_VUFORIA
-            bool hitReceived=false;UnityEngine.Events.UnityAction<Vuforia.HitTestResult> onHit=_=>hitReceived=true;
-            var factory=typeof(VuforiaGroundPlaneProvider).GetMethod("CreatePlaneFinder",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
-            var finder=(Vuforia.PlaneFinderBehaviour)factory.Invoke(null,new object[]{null,onHit});finder.OnAutomaticHitTest.Invoke(null);
-            Assert(hitReceived && finder.OnInteractiveHitTest!=null && !finder.gameObject.activeSelf,"Production runtime Plane Finder accepts hit events before activation");Destroy(finder.gameObject);
+            VerifyGroundPlaneSurfaceLifetime();
+            Assert(VuforiaGroundPlaneProvider.HasTrackedPose(Vuforia.Status.TRACKED) && VuforiaGroundPlaneProvider.HasTrackedPose(Vuforia.Status.EXTENDED_TRACKED) && !VuforiaGroundPlaneProvider.HasTrackedPose(Vuforia.Status.LIMITED) && !VuforiaGroundPlaneProvider.HasTrackedPose(Vuforia.Status.NO_POSE),"Vuforia accepts valid tracked and extended poses while rejecting positionless tracking");
 #endif
             for(int behavior=1;behavior<=2;behavior++)foreach(string scene in new[]{"MobileAssemblyAR","MobileDisplayAR"})
             {
@@ -114,9 +114,9 @@ namespace EngineAssembly.Editor
             Assert(AssemblyPresentationBounds.World(manager.AssemblyRoot,manager).min.y>=session.WorkspaceSurface.position.y+.019f,"Engine rests above the workbench instead of near the ground");
             Assert(manager.TrayFrame.parent==rig.ContentAnchor,"Source parts and socket frames inherit one presentation scale");
             Assert(Mathf.Abs(rig.ContentAnchor.localScale.x-.25f)<.001f,"AR uses a tabletop presentation scale without editing CAD meshes");
-            var arrowButton=mobile.GetComponentsInChildren<WorkshopCard>(true).First(c=>c.name=="Quest arrow toggle");arrowButton.clicked();yield return null;yield return null;
+            WorkshopGuidance.SetArrow(true);yield return null;yield return null;
             Assert(mobile.QuestArrow.Tracking && mobile.QuestArrow.ArrowVisible && mobile.QuestArrow.PointsToPlacement && mobile.QuestArrow.TargetPart==manager.NextHintPart(),"AR arrow toggle points to the next placement ghost");
-            arrowButton.clicked();Assert(!mobile.QuestArrow.Tracking && !mobile.QuestArrow.ArrowVisible,"AR arrow button can turn the pointer off");
+            WorkshopGuidance.SetArrow(false);yield return null;Assert(!mobile.QuestArrow.Tracking && !mobile.QuestArrow.ArrowVisible,"AR guidance settings can turn the pointer off");
             var camera=mobile.ViewCamera;var pose=new Pose(camera.transform.position,camera.transform.rotation);var center=mobile.WorldFocus;
             mobile.PanModel(new Vector2(0,100));center=mobile.WorldFocus;
             var benchPose=new Pose(session.WorkspaceSurface.position,session.WorkspaceSurface.rotation);
@@ -199,6 +199,38 @@ namespace EngineAssembly.Editor
         {
             var provider=FindAnyObjectByType<VuforiaGroundPlaneProvider>();if(!provider)return;
             var serialized=new SerializedObject(provider);serialized.FindProperty("allowEditorCameraPreview").boolValue=true;serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+#endif
+#if ENGINE_VUFORIA
+        void VerifyGroundPlaneSurfaceLifetime()
+        {
+            // Use a real SDK result to exercise the shipped cache and guards.
+            // Native surface tracking still requires a physical phone.
+            var host=new GameObject("Ground plane surface regression");
+            var cameraObject=new GameObject("Surface-query test camera");var queryCamera=cameraObject.AddComponent<Camera>();queryCamera.enabled=false;
+            var provider=host.AddComponent<VuforiaGroundPlaneProvider>();provider.enabled=false;
+            var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+            var type=typeof(VuforiaGroundPlaneProvider);
+            type.GetField("arCamera",flags).SetValue(provider,queryCamera);
+            var current=type.GetMethod("SurfaceIsCurrent",flags);
+            var position=new Vector3(.2f,0,2);
+            var hit=(Vuforia.HitTestResult)System.Activator.CreateInstance(typeof(Vuforia.HitTestResult),flags|System.Reflection.BindingFlags.Public,null,new object[]{position,Quaternion.identity,null},null);
+            try
+            {
+                provider.HandleSurfaceHit(hit);Assert(provider.SurfaceHitCount==0,"Surface results are ignored until Vuforia has started");
+                type.GetField("started",flags).SetValue(provider,true);provider.HandleSurfaceHit(hit);
+                Assert(provider.SurfaceHitCount==1 && (bool)current.Invoke(provider,new object[]{Time.unscaledTime}),"An automatic SDK hit provides a fresh visible surface");
+                float stamp=(float)type.GetField("lastHitTime",flags).GetValue(provider);
+                provider.HandleSurfaceHit(null);Assert((float)type.GetField("lastHitTime",flags).GetValue(provider)==stamp,"Missing hits do not renew the previous surface");
+                Assert(!(bool)current.Invoke(provider,new object[]{stamp+1}),"Old surface hits expire instead of displaying a false placement target");
+                queryCamera.transform.rotation=Quaternion.Euler(0,180,0);Assert(!(bool)current.Invoke(provider,new object[]{stamp}),"Surface targets behind the phone cannot be placed");queryCamera.transform.rotation=Quaternion.identity;
+                type.GetField("searching",flags).SetValue(provider,false);
+                provider.HandleSurfaceHit(hit);Assert(provider.SurfaceHitCount==1,"An anchored workspace ignores additional placement hits");
+                provider.BeginRepositioning();Assert(!(bool)current.Invoke(provider,new object[]{Time.unscaledTime}),"Reposition clears the old surface before scanning again");
+                provider.HandleSurfaceHit(hit);Assert(provider.SurfaceHitCount==2,"Reposition accepts new automatic SDK results");
+                provider.Shutdown();provider.HandleSurfaceHit(hit);Assert(provider.SurfaceHitCount==2,"Shutdown stops accepting surface results");
+            }
+            finally{Destroy(host);Destroy(cameraObject);}
         }
 #endif
         void Assert(bool value,string description){if(!value)throw new Exception(description);checks.Add(description);}

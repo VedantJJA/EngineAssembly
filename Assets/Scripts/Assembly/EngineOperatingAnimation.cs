@@ -11,7 +11,7 @@ namespace EngineAssembly
     {
         sealed class Node
         {
-            public string id;public Transform transform;public MeshFilter mesh;public Renderer renderer;
+            public string id;public PartDefinition definition;public string station;public Transform transform;public MeshFilter mesh;public Renderer renderer;
             public bool visible;
             public Vector3 localPosition,localScale,rootScale,position,center;public Quaternion localRotation,rotation;
         }
@@ -34,9 +34,26 @@ namespace EngineAssembly
         readonly List<Action<float>> rotations=new List<Action<float>>();
         readonly Dictionary<Node,float> camPhase=new Dictionary<Node,float>();readonly Dictionary<Node,Vector3> camLobePhases=new Dictionary<Node,Vector3>();readonly HashSet<Node> moving=new HashSet<Node>();
         Renderer[] shells;Node[] fixedFasteners,hiddenInMotion,sectionPipes;Vector3 crank;float roof;
+        bool sectionDirty=true,sectionMode;float sectionSide;Matrix4x4 sectionFrame;int cycleCode=-1;string cycleSummary="";
+        public int SectionRefreshCount {get;private set;}
         public bool Active {get;private set;}
         public bool Paused {get;set;}
-        public bool SectionEnabled {get;set;}=true;
+        bool xray=true;
+        public bool XRayEnabled {get=>xray;set{if(xray!=value){xray=value;sectionDirty=true;}}}
+        public bool SectionEnabled {get=>XRayEnabled;set=>XRayEnabled=value;}
+        readonly Dictionary<Renderer,MaterialPropertyBlock> descriptionColours=new Dictionary<Renderer,MaterialPropertyBlock>();
+        readonly HashSet<string> descriptionParts=new HashSet<string>();
+        public IReadOnlyCollection<string> HighlightedDescriptionParts=>descriptionParts;
+        public void HighlightDescription(string[] prefixes)
+        {
+            ClearDescriptionHighlight();if(prefixes==null || prefixes.Length==0)return;
+            foreach(var node in nodes.Values)if(prefixes.Any(prefix=>node.id.StartsWith(prefix,StringComparison.OrdinalIgnoreCase)))
+            {
+                var block=new MaterialPropertyBlock();node.renderer.GetPropertyBlock(block);descriptionColours[node.renderer]=block;
+                var highlight=new MaterialPropertyBlock();node.renderer.GetPropertyBlock(highlight);highlight.SetColor("_BaseColor",new Color(.18f,.65f,1));highlight.SetColor("_Color",new Color(.18f,.65f,1));node.renderer.SetPropertyBlock(highlight);descriptionParts.Add(node.id);
+            }
+        }
+        public void ClearDescriptionHighlight(){foreach(var pair in descriptionColours)if(pair.Key)pair.Key.SetPropertyBlock(pair.Value);descriptionColours.Clear();descriptionParts.Clear();}
         public float TeachingRPM {get;private set;}=12;
         public float CrankAngle {get;private set;}
         public float CamAngle=>CrankAngle*.5f;
@@ -52,15 +69,17 @@ namespace EngineAssembly
         public void Play()
         {
             if(Active){Paused=false;return;}
-            Cache();Active=true;Paused=false;CrankAngle=0;SetCrankAngle(0);
+            XRayEnabled=true;Cache();Active=true;Paused=false;CrankAngle=0;SetCrankAngle(0);
         }
         void Cache()
         {
-            nodes.Clear();cylinders.Clear();valves.Clear();rotations.Clear();moving.Clear();camPhase.Clear();camLobePhases.Clear();
+            section.Restore();EngineSurfaceLibrary.Apply(root);
+            nodes.Clear();cylinders.Clear();valves.Clear();rotations.Clear();moving.Clear();camPhase.Clear();camLobePhases.Clear();sectionDirty=true;cycleCode=-1;
+            var definitions=recipe.parts.ToDictionary(p=>p.id);var camVertices=new Dictionary<Node,Vector3[]>();
             foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true))
             {
-                if(!mesh.sharedMesh || !recipe.parts.Any(p=>p.id==mesh.name) || !mesh.TryGetComponent<Renderer>(out var renderer))continue;
-                var t=mesh.transform;nodes[mesh.name]=new Node{id=mesh.name,transform=t,mesh=mesh,renderer=renderer,visible=renderer.enabled,localPosition=t.localPosition,localRotation=t.localRotation,localScale=t.localScale,
+                if(!mesh.sharedMesh || !definitions.TryGetValue(mesh.name,out var definition) || !mesh.TryGetComponent<Renderer>(out var renderer))continue;
+                var t=mesh.transform;nodes[mesh.name]=new Node{id=mesh.name,definition=definition,station=Station(definition.displayName),transform=t,mesh=mesh,renderer=renderer,visible=renderer.enabled,localPosition=t.localPosition,localRotation=t.localRotation,localScale=t.localScale,
                     rootScale=new Vector3(t.lossyScale.x/root.lossyScale.x,t.lossyScale.y/root.lossyScale.y,t.lossyScale.z/root.lossyScale.z),position=root.InverseTransformPoint(t.position),rotation=Quaternion.Inverse(root.rotation)*t.rotation,center=root.InverseTransformPoint(t.TransformPoint(mesh.sharedMesh.bounds.center))};
             }
             crank=nodes["103_Crankshaft_01"].position;
@@ -69,20 +88,20 @@ namespace EngineAssembly
                 string tag="Cyl"+(i+1).ToString("00");var piston=nodes.Values.First(n=>n.id.StartsWith("201_Piston_"+tag));var rod=nodes.Values.First(n=>n.id.StartsWith("202_Connecting_Rod_"+tag));
                 var pin=nodes.Values.First(n=>n.id.StartsWith("203_Piston_Wrist_Pin_"+tag)).center;
                 var big=new Vector3(rod.position.x,rod.position.y,pin.z);var radial=big-new Vector3(crank.x,crank.y,pin.z);
-                var group=recipe.parts.First(p=>p.id==piston.id).subAssemblyId;
+                var group=piston.definition.subAssemblyId;
                 var c=new Cylinder{index=i,piston=piston,rod=rod,pin=pin,big=big,length=Vector3.Distance(pin,big),throwRadius=radial.magnitude,phase=Mathf.Atan2(-radial.x,radial.y)*Mathf.Rad2Deg};
                 var matrix=root.worldToLocalMatrix*piston.transform.localToWorldMatrix;var bounds=piston.mesh.sharedMesh.bounds;
                 var points=Enumerable.Range(0,8).Select(k=>matrix.MultiplyPoint3x4(bounds.center+Vector3.Scale(bounds.extents,new Vector3((k&1)==0?-1:1,(k&2)==0?-1:1,(k&4)==0?-1:1)))).ToArray();
                 c.crownOffset=points.Max(p=>p.y)-pin.y;c.bore=Mathf.Max(points.Max(p=>p.x)-points.Min(p=>p.x),.02f);
-                c.reciprocating=nodes.Values.Where(n=>recipe.parts.First(p=>p.id==n.id).subAssemblyId==group && !n.id.StartsWith("202_") && !n.id.Contains("Stud_")).ToArray();
+                c.reciprocating=nodes.Values.Where(n=>n.definition.subAssemblyId==group && !n.id.StartsWith("202_") && !n.id.Contains("Stud_")).ToArray();
                 c.rodParts=nodes.Values.Where(n=>n==rod || n.id.Contains(tag) && (n.id.Contains("Stud_") || n.id.StartsWith("206_") || n.id.Contains("Nut_JIS_B_1170"))).ToArray();
                 cylinders.Add(c);foreach(var n in c.reciprocating.Concat(c.rodParts))moving.Add(n);
             }
             roof=cylinders.Max(c=>crank.y+c.throwRadius+c.length+c.crownOffset)+.025f;
             foreach(var stem in nodes.Values.Where(n=>n.id.StartsWith("404_") && n.id.Contains("Valve_")))
             {
-                var definition=recipe.parts.First(p=>p.id==stem.id);string station=Station(definition.displayName);
-                var related=nodes.Values.Where(n=>Station(recipe.parts.First(p=>p.id==n.id).displayName)==station).ToArray();
+                var definition=stem.definition;string station=stem.station;
+                var related=nodes.Values.Where(n=>n.station==station).ToArray();
                 var size=Vector3.Scale(stem.mesh.sharedMesh.bounds.size,stem.localScale);int axis=0;for(int a=1;a<3;a++)if(size[a]>size[axis])axis=a;
                 var direction=stem.rotation*(axis==0?Vector3.right:axis==1?Vector3.up:Vector3.forward);if(direction.y>0)direction=-direction;
                 var spring=related.FirstOrDefault(n=>n.id.StartsWith("405_"));int springAxis=2;
@@ -92,7 +111,8 @@ namespace EngineAssembly
                 if(spring!=null){var localDirection=Quaternion.Inverse(spring.rotation)*direction;springAxis=0;for(int a=1;a<3;a++)if(Mathf.Abs(localDirection[a])>Mathf.Abs(localDirection[springAxis]))springAxis=a;}
                 bool intake=stem.id.Contains("Intake");var cam=nodes.Values.First(n=>n.id.StartsWith(intake?"502_Intake":"502_Exhaust"));
                 var points=stem.mesh.sharedMesh.vertices.Select(p=>root.InverseTransformPoint(stem.transform.TransformPoint(p))).ToArray();float end=points.Max(p=>Vector3.Dot(p,-direction));var tips=points.Where(p=>end-Vector3.Dot(p,-direction)<.0001f).ToArray();var tip=tips.Aggregate(Vector3.zero,(a,p)=>a+p)/tips.Length;
-                var camPoints=cam.mesh.sharedMesh.vertices.Select(p=>root.InverseTransformPoint(cam.transform.TransformPoint(p))).ToArray();
+                if(!camVertices.TryGetValue(cam,out var camPoints))
+                {camPoints=cam.mesh.sharedMesh.vertices;var camMatrix=root.worldToLocalMatrix*cam.transform.localToWorldMatrix;for(int i=0;i<camPoints.Length;i++)camPoints[i]=camMatrix.MultiplyPoint3x4(camPoints[i]);camVertices.Add(cam,camPoints);}
                 var contact=new EngineCamContact(camPoints,cam.position,tip,direction);
                 var valve=new Valve{stem=stem,cam=cam,cylinder=Array.FindIndex(new[]{"Cyl01","Cyl02","Cyl03"},stem.id.Contains),intake=intake,direction=direction.normalized,tip=tip,contact=contact,travel=contact.MaximumReach-contact.BaseReach,
                     tipMesh=stem.transform.InverseTransformPoint(root.TransformPoint(tip)),
@@ -117,7 +137,7 @@ namespace EngineAssembly
             var followerMaterial=Resources.Load<EngineSurfaceLibrary>("EngineSurfaceLibrary")?.Find("Machined steel");
             foreach(var valve in valves)
             {
-                var go=GameObject.CreatePrimitive(PrimitiveType.Cylinder);go.name=Station(recipe.parts.First(p=>p.id==valve.stem.id).displayName)+" display tappet";Destroy(go.GetComponent<Collider>());go.transform.SetParent(root,false);go.transform.localRotation=Quaternion.FromToRotation(Vector3.up,valve.direction);go.transform.localScale=new Vector3(.028f,Mathf.Max(.005f,valve.tappetLength)*.5f,.028f);valve.tappet=go.transform;
+                var go=GameObject.CreatePrimitive(PrimitiveType.Cylinder);go.name=valve.stem.station+" display tappet";Destroy(go.GetComponent<Collider>());go.transform.SetParent(root,false);go.transform.localRotation=Quaternion.FromToRotation(Vector3.up,valve.direction);go.transform.localScale=new Vector3(.028f,Mathf.Max(.005f,valve.tappetLength)*.5f,.028f);valve.tappet=go.transform;
                 if(followerMaterial)go.GetComponent<Renderer>().sharedMaterial=followerMaterial;
             }
             AddRotation(nodes["103_Crankshaft_01"],crank,1);
@@ -149,8 +169,17 @@ namespace EngineAssembly
         void AddRotation(Node node,Vector3 pivot,float ratio,Vector3 axis,float phase=0){moving.Add(node);rotations.Add(angle=>{var q=Quaternion.AngleAxis(angle*ratio+phase,axis);Pose(node,pivot+q*(node.position-pivot),q*node.rotation);});}
         void Pose(Node node,Vector3 position,Quaternion rotation){node.transform.SetPositionAndRotation(root.TransformPoint(position),root.rotation*rotation);}
         public float CylinderCycle(int index)=>Mathf.Repeat(CrankAngle+cylinders[index].phase-(index==0?0:360),720);
+        public float CrankForCycle(float cycle,int index=0)=>cycle-cylinders[index].phase+(index==0?0:360);
         public string StrokeName(int index){float cycle=CylinderCycle(index);return cycle<180?"Power":cycle<360?"Exhaust":cycle<540?"Intake":"Compression";}
-        public string CycleSummary=>Active?string.Join("  ·  ",cylinders.Select(c=>"C"+(c.index+1)+" "+StrokeName(c.index))) : "";
+        public string CycleSummary
+        {
+            get
+            {
+                if(!Active)return "";int code=0;for(int i=0;i<cylinders.Count;i++)code=code*4+Mathf.FloorToInt(CylinderCycle(i)/180);
+                if(code!=cycleCode){cycleCode=code;cycleSummary=string.Join("  ·  ",cylinders.Select(c=>"C"+(c.index+1)+" "+StrokeName(c.index)));}
+                return cycleSummary;
+            }
+        }
         public string Explanation
         {
             get
@@ -207,31 +236,34 @@ namespace EngineAssembly
             if(phase<540)return new Color(.12f,.52f,1,.13f);
             return Color.Lerp(new Color(.12f,.52f,1,.13f),new Color(1,.71f,.08f,.34f),compressed);
         }
-        static string Station(string name)=>name.Split('·').Last().ToUpperInvariant().Replace("INTAKE VALVE ","IN").Replace("EXHAUST VALVE ","EX").Replace(" ","");
+        static string Station(string name)=>(name??"").Split('·').Last().ToUpperInvariant().Replace("INTAKE VALVE ","IN").Replace("EXHAUST VALVE ","EX").Replace(" ","");
         void RefreshSection()
         {
             if(!viewer || !viewer.isActiveAndEnabled)viewer=Camera.main;var eye=viewer?root.InverseTransformPoint(viewer.transform.position):Vector3.right;
-            var normal=root.TransformDirection(eye.x>=crank.x?Vector3.right:Vector3.left);var point=root.TransformPoint(new Vector3(crank.x,0,0));
-            section.SetSection(shells,SectionEnabled,point,normal,root.lossyScale.magnitude*.001f);
-            // Remove each fastener as a whole on the opened side. A plane through a
-            // screw otherwise leaves a small unsupported stem floating at the cut.
-            float side=eye.x>=crank.x?1:-1;
-            foreach(var fastener in fixedFasteners){bool shown=fastener.visible && (!SectionEnabled || (fastener.center.x-crank.x)*side<-.0001f);if(fastener.renderer.enabled!=shown)fastener.renderer.enabled=shown;}
+            float side=eye.x>=crank.x?1:-1;var frame=root.localToWorldMatrix;
+            if(!sectionDirty && sectionMode==SectionEnabled && sectionSide==side && sectionFrame==frame)return;
+            SectionRefreshCount++;sectionDirty=false;sectionMode=SectionEnabled;sectionSide=side;sectionFrame=frame;
+            var normal=root.TransformDirection(side>0?Vector3.right:Vector3.left);var point=root.TransformPoint(new Vector3(crank.x,0,0));
+            // Show complete casing geometry translucently; the old clipping plane
+            // could remove the wrong side after the engine was rotated.
+            section.SetSection(shells,false,point,normal,root.lossyScale.magnitude*.001f);section.SetContext(XRayEnabled?shells:Array.Empty<Renderer>(),.08f);
+            // Complete casing geometry keeps its attached fasteners in place.
+            foreach(var fastener in fixedFasteners)if(fastener.renderer.enabled!=fastener.visible)fastener.renderer.enabled=fastener.visible;
             foreach(var node in hiddenInMotion)if(node.renderer.enabled)node.renderer.enabled=false;
-            // Plumbing is supported by the removed intake housing. Remove the
-            // complete fittings with the cutaway, then restore them in exterior view.
-            foreach(var pipe in sectionPipes){bool shown=pipe.visible && !SectionEnabled;if(pipe.renderer.enabled!=shown)pipe.renderer.enabled=shown;}
+            // The imported detached intake/service fittings are omitted from the
+            // teaching motion view; the assembled exterior restores them on Stop.
+            foreach(var pipe in sectionPipes)if(pipe.renderer.enabled)pipe.renderer.enabled=false;
             foreach(var cam in camLobePhases.Keys)section.SetCamPose(cam.renderer,root,cam.position,(cylinders[0].pin.z+cylinders[1].pin.z)*.5f,(cylinders[1].pin.z+cylinders[2].pin.z)*.5f,camLobePhases[cam],true);
         }
-        public bool IsClipped(Renderer renderer,Vector3 point)=>Active && (!renderer || !renderer.enabled || section.IsClipped(renderer,point));
+        public bool IsClipped(Renderer renderer,Vector3 point)=>Active && (!renderer || !renderer.enabled || XRayEnabled && section.ContextVisibility(renderer)<1 || section.IsClipped(renderer,point));
         void Update(){if(Active && !Paused && Time.timeScale>0 && MobileARSession.CanInteract(gameObject))SetCrankAngle(CrankAngle+Mathf.Min(Time.unscaledDeltaTime,.1f)*TeachingRPM*6);}
         void LateUpdate(){if(Active)RefreshSection();}
         public void Stop()
         {
-            if(!Active)return;Active=false;foreach(var c in cylinders)if(c.gas)Destroy(c.gas.gameObject);foreach(var valve in valves)if(valve.tappet)Destroy(valve.tappet.gameObject);
+            if(!Active)return;ClearDescriptionHighlight();Active=false;foreach(var c in cylinders)if(c.gas)Destroy(c.gas.gameObject);foreach(var valve in valves)if(valve.tappet)Destroy(valve.tappet.gameObject);
             foreach(var cam in camLobePhases.Keys)section.SetCamPose(cam.renderer,root,cam.position,0,0,Vector3.zero,false);
             foreach(var node in nodes.Values)if(node.transform){node.transform.SetLocalPositionAndRotation(node.localPosition,node.localRotation);node.transform.localScale=node.localScale;node.renderer.enabled=node.visible;}
-            section.SetSection(Array.Empty<Renderer>(),false,Vector3.zero,Vector3.right,.001f);Physics.SyncTransforms();
+            section.SetSection(Array.Empty<Renderer>(),false,Vector3.zero,Vector3.right,.001f);section.SetContext(Array.Empty<Renderer>());Physics.SyncTransforms();
         }
         void OnDisable()=>Stop();
         void OnDestroy()=>Stop();

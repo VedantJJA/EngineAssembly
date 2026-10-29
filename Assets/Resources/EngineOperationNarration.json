@@ -3,37 +3,116 @@
     {
       "id": "engine-operation-introduction",
       "title": "How the engine works",
-      "text": "An engine turns energy from burning fuel into rotation. The pistons slide inside the cylinders. Connecting rods link the pistons to the crankshaft, which turns as the pistons move. The belt drives the camshafts at half the crankshaft speed. Cam lobes open the valves, and springs close them. Follow the nearest cylinder through four strokes.",
+      "text": "An engine changes energy from burning fuel into a turning shaft. Before the engine moves, identify the main parts highlighted in blue.",
       "startAngle": 360,
-      "endAngle": 360
+      "endAngle": 360,
+      "partPrefixes": []
     },
     {
       "id": "engine-stroke-intake",
       "title": "1. Intake",
-      "text": "During the intake stroke, the piston moves down and the intake valves open. Fresh air enters the space above the piston. Blue represents the incoming air. The exhaust valves stay closed so the air follows the intake passage.",
+      "text": "Intake draws fresh air into the cylinder. The piston travels down and the intake valves open. Blue marks the incoming air. The exhaust valves remain closed.",
       "startAngle": 360,
-      "endAngle": 540
+      "endAngle": 540,
+      "partPrefixes": [
+        "201_",
+        "404_Intake"
+      ]
     },
     {
       "id": "engine-stroke-compression",
       "title": "2. Compression",
-      "text": "During the compression stroke, the piston moves up with both sets of valves closed. The trapped air is squeezed into a smaller space, increasing its pressure and temperature. Gold represents the compressed air near the top of the cylinder.",
+      "text": "Compression squeezes the trapped air. The piston travels up while the intake and exhaust valves stay closed. The shrinking space raises the air pressure and temperature. Gold marks the compressed air.",
       "startAngle": 540,
-      "endAngle": 720
+      "endAngle": 720,
+      "partPrefixes": [
+        "201_"
+      ]
     },
     {
       "id": "engine-stroke-power",
       "title": "3. Power",
-      "text": "During the power stroke, fuel burns in the hot compressed air. Orange represents the hot gas expanding and pushing the piston down. The connecting rod transfers that push to the crankshaft. The crankshaft delivers rotation to the rest of the machine.",
+      "text": "Burning fuel releases heat. Expanding hot gas pushes the piston down during the power stroke. The connecting rod carries the force to the crankshaft, making it turn. Orange marks the expanding gas.",
       "startAngle": 0,
-      "endAngle": 180
+      "endAngle": 180,
+      "partPrefixes": [
+        "201_",
+        "202_",
+        "103_"
+      ]
     },
     {
       "id": "engine-stroke-exhaust",
       "title": "4. Exhaust",
-      "text": "During the exhaust stroke, the exhaust valves open and the piston moves up. Used gas leaves the cylinder through the exhaust passage. Grey represents the outgoing gas. The intake valves then open for another cycle. Four strokes take two complete crankshaft turns and one camshaft turn.",
+      "text": "Exhaust removes the used gas. The piston travels up while the exhaust valves open, pushing the gas out. Grey marks the outgoing gas. A complete four-stroke cycle takes two crankshaft turns. The camshafts turn once in that time.",
       "startAngle": 180,
+      "endAngle": 360,
+      "partPrefixes": [
+        "201_",
+        "404_Exhaust"
+      ]
+    },
+    {
+      "id": "engine-identify-pistons",
+      "title": "Pistons and cylinders",
+      "text": "Pistons are the moving crowns inside the three cylinders. Each piston slides up and down. The cylinder walls guide that movement, while rings around the piston help keep pressure in the space above it.",
+      "partPrefixes": [
+        "201_",
+        "205_",
+        "206_",
+        "207_"
+      ],
+      "startAngle": 360,
+      "endAngle": 360
+    },
+    {
+      "id": "engine-identify-rods",
+      "title": "Connecting rods and crankshaft",
+      "text": "Connecting rods join the pistons to the crankshaft below them. A rod can tilt at its joints as the piston moves. The offset arms of the crankshaft turn the up-and-down movement into rotation.",
+      "partPrefixes": [
+        "202_",
+        "203_",
+        "103_"
+      ],
+      "startAngle": 360,
+      "endAngle": 360
+    },
+    {
+      "id": "engine-identify-timing",
+      "title": "Timing belt and camshafts",
+      "text": "The timing belt links the crankshaft pulley to the two camshaft pulleys at the top. The camshafts turn at half the crankshaft speed. This keeps valve opening and closing matched to the piston positions.",
+      "partPrefixes": [
+        "512_",
+        "509_",
+        "502_",
+        "503_"
+      ],
+      "startAngle": 360,
+      "endAngle": 360
+    },
+    {
+      "id": "engine-identify-valves",
+      "title": "Valves and springs",
+      "text": "Intake valves admit fresh air. Exhaust valves let used gas leave. Raised lobes on the camshafts push the valve mechanism open. Valve springs close the valves again as each lobe turns away. Now follow one cylinder through intake, compression, power and exhaust.",
+      "partPrefixes": [
+        "404_",
+        "405_",
+        "406_",
+        "408_"
+      ],
+      "startAngle": 360,
       "endAngle": 360
     }
+  ],
+  "tourOrder": [
+    "engine-operation-introduction",
+    "engine-identify-pistons",
+    "engine-identify-rods",
+    "engine-identify-timing",
+    "engine-identify-valves",
+    "engine-stroke-intake",
+    "engine-stroke-compression",
+    "engine-stroke-power",
+    "engine-stroke-exhaust"
   ]
 }

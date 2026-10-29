@@ -34,6 +34,7 @@ namespace EngineAssembly
         WorkshopCard next;
         WorkshopCard stepAssistCard;
         WorkshopQuestArrow questArrow;
+        WorkshopGuidancePanel guidanceSettings;
         public WorkshopQuestArrow QuestArrow=>questArrow;
         TMP_FontAsset font,heading;
         Quaternion initialRotation;
@@ -48,7 +49,7 @@ namespace EngineAssembly
         float fixtureRadius=1,zoomFactor=1,lastPinchDistance;
         bool RepairUnitActive=>manager && manager.RepairActive && !manager.IsPlaced(PCRepairChapter.UnitId);
         Transform Workpiece=>RepairUnitActive?manager.FindPart(PCRepairChapter.UnitId).transform:fixture==null?manager.AssemblyRoot:fixtureStage;
-        Vector3 FocusCenter=>RepairUnitActive?Vector3.zero:fixture==null?engineCenter:Vector3.zero;
+        Vector3 FocusCenter=>RepairUnitActive || manager && manager.CurrentChapterId==WorkshopPractice.ChapterId?Workpiece.InverseTransformPoint(AssemblyPresentationBounds.World(Workpiece,manager).center):fixture==null?engineCenter:Vector3.zero;
         float FocusRadius=>RepairUnitActive?Mathf.Max(.15f,AssemblyPresentationBounds.World(Workpiece,manager).extents.magnitude):fixture==null?Mathf.Max(.3f,AssemblyPresentationBounds.World(Workpiece,manager).extents.magnitude):fixtureRadius;
         public Transform ActiveWorkpiece=>Workpiece;
         public bool Ready=>ready;
@@ -63,7 +64,8 @@ namespace EngineAssembly
         public AssemblyPart SelectedPart=>selected;
         public IReadOnlyCollection<string> VisiblePartIds=>cards.Keys;
         public Camera ViewCamera=>viewCamera;
-        public bool ChapterMenuOpen=>chapterPanel && chapterPanel.gameObject.activeSelf;
+        public bool ChapterMenuOpen=>chapterPanel && chapterPanel.gameObject.activeSelf || guidanceSettings && guidanceSettings.IsOpen;
+        public WorkshopGuidancePanel GuidanceSettings=>guidanceSettings;
         static readonly Color Background=WorkshopTheme.Background,Panel=WorkshopTheme.Surface,Mint=WorkshopTheme.Accent,TextColor=WorkshopTheme.Text,Muted=WorkshopTheme.Muted;
         SpatialExperienceRig spatialRig;
 
@@ -158,6 +160,7 @@ namespace EngineAssembly
             if(!ready || WorkshopTutorial.BlocksInput)return;
             if(stepAssistCard){var assist=manager.GetComponent<AssemblyStepAssist>();stepAssistCard.interactable=assist && assist.Available;}
             if(refreshPending) { refreshPending=false;RefreshChapter(); }
+            var completion=manager.GetComponent<WorkshopSectionCompletion>();if(completion && completion.HandlesCompletion)status.text=completion.StatusText;
             if(lastScreen!=new Vector2Int(Screen.width,Screen.height) || lastSafeArea!=Screen.safeArea)UpdateViewport();
             ReadPointer();
         }
@@ -211,9 +214,8 @@ namespace EngineAssembly
             }
             if(!ready || !MobileARSession.CanInteract(gameObject) || ChapterMenuOpen || !selected || selected.IsBusy || !viewCamera.pixelRect.Contains(screenPosition))return false;
             var ray=viewCamera.ScreenPointToRay(screenPosition);
-            if(guide.Aim(ray,100,viewCamera)!=selected){status.text="Tap the visible ghost. Drag to turn the engine.";return false;}
-            var part=selected;
-            bool result=part.GuidedSnap(part.TargetSocket);
+            bool result=guide.Place(ray,100,viewCamera,selected);
+            if(result)selected=null;
             status.text=result?"Component placed":"Tap the visible ghost. Drag to turn the engine.";
             if(result)RefreshChapter();
             return result;
@@ -221,6 +223,7 @@ namespace EngineAssembly
         public void RotateEngine(Vector2 delta)
         {
             if(!ready || ChapterMenuOpen || !MobileARSession.CanInteract(gameObject))return;
+            WorkshopPractice.Record("rotate-build",delta.magnitude);
             var pivot=WorldFocus;
             Workpiece.RotateAround(pivot,viewCamera.transform.right,delta.y*.3f);
             Workpiece.RotateAround(pivot,viewCamera.transform.up,-delta.x*.3f);
@@ -235,6 +238,7 @@ namespace EngineAssembly
         public void PanModel(Vector2 pixelDelta)
         {
             if(!ready || ChapterMenuOpen || !MobileARSession.CanInteract(gameObject))return;
+            WorkshopPractice.Record("pan-build",pixelDelta.magnitude);
             float depth=Vector3.Dot(WorldFocus-viewCamera.transform.position,viewCamera.transform.forward);
             var center=viewCamera.pixelRect.center;
             var from=viewCamera.ScreenToWorldPoint(new Vector3(center.x,center.y,depth));
@@ -245,6 +249,7 @@ namespace EngineAssembly
         public void ZoomModel(float ratio)
         {
             if(!ready || ChapterMenuOpen || !MobileARSession.CanInteract(gameObject) || ratio<=0)return;
+            WorkshopPractice.Record("zoom-build",Mathf.Abs(Mathf.Log(ratio)));
             if(spatialRig.IsTracked){GetComponent<MobileARSession>().Zoom(ratio,WorldFocus);return;}
             float next=Mathf.Clamp(zoomFactor*ratio,.4f,3.5f);float applied=next/zoomFactor;zoomFactor=next;
             var center=Workpiece.TransformPoint(FocusCenter);
@@ -374,6 +379,7 @@ namespace EngineAssembly
                     var layout=card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();layout.preferredWidth=218;layout.preferredHeight=236;
                     var photo=NewRect("Part image",card.transform);Anchor(photo,new Vector2(0,1),new Vector2(1,1),new Vector2(10,-145),new Vector2(-10,-10));
                     var image=photo.gameObject.AddComponent<UnityEngine.UI.RawImage>();var carrier=manager.CarrierDefinition(id);image.texture=artwork?artwork.Find(id==PCRepairChapter.ReplacementId?PCRepairChapter.FaultyId:id)??artwork.Find(carrier?.previewPartId):null;image.color=image.texture?Color.white:new Color(.12f,.2f,.23f);image.raycastTarget=false;
+                    if(d.chapterId==WorkshopPractice.ChapterId){image.color=part.GetComponent<Renderer>().sharedMaterial.color;CenterLabel(photo,d.displayName.Replace("Practice ","").ToUpperInvariant(),27);}
                     Label(card.transform,d.order.ToString("000"),17,Mint,new Vector2(12,-148),new Vector2(190,24)).name="Part state";
                     Label(card.transform,d.displayName,20,TextColor,new Vector2(12,-174),new Vector2(194,56));
                 }
@@ -419,21 +425,23 @@ namespace EngineAssembly
             }
             safe=NewRect("Safe area",root);Stretch(safe);
             var header=Box(safe,Panel);Anchor(header,new Vector2(0,1),Vector2.one,new Vector2(0,-184),Vector2.zero);
-            Label(header,"ENGINE / LAB",22,Mint,new Vector2(28,-20),new Vector2(700,32));
+            Label(header,"ENGINE / LAB",22,Mint,new Vector2(28,-16),new Vector2(400,28));
             title=Label(header,"",36,TextColor,new Vector2(28,-62),new Vector2(770,84),true);
             title.rectTransform.anchorMax=Vector2.one;title.rectTransform.sizeDelta=new Vector2(-278,84);
             actionText=Label(header,"",19,Muted,new Vector2(28,-147),new Vector2(700,28));
             header.name="Assembly header";
             var chapters=MakeCard(header,ToggleChapters);chapters.name="Chapter menu action";Anchor((RectTransform)chapters.transform,Vector2.one,Vector2.one,new Vector2(-224,-66),new Vector2(-24,-16));CenterLabel(chapters.transform,"CHAPTERS",20);
             var home=MakeCard(header,ExperienceMenu.GoHome);home.name="Home action";Anchor((RectTransform)home.transform,Vector2.one,Vector2.one,new Vector2(-224,-128),new Vector2(-24,-78));CenterLabel(home.transform,"MAIN MENU",18);
-            var tutorial=MakeCard(header,OpenTutorial);tutorial.name="Section 0 action";Anchor((RectTransform)tutorial.transform,Vector2.one,Vector2.one,new Vector2(-448,-66),new Vector2(-240,-16));CenterLabel(tutorial.transform,"SECTION 0",18);
+            home.gameObject.SetActive(false);
+            if(manager.GetComponent<WorkshopPractice>()){var tutorial=MakeCard(header,OpenTutorial);tutorial.name="Practice action";Anchor((RectTransform)tutorial.transform,Vector2.one,Vector2.one,new Vector2(-448,-66),new Vector2(-240,-16));CenterLabel(tutorial.transform,"PRACTICE",18);}
             var rotate=MakeCard(safe,ResetView);
-            var arrowLabel=(TextMeshProUGUI)null;
-            var arrowToggle=MakeCard(header,()=>{questArrow.Toggle(!questArrow.Tracking);arrowLabel.text=questArrow.Tracking?"ARROW ON":"ARROW OFF";});arrowToggle.name="Quest arrow toggle";
-            Anchor((RectTransform)arrowToggle.transform,Vector2.one,Vector2.one,new Vector2(-224,-180),new Vector2(-24,-138));CenterLabel(arrowToggle.transform,"ARROW OFF",16);arrowLabel=arrowToggle.GetComponentInChildren<TextMeshProUGUI>();
+            rotate.gameObject.SetActive(false);
+            var settings=MakeCard(header,()=>{chapterPanel.gameObject.SetActive(false);guidanceSettings.SetOpen(!guidanceSettings.IsOpen);pointerActive=false;});settings.name="Settings action";
+            Anchor((RectTransform)settings.transform,Vector2.one,Vector2.one,new Vector2(-224,-180),new Vector2(-24,-138));CenterLabel(settings.transform,"SETTINGS",18);
             questArrow=NewRect("Quest arrow",safe).gameObject.AddComponent<WorkshopQuestArrow>();questArrow.ConfigureMobile(safe,manager,this,font);
             Anchor((RectTransform)rotate.transform,new Vector2(1,0),new Vector2(1,0),new Vector2(-212,348),new Vector2(-24,400));CenterLabel(rotate.transform,"RESET VIEW",18);
             var flip=MakeCard(safe,()=>RotateEngine(new Vector2(0,600)));
+            flip.gameObject.SetActive(false);
             Anchor((RectTransform)flip.transform,Vector2.zero,Vector2.zero,new Vector2(24,348),new Vector2(194,400));CenterLabel(flip.transform,"FLIP",18);
             var assist=MakeCard(safe,()=>manager.GetComponent<AssemblyStepAssist>()?.NextStep());assist.name="Next Step";
             stepAssistCard=assist;
@@ -459,33 +467,34 @@ namespace EngineAssembly
             var content=NewRect("Chapters",vp);content.anchorMin=new Vector2(0,1);content.anchorMax=Vector2.one;content.pivot=new Vector2(.5f,1);content.sizeDelta=Vector2.zero;
             var vl=content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();vl.spacing=16;vl.childControlHeight=true;vl.childControlWidth=true;vl.childForceExpandHeight=false;
             content.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit=UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;chapterScroll.viewport=vp;chapterScroll.content=content;
-            var guideCard=MakeCard(content,OpenTutorial);guideCard.name="Section 0 card";
-            guideCard.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight=106;CenterLabel(guideCard.transform,"00   Controls and features",27);
             for(int i=0;i<manager.Recipe.chapters.Count;i++)
             {
-                int index=i;var chapter=manager.Recipe.chapters[i];var card=MakeCard(content,()=>ChooseChapter(index));
-                card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight=106;CenterLabel(card.transform,(i+1).ToString("00")+"   "+chapter.title,27);
+                int index=i;var chapter=manager.Recipe.chapters[i];if(chapter.id==PCDisplayChapter.ChapterId)continue;var card=MakeCard(content,()=>ChooseChapter(index));
+                int number=manager.Recipe.chapters.Exists(c=>c.id==WorkshopPractice.ChapterId)?i:i+1;
+                card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight=106;CenterLabel(card.transform,number.ToString("00")+"   "+chapter.title,27);
                 card.interactable=manager.IsPlayableChapter(chapter.id);
             }
-            chapterPanel.gameObject.SetActive(false);
+            chapterPanel.gameObject.SetActive(false);guidanceSettings=WorkshopGuidancePanel.Create(safe);
+            guidanceSettings.AddActionRow("RESET VIEW",()=>{ResetView();guidanceSettings.SetOpen(false);},"MAIN MENU",ExperienceMenu.GoHome);
+            if(GetComponent<MobileARSession>() is MobileARSession ar)guidanceSettings.AddActionRow("REPOSITION",()=>{guidanceSettings.SetOpen(false);ar.Reposition();},"PHONE VIEW",ar.UsePhoneView);
         }
-        void ToggleChapters() { chapterPanel.gameObject.SetActive(!chapterPanel.gameObject.activeSelf);pointerActive=false; }
-        public void OpenTutorial(){chapterPanel.gameObject.SetActive(false);pointerActive=false;WorkshopTutorial.Open(gameObject);}
+        void ToggleChapters() { if(guidanceSettings)guidanceSettings.SetOpen(false);chapterPanel.gameObject.SetActive(!chapterPanel.gameObject.activeSelf);if(chapterPanel.gameObject.activeSelf)WorkshopPractice.Record("menu");pointerActive=false; }
+        public void OpenTutorial(){if(manager.RepairActive)return;if(guidanceSettings)guidanceSettings.SetOpen(false);chapterPanel.gameObject.SetActive(false);pointerActive=false;int index=manager.Recipe.chapters.FindIndex(c=>c.id==WorkshopPractice.ChapterId);if(index>=0)ChooseChapter(index);manager.GetComponent<WorkshopPractice>()?.OpenGuide();}
         void SetPresentationCamera(Camera camera){viewCamera=camera;if(ready)UpdateViewport();}
         public void ResetView(){if(spatialRig.IsTracked){GetComponent<MobileARSession>().ResetActiveBuild();return;}zoomFactor=1;Workpiece.SetLocalPositionAndRotation(fixture==null?initialPosition:fixturePosition,fixture==null?initialRotation:fixtureRotation);RotateEngine(Vector2.zero);UpdateViewport();}
         void UpdateViewport()
         {
             lastSafeArea=Screen.safeArea;lastScreen=new Vector2Int(Screen.width,Screen.height);
             safe.anchorMin=lastSafeArea.min/new Vector2(Screen.width,Screen.height);safe.anchorMax=lastSafeArea.max/new Vector2(Screen.width,Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;
-            Canvas.ForceUpdateCanvases();
             canvas.GetComponent<UnityEngine.UI.CanvasScaler>().referenceResolution=Screen.width>Screen.height?new Vector2(1920,1080):new Vector2(1080,1920);
+            canvas.GetComponent<UnityEngine.UI.CanvasScaler>().matchWidthOrHeight=Screen.width>Screen.height?.5f:0;
             bool landscape=Screen.width>Screen.height;
-            var header=(RectTransform)safe.Find("Assembly header");header.offsetMin=new Vector2(0,landscape?-110:-184);
-            var guide=(RectTransform)header.Find("Section 0 action");Anchor(guide,Vector2.one,Vector2.one,landscape?new Vector2(-826,-76):new Vector2(-448,-66),landscape?new Vector2(-642,-20):new Vector2(-240,-16));
-            title.rectTransform.anchoredPosition=new Vector2(28,landscape?-50:-62);title.rectTransform.sizeDelta=new Vector2(landscape?-860:-278,landscape?48:84);title.fontSize=landscape?28:36;
-            actionText.enabled=!landscape;
-            string[] controls={"Chapter menu action","Home action","Quest arrow toggle"};
-            for(int i=0;i<controls.Length;i++){var button=(RectTransform)header.Find(controls[i]);Anchor(button,Vector2.one,Vector2.one,landscape?new Vector2(-624+i*202,-76):new Vector2(-224,-66-i*58),landscape?new Vector2(-440+i*202,-20):new Vector2(-24,-16-i*58));}
+            var header=(RectTransform)safe.Find("Assembly header");header.offsetMin=new Vector2(0,landscape?-110:-116);
+            var guide=(RectTransform)header.Find("Practice action");if(guide)Anchor(guide,Vector2.one,Vector2.one,landscape?new Vector2(-826,-76):new Vector2(-448,-66),landscape?new Vector2(-642,-20):new Vector2(-240,-16));
+            title.rectTransform.anchoredPosition=new Vector2(28,-48);title.rectTransform.sizeDelta=new Vector2(-440,58);title.fontSize=28;title.enableAutoSizing=true;title.fontSizeMin=21;title.fontSizeMax=28;
+            actionText.enabled=false;
+            string[] controls={"Chapter menu action","Settings action"};
+            for(int i=0;i<controls.Length;i++){var button=(RectTransform)header.Find(controls[i]);Anchor(button,Vector2.one,Vector2.one,new Vector2(-406+i*194,-80),new Vector2(-228+i*194,-24));}
             Canvas.ForceUpdateCanvases();
             if(spatialRig.IsTracked)return;
             float bottom=lastSafeArea.yMin+410*canvas.scaleFactor,top=lastSafeArea.yMax-(landscape?120:400)*canvas.scaleFactor;

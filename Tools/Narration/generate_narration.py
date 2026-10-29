@@ -74,13 +74,15 @@ def cues():
     for number, text in re.findall(r"Step (\d+)\.\s*(.*?)(?=\n\s*\n|\Z)", repair, re.S):
         result.append(dict(id="repair-step-" + str(int(number)-1), text=text.strip(), folder="Repair"))
     result += [
-        dict(id="complete", text="Chapter complete. Your section is assembled. Continue to the next chapter when you are ready.", folder="Assembly"),
-        dict(id="repair-complete", text="Repair complete. The replacement bearing is fitted and the timing drive is rebuilt.", folder="Repair"),
+        dict(id="complete", text="Section complete. Well done.", folder="Assembly"),
+        dict(id="repair-complete", text="Repair complete. The replacement is fitted. Well done.", folder="Repair"),
         dict(id="flip-upright", text="Turn the active workpiece upright before fitting the next part. Press F, or press the flip button beside its lift.", folder="Assembly"),
         dict(id="flip-upside-down", text="Turn the active workpiece upside down before fitting the next part. Press F, or press the flip button beside its lift.", folder="Assembly"),
         dict(id="repeat-piston", text="Build the remaining piston units using the same steps.", folder="Assembly",sourceIndex=187),
         dict(id="repeat-valve", text="Repeat this fitting step for the remaining matching valve parts.", folder="Assembly",sourceIndex=188),
         dict(id="repeat-matching", text="Repeat this step for the remaining matching parts.", folder="Assembly",sourceIndex=189),
+        dict(id="flip-upside-down-spatial", text="Turn the assembly upside down before fitting the next part. Press the red flip button on the lift control panel, then wait for the lift to finish turning.", folder="Assembly",sourceIndex=4000000),
+        dict(id="flip-upright-spatial", text="Turn the assembly upright before fitting the next part. Press the red flip button on the lift control panel, then wait for the lift to finish turning.", folder="Assembly",sourceIndex=4000001),
     ]
     for detail in data['details']:
         identity = detail['voiceId']

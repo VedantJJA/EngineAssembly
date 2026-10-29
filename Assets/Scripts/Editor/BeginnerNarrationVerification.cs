@@ -44,7 +44,7 @@ namespace EngineAssembly.Editor
             // Short in-memory clips exercise playback timing independently of TTS
             // generation speed and the duration of the exported voice lessons.
             var library=ScriptableObject.CreateInstance<NarrationLibrary>();
-            var cueIds=data.steps.Select(s=>string.IsNullOrEmpty(s.voiceId)?s.id:s.voiceId).Concat(new[]{"flip-upright","flip-upside-down","complete","repeat-matching","repeat-piston","repeat-valve"}).Distinct();
+            var cueIds=data.steps.Select(s=>string.IsNullOrEmpty(s.voiceId)?s.id:s.voiceId).Concat(data.details.Select(d=>d.voiceId)).Concat(new[]{"flip-upright","flip-upside-down","complete","repeat-matching","repeat-piston","repeat-valve"}).Where(id=>!string.IsNullOrEmpty(id)).Distinct();
             library.cues=cueIds.Select(id=>new NarrationLibrary.Cue{id=id,clip=AudioClip.Create(id,24000,1,24000,false)}).ToArray();
             var narrator=m.GetComponent<AssemblyNarrator>();narrator.enabled=false;
             typeof(AssemblyNarrator).GetField("library",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(narrator,library);
@@ -52,16 +52,16 @@ namespace EngineAssembly.Editor
             m.SelectChapter(0);ui.SetOpen(false);narrator.enabled=true;
             yield return null;yield return null;yield return null;
             Check(narrator.Source.isPlaying && narrator.CurrentCueId=="chapter-1-cue-001","First beginner lesson starts with a loaded clip");
-            var first=m.NextHintPart();first.InstallImmediate(first.TargetSocket);yield return null;yield return null;
-            Check(narrator.CurrentCueId=="chapter-1-cue-001" && narrator.Source.isPlaying,"Installing early does not cut off the current explanation");
+            var first=m.NextHintPart();float began=narrator.LastCueStartedAt;first.InstallImmediate(first.TargetSocket);yield return new WaitForSecondsRealtime(.15f);var next=EngineLearningContent.ForPart(m.NextHintPart().Definition);string nextVoice=string.IsNullOrEmpty(next.voiceId)?next.id:next.voiceId;
+            Check(narrator.CurrentCueId=="chapter-1-cue-001" && narrator.Source.isPlaying && narrator.LastCueStartedAt==began,"Installing early keeps the original purpose playing without a second description recording");
             float deadline=Time.realtimeSinceStartup+3;
             while(narrator.CurrentCueId=="chapter-1-cue-001" && Time.realtimeSinceStartup<deadline)yield return null;
             yield return null;yield return null;
-            Check(narrator.CurrentCueId=="chapter-1-cue-002" && narrator.Source.isPlaying,"Next queued lesson starts after the previous audio finishes");
+            Check(narrator.CurrentCueId==nextVoice && narrator.Source.isPlaying,"Next fitting lesson waits for the completed part description");
             ui.Open(AssemblyWorkshopUI.Page.Pause);yield return null;yield return null;Check(!narrator.Source.isPlaying,"Pause menu pauses a lesson");
             ui.SetOpen(false);yield return null;yield return null;Check(narrator.Source.isPlaying,"Returning to the workshop resumes the lesson");
             Check(narrator.ReplayCurrent(),"Replay accepts the current fitting instruction");yield return null;yield return null;
-            Check(narrator.CurrentCueId=="chapter-1-cue-002" && narrator.Source.isPlaying,"Replay works for an already-loaded clip without leaving a stuck coroutine");
+            Check(narrator.CurrentCueId==nextVoice && narrator.Source.isPlaying,"Replay works for an already-loaded clip without leaving a stuck coroutine");
         }
     }
 }

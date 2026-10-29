@@ -68,6 +68,6 @@ try:
 except Exception as error:
     report["error"] = str(error)
 
-(project / "Tools/Verification/android-apk-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+(Path(sys.argv[2]) if len(sys.argv)>2 else project / "Tools/Verification/android-apk-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 print(json.dumps(report, indent=2))
 sys.exit(0 if report["passed"] else 1)

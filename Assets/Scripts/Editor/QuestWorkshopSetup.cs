@@ -29,6 +29,8 @@ namespace EngineAssembly.Editor
                 if(!XRPackageMetadataStore.AssignLoader(general.Manager,"UnityEngine.XR.OpenXR.OpenXRLoader",target))throw new Exception("Unable to assign OpenXR loader for "+target);
                 var settings=OpenXRSettings.GetSettingsForBuildTargetGroup(target);var touch=settings.GetFeature<OculusTouchControllerProfile>();if(touch)touch.enabled=true;
                 var quest=settings.GetFeature<MetaQuestFeature>();if(quest)quest.enabled=target==BuildTargetGroup.Android;
+                var hands=settings.GetFeature<UnityEngine.XR.Hands.OpenXR.HandTracking>();if(hands)hands.enabled=true;
+                var aim=settings.GetFeature<UnityEngine.XR.Hands.OpenXR.MetaHandTrackingAim>();if(aim)aim.enabled=true;
                 var foveation=settings.GetFeature<UnityEngine.XR.OpenXR.Features.FoveatedRenderingFeature>();
                 if(foveation){foveation.enabled=target==BuildTargetGroup.Android;var config=new SerializedObject(foveation);config.FindProperty("useEyeTracking").boolValue=false;config.ApplyModifiedPropertiesWithoutUndo();}
                 settings.foveatedRenderingApi=OpenXRSettings.BackendFovationApi.SRPFoveation;

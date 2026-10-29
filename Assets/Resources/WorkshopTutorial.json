@@ -1,21 +1,820 @@
 {
   "lessons": [
-    {"id":"tutorial-pc-navigation","platform":"PC","title":"Explore the workshop","controls":"W A S D   Walk\nMouse   Look\nShift   Sprint    Space   Jump    Ctrl / C   Crouch","text":"Walk with W, A, S and D, and look around with the mouse. Hold Shift to walk faster. Space jumps, and Control crouches. The large table holds your loose parts; the lifts hold the engine and smaller assemblies."},
-    {"id":"tutorial-pc-pickup","platform":"PC","title":"Collect and carry parts","controls":"Left click / E   Pick up one part\nClick another matching part   Add one to inventory\nG   Put down the held part","text":"Aim at a loose part and click to pick it up. Click another matching part to carry several of the same type, one pickup at a time. The inventory shows the quantity. Different sizes of screw cannot share that stack. Press G to put down the held part."},
-    {"id":"tutorial-pc-placement","platform":"PC","title":"Fit a part","controls":"Easy   Pick up, aim at the visible ghost, click\nQ   Carry / placement mode in Medium and Hard\nT   Move / rotate    Hold right mouse   Adjust","text":"In Easy difficulty, pick up the part, aim at its visible ghost, and click to fit it. Medium and Hard also use Q to switch between carrying and placement. In placement mode, hold the right mouse button to adjust the part. T switches between moving and rotating. Hard requires the correct orientation."},
-    {"id":"tutorial-pc-lift","platform":"PC","title":"Raise, lower and flip","controls":"Hold the red lever + drag up / down\nRed FLIP button / F   Turn the selected workpiece\nLeft / Right   Select lift    Up / Down   Lift height","text":"Point at a lift's red lever, hold the left mouse button, and drag up or down to change its height. Release to stop. Press the red flip button to turn that lift's assembly over. The hatch opens while the assembly turns below the floor. Follow a flip instruction before fitting the next part."},
-    {"id":"tutorial-pc-help","platform":"PC","title":"Choose your help","controls":"V   Direction arrow    H   Ghost hints\nR   Replay narration    P   Show / hide captions\nN   Install next part    Tab   Chapters    Esc   Pause","text":"V toggles the arrow to the next part, then its fitting position after pickup. H toggles ghost hints. R replays the current explanation. N installs the next part for you. Tab opens chapters, and Escape pauses the workshop. Settings contains volume, placement difficulty and the full controls."},
-    {"id":"tutorial-ar-place","platform":"AR","title":"Choose your workspace","controls":"Allow camera access\nScan a clear, well-lit surface\nTap PLACE ENGINE when a surface is found","text":"Allow camera access, then move the phone slowly over a clear, well-lit surface. Tap Place Engine when a surface is found. The engine floats at working height. If AR is unavailable, choose phone view to use the same assembly without a camera."},
-    {"id":"tutorial-ar-assemble","platform":"AR","title":"Select, then fit","controls":"Bottom cards   Choose the next loose part\nVisible glowing target   Tap to install\nComplete one piston before starting another","text":"Choose a part from the cards at the bottom, then tap its visible glowing target to fit it. Cards follow the assembly order and disappear after placement. Any piston may be started first, but finish that piston before starting another. Smaller assemblies have separate workspaces beside the engine."},
-    {"id":"tutorial-ar-gestures","platform":"AR","title":"Move the active build","controls":"One finger   Rotate\nTwo fingers   Move across the view\nPinch   Zoom","text":"Drag with one finger to rotate the active build. Drag with two fingers to move it across the view, or pinch to zoom. Only the assembly you are working on moves. Turn it until the target is visible; phone assembly works in any orientation and never requires a lift flip."},
-    {"id":"tutorial-ar-help","platform":"AR","title":"Help when you need it","controls":"ARROW   Toggle the direction guide\nNEXT STEP   Install the next component\nCHAPTERS   Choose a section","text":"Use the Arrow button to point out the next part or fitting position. Next Step fits the next component for you. Captions explain the part and its function while narration plays. Chapters lets you revisit any section with earlier work already assembled."},
-    {"id":"tutorial-vr-navigation","platform":"VR","title":"Explore in VR","controls":"Left stick   Walk\nRight stick left / right   Turn\nRight stick forward, aim, release   Teleport","text":"Move within your safe play area, or use the left stick to walk. Push the right stick left or right to turn in steps. Push it forward to aim a teleport arc, then release to travel to the marked clear floor. The controller ray points at menu cards; press the trigger to choose one."},
-    {"id":"tutorial-vr-parts","platform":"VR","title":"Pick up and fit","controls":"Point + hold grip   Carry a part\nAim at its visible ghost + trigger   Guided placement\nRelease grip   Put the part down","text":"Point at a loose part and hold the grip button to carry it. Aim at the matching visible ghost and press the trigger for guided placement. Release the grip to put a loose part down. Each controller carries one part. Finish the active piston before starting another piston."},
-    {"id":"tutorial-vr-lift","platform":"VR","title":"Operate a lift","controls":"Near the red lever   Hold grip and move up / down\nRelease   Stop the lift\nTouch the red FLIP button / aim + trigger   Flip","text":"Reach for the red lift lever, hold the grip, and move the controller up or down to raise or lower its assembly. Release the grip to stop. Touch the red flip button, or point at it and press the trigger, to turn that assembly over. Each panel operates its own lift."},
-    {"id":"tutorial-vr-help","platform":"VR","title":"Guidance and chapters","controls":"A / X   Install the next component\nLeft menu button   Pause and open chapters\nController ray + trigger   Select a menu card","text":"The captions and narration explain what each part does and where it fits. Press A or X to install the next part automatically. The left controller menu button opens the pause menu, where you can choose chapters, adjust settings, or return to the main menu."},
-    {"id":"tutorial-touch-navigation","platform":"Touch","title":"Walk around the garage","controls":"Left joystick   Walk\nDrag the free view   Look\nOn-screen crouch / sprint / jump controls","text":"Use the left joystick to walk around the garage. Drag on a clear area of the view to look around. The on-screen controls let you crouch, sprint and jump. Tap a part or lift control directly to interact with it."},
-    {"id":"tutorial-touch-parts","platform":"Touch","title":"Carry and place","controls":"Tap a part   Pick up one\nTap another matching part   Add one to inventory\nTap its visible ghost   Install","text":"Tap a loose part to pick it up. Tap matching parts one at a time to carry several in the inventory. Tap the matching visible ghost to fit the correct part. Complete one piston before starting the next. The captions describe the part's purpose and fitting position."},
-    {"id":"tutorial-touch-lift","platform":"Touch","title":"Use the workshop lifts","controls":"Hold the red lever + drag up / down\nTap the red FLIP button   Turn that assembly\nChapters / pause controls   Choose sections and settings","text":"Hold a lift's red lever and drag up or down to change its height. Release to stop. Tap the red flip button when the narration asks you to turn the assembly over. Open chapters to choose a different section, or pause to adjust volume and placement difficulty."},
-    {"id":"tutorial-display","platform":"Display","title":"Explore how the engine works","controls":"INFO / TIMELINE   Inspect parts or play the build\nENGINE MOTION   Watch the moving mechanism\nAudio and speed controls   Choose your playback","text":"In the display experience, choose Info and Timeline to inspect a part or play the assembly sequence. Engine Motion shows the working mechanism and its four strokes. The audio toggle silences timeline descriptions when you want faster playback. Assembly speed controls how quickly parts enter their fitted positions."}
+    {
+      "id": "tutorial-pc-navigation",
+      "platform": "PC",
+      "title": "Walk and look",
+      "controls": "W A S D   Walk\nMouse   Look",
+      "text": "Practice with the shapes before building the engine. Walk a few steps with W, A, S and D. Move the mouse to look around. Take your time; the next instruction waits for you.",
+      "practiceOrder": 0,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "walk",
+          "target": 1.2,
+          "label": "Walk a few steps"
+        },
+        {
+          "id": "look",
+          "target": 35,
+          "label": "Look around"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-pickup",
+      "platform": "PC",
+      "title": "Pick up matching cubes",
+      "controls": "Aim + left click / E   Pick up one cube\nClick a second blue cube   Carry both",
+      "text": "Find the blue cubes on the nearby table. Aim at a cube and click to pick it up. Click a second cube to carry both. The inventory number shows how many matching parts you hold.",
+      "practiceOrder": 2,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pickup",
+          "target": 2,
+          "label": "Pick up two blue cubes"
+        },
+        {
+          "id": "stack",
+          "target": 1,
+          "label": "Carry matching cubes together"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-placement",
+      "platform": "PC",
+      "title": "Fit a cube",
+      "controls": "Carry a cube\nAim at a visible matching ghost + click",
+      "text": "Find a cube-shaped ghost on the practice board. Carry a cube, aim at the visible ghost and click to fit it. In Easy difficulty the position and rotation are handled for you.",
+      "practiceOrder": 5,
+      "difficulty": "Easy",
+      "actions": [
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-lift",
+      "platform": "PC",
+      "title": "Adjust the lift height",
+      "controls": "Hold the red lever + drag up / down\nOr use Up / Down arrows",
+      "text": "Find the red lever beside the practice board. Hold the left mouse button on its red grip and drag up or down. Release to stop the lift. Try changing the board height now.",
+      "practiceOrder": 6,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "lift",
+          "target": 0.08,
+          "label": "Raise or lower the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-help",
+      "platform": "PC",
+      "title": "Try the guides",
+      "controls": "H   Toggle ghost hints\nV   Toggle the direction arrow\nR   Replay this instruction",
+      "text": "Press H to hide the ghost hints, then press H again to restore them. Press V to try the direction arrow, then press V again to turn it off. R replays the current voice line whenever you need it.",
+      "practiceOrder": 8,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "hints",
+          "target": 2,
+          "label": "Toggle hints off and back on"
+        },
+        {
+          "id": "arrow",
+          "target": 2,
+          "label": "Toggle the arrow on and back off"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-place",
+      "platform": "AR",
+      "title": "Choose your workspace",
+      "controls": "Scan a clear, well-lit surface\nTap PLACE when ready",
+      "text": "Allow camera access and scan a clear, well-lit surface. Tap Place when a surface is found. Set the practice shapes at a comfortable working height. The engine will use this workspace after practice.",
+      "practiceOrder": 0,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "workspace",
+          "target": 1,
+          "label": "Place your workspace"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-assemble",
+      "platform": "AR",
+      "title": "Choose a cube, then fit it",
+      "controls": "Bottom cards   Choose a blue cube\nTap its visible ghost   Install",
+      "text": "Choose a blue cube from the cards at the bottom. Tap a visible cube-shaped target on the practice board to fit it. A target hidden behind solid material must be viewed from another angle.",
+      "practiceOrder": 3,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pickup",
+          "target": 1,
+          "label": "Select a blue cube card"
+        },
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-gestures",
+      "platform": "AR",
+      "title": "Turn the practice board",
+      "controls": "One finger   Rotate",
+      "text": "Drag with one finger to turn the practice board. Try rotating it until you can see the cube-shaped targets. Only the active build moves.",
+      "practiceOrder": 1,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "rotate-build",
+          "target": 10,
+          "label": "Rotate the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-help",
+      "platform": "AR",
+      "title": "Try the help settings",
+      "controls": "SETTINGS   Volume / captions / hints / arrow\nNEXT STEP   Automatic placement",
+      "text": "Open Settings to find volume, captions, ghost hints and the direction arrow. Close settings to return to practice. Next Step fits the next component for you when you need help.",
+      "practiceOrder": 9,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "menu",
+          "target": 1,
+          "label": "Open settings, then return"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-navigation",
+      "platform": "VR",
+      "title": "Quest 2: walk and turn",
+      "controls": "Left Touch stick   Walk\nRight Touch stick left / right   Turn",
+      "text": "On Meta Quest 2, use the left Touch-controller thumbstick to walk a few steps. Push the right thumbstick sideways to turn. Keep inside your safe play area.",
+      "practiceOrder": 0,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "walk",
+          "target": 0.7,
+          "label": "Move a few steps"
+        },
+        {
+          "id": "look",
+          "target": 25,
+          "label": "Look or turn"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-parts",
+      "platform": "VR",
+      "title": "Quest 2: fit a cube",
+      "controls": "Side grip   Hold a cube\nNear visible ghost   Preview\nRelease side grip   Install\nPoint + trigger   Alternative placement",
+      "text": "Point at a blue cube and hold the side grip button to carry it. Move the cube near a visible matching ghost to preview its fit. Move away to cancel. Release the side grip at the ghost to install it. Pointing at the ghost and pressing the trigger also places a held cube.",
+      "practiceOrder": 3,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pickup",
+          "target": 1,
+          "label": "Take a blue cube"
+        },
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-lift",
+      "platform": "VR",
+      "title": "Adjust the lift height",
+      "controls": "Hold red lever   Move up / down\nRelease   Stop",
+      "text": "Reach for the red lever with a Touch controller. Hold the side grip and move your controller up or down to adjust the practice board height. Release the grip to stop. Try moving the lift now.",
+      "practiceOrder": 6,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "lift",
+          "target": 0.08,
+          "label": "Raise or lower the board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-help",
+      "platform": "VR",
+      "title": "Try the menus",
+      "controls": "Menu / Pause   Chapters and settings\nNext   Automatic placement",
+      "text": "Press the Menu button with three lines on the left Touch controller. Open settings or chapters, then return to practice. A on the right controller or X on the left installs the next part automatically.",
+      "practiceOrder": 9,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "menu",
+          "target": 1,
+          "label": "Open a menu, then return"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-navigation",
+      "platform": "Touch",
+      "title": "Walk around the garage",
+      "controls": "Left joystick   Walk\nDrag clear view   Look",
+      "text": "Use the left joystick to walk a few steps. Drag on a clear part of the screen to look around. Practice with the shapes; each lesson waits until you have tried its control.",
+      "practiceOrder": 0,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "walk",
+          "target": 1.2,
+          "label": "Walk a few steps"
+        },
+        {
+          "id": "look",
+          "target": 35,
+          "label": "Look around"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-parts",
+      "platform": "Touch",
+      "title": "Carry a practice cube",
+      "controls": "Tap a cube   Pick up\nTap its visible ghost   Install",
+      "text": "Tap a blue cube on the nearby table to pick it up. Tap a visible cube-shaped ghost on the practice board to fit it. Matching parts can be collected one at a time into the same inventory stack.",
+      "practiceOrder": 3,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pickup",
+          "target": 1,
+          "label": "Take a blue cube"
+        },
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-lift",
+      "platform": "Touch",
+      "title": "Adjust the lift height",
+      "controls": "Hold red lever   Move up / down\nRelease   Stop",
+      "text": "Hold the red lift lever and drag up or down to change the practice board height. Release to stop. Try moving the lift now.",
+      "practiceOrder": 6,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "lift",
+          "target": 0.08,
+          "label": "Raise or lower the board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-display",
+      "platform": "Display",
+      "title": "Explore how the engine works",
+      "controls": "INFO / TIMELINE   Inspect parts or play the build\nENGINE MOTION   Watch the moving mechanism\nAudio and speed controls   Choose your playback",
+      "text": "In the display experience, choose Info and Timeline to inspect a part or play the assembly sequence. Engine Motion shows the working mechanism and its four strokes. The audio toggle silences timeline descriptions when you want faster playback. Assembly speed controls how quickly parts enter their fitted positions."
+    },
+    {
+      "id": "tutorial-mobile-navigation",
+      "platform": "Mobile",
+      "title": "Turn the practice board",
+      "controls": "One finger   Rotate",
+      "text": "Drag with one finger to turn the practice board. Try rotating it until you can see the cube-shaped targets. Only the active build moves.",
+      "practiceOrder": 1,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "rotate-build",
+          "target": 10,
+          "label": "Rotate the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-placement-advanced",
+      "platform": "PC",
+      "title": "Hard: move and rotate",
+      "controls": "Q   Carry / placement mode\nT   Move / rotate tool\nRight mouse + drag   Adjust the part",
+      "text": "Hard difficulty needs the correct position and rotation. Hold a cube and press Q for placement mode. T switches between moving and rotating. Hold the right mouse button and drag to adjust the cube. Try both tools.",
+      "practiceOrder": 4,
+      "difficulty": "Hard",
+      "actions": [
+        {
+          "id": "placement-mode",
+          "target": 1,
+          "label": "Enter placement mode with Q"
+        },
+        {
+          "id": "manipulate-rotate",
+          "target": 5,
+          "label": "Rotate the held cube"
+        },
+        {
+          "id": "manipulate-move",
+          "target": 5,
+          "label": "Move the held cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-navigation",
+      "platform": "Hands",
+      "title": "Quest 2: look and move",
+      "controls": "Walk inside your safe play area\nKeep hands in view",
+      "text": "Keep your hands where the Quest 2 cameras can see them. Look around, then walk a little inside your safe play area. The practice shapes let you try the controls before building the engine.",
+      "practiceOrder": 0,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "walk",
+          "target": 0.35,
+          "label": "Move safely in your play area"
+        },
+        {
+          "id": "look",
+          "target": 25,
+          "label": "Look around"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-parts",
+      "platform": "Hands",
+      "title": "Take and fit a cube",
+      "controls": "Near cube   Pinch or close hand\nNear visible ghost   Preview\nOpen hand   Install",
+      "text": "Reach for a blue cube. Pinch or close your hand to take it, and keep that gesture while moving. Bring the cube near a visible matching ghost. Move away to cancel the preview. Open your hand at the ghost to install it.",
+      "practiceOrder": 3,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pickup",
+          "target": 1,
+          "label": "Take a blue cube"
+        },
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-lift",
+      "platform": "Hands",
+      "title": "Adjust the lift height",
+      "controls": "Hold red lever   Move up / down\nRelease   Stop",
+      "text": "Reach for the red lift lever. Pinch or close your hand around it, then move your hand up or down to adjust the practice board height. Open your hand to stop. Try moving the lift now.",
+      "practiceOrder": 6,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "lift",
+          "target": 0.08,
+          "label": "Raise or lower the board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-help",
+      "platform": "Hands",
+      "title": "Try the menus",
+      "controls": "Menu / Pause   Chapters and settings\nNext   Automatic placement",
+      "text": "Point at Menu on your left wrist panel and pinch. Open settings or chapters, then return to practice. Next on the wrist panel installs the next part automatically when you need help.",
+      "practiceOrder": 9,
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "menu",
+          "target": 1,
+          "label": "Open a menu, then return"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-stance",
+      "platform": "PC",
+      "practiceOrder": 1,
+      "title": "Sprint, jump and crouch",
+      "controls": "Shift + walk   Sprint\nSpace   Jump\nCtrl / C   Crouch",
+      "text": "Hold Shift while walking to sprint. Press Space to jump, then hold Control or C to crouch. Try each movement before continuing.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "sprint",
+          "target": 0.6,
+          "label": "Sprint briefly"
+        },
+        {
+          "id": "jump",
+          "target": 1,
+          "label": "Jump"
+        },
+        {
+          "id": "crouch",
+          "target": 1,
+          "label": "Crouch"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-drop",
+      "platform": "PC",
+      "practiceOrder": 3,
+      "title": "Drop the cubes",
+      "controls": "G   Drop every held copy\nPick the cubes up again when you are ready",
+      "text": "Press G to drop the cubes. Both copies fall separately. Pick up a cube again for the placement practice.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "drop",
+          "target": 2,
+          "label": "Drop both cubes"
+        },
+        {
+          "id": "repickup",
+          "target": 1,
+          "label": "Pick up a dropped cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-placement-medium",
+      "platform": "PC",
+      "practiceOrder": 4,
+      "title": "Medium: move the held cube",
+      "controls": "Q   Carry / placement mode\nT   Move / rotate tool\nRight mouse + drag   Adjust the part",
+      "text": "Medium difficulty needs placement mode. Hold a cube and press Q to enter it. Press T to try the move tool, then hold the right mouse button and drag to move the cube. The final rotation aligns automatically.",
+      "difficulty": "Medium",
+      "actions": [
+        {
+          "id": "placement-mode",
+          "target": 1,
+          "label": "Enter placement mode with Q"
+        },
+        {
+          "id": "placement-tool",
+          "target": 1,
+          "label": "Switch the tool with T"
+        },
+        {
+          "id": "manipulate-move",
+          "target": 5,
+          "label": "Move the held cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-fit-manual",
+      "platform": "PC",
+      "practiceOrder": 5,
+      "title": "Fit the aligned cube",
+      "controls": "Placement mode   Aim at its visible ghost + click\nQ   Return to carry mode if you need another cube",
+      "text": "Bring the cube close to a matching ghost on the practice board. Match its position and rotation, then aim at the visible target and click to fit it.",
+      "difficulty": "Hard",
+      "actions": [
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-flip",
+      "platform": "PC",
+      "practiceOrder": 7,
+      "title": "Turn the practice board over",
+      "controls": "Red FLIP button / F   Turn the active lift\nLeft / Right arrows   Choose a lift",
+      "text": "Press the red Flip button beside the practice board, or press F. Wait while the hatch opens and the board turns below the floor. The same control turns an engine workpiece when a fitting step needs it.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "flip",
+          "target": 1,
+          "label": "Flip the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-menus",
+      "platform": "PC",
+      "practiceOrder": 9,
+      "title": "Chapters, pause and settings",
+      "controls": "Tab   Chapters\nEsc   Pause / settings\nHold Alt   Use the guide buttons\nN   Auto-install next part",
+      "text": "Tab opens the chapter cards. Escape opens pause and settings, including volume, captions and difficulty. Open either menu and return to practice. N can fit the next part automatically if you get stuck.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "menu",
+          "target": 1,
+          "label": "Open a menu, then return"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-stance",
+      "platform": "Touch",
+      "practiceOrder": 1,
+      "title": "Try movement buttons",
+      "controls": "Sprint   Move faster\nJump   Hop\nCrouch   Lower your view",
+      "text": "Try the Sprint button while moving, then tap Jump and Crouch. You can tap objects directly to interact; you do not have to aim a crosshair.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "sprint",
+          "target": 0.6,
+          "label": "Sprint briefly"
+        },
+        {
+          "id": "jump",
+          "target": 1,
+          "label": "Jump"
+        },
+        {
+          "id": "crouch",
+          "target": 1,
+          "label": "Crouch"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-flip",
+      "platform": "Touch",
+      "practiceOrder": 7,
+      "title": "Turn the board over",
+      "controls": "Touch FLIP / point and select   Turn over",
+      "text": "Press the red Flip button beside the practice board. Wait for the hatch to open and the board to turn, then come back up. The same control turns an engine workpiece when needed.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "flip",
+          "target": 1,
+          "label": "Flip the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-help",
+      "platform": "Touch",
+      "practiceOrder": 9,
+      "title": "Try the menus",
+      "controls": "Menu / Pause   Chapters and settings\nNext   Automatic placement",
+      "text": "Open Pause or Chapters, then return to practice. Settings contains volume, captions, difficulty and guide toggles. Next Step can install a part automatically when you need help.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "menu",
+          "target": 1,
+          "label": "Open a menu, then return"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-teleport",
+      "platform": "VR",
+      "practiceOrder": 1,
+      "title": "Quest 2: teleport",
+      "controls": "Right stick forward   Aim at clear floor\nRelease the stick   Travel",
+      "text": "Push the right Touch-controller thumbstick forward to aim a teleport arc at clear floor. Release the stick when the landing marker is valid. Try one teleport now.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "teleport",
+          "target": 1,
+          "label": "Teleport to clear floor"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-flip",
+      "platform": "VR",
+      "practiceOrder": 7,
+      "title": "Turn the board over",
+      "controls": "Touch FLIP / point and select   Turn over",
+      "text": "Press the red Flip button beside the practice board. Wait for the hatch to open and the board to turn, then come back up. The same control turns an engine workpiece when needed.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "flip",
+          "target": 1,
+          "label": "Flip the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-teleport",
+      "platform": "Hands",
+      "practiceOrder": 1,
+      "title": "Travel with your wrist controls",
+      "controls": "Wrist TELEPORT   Point and pinch\nPoint at clear floor + pinch   Travel",
+      "text": "Point at Teleport on your left wrist panel and pinch. Point your right hand at clear floor and pinch again when the landing marker is valid. Try one teleport now.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "teleport",
+          "target": 1,
+          "label": "Teleport to clear floor"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-flip",
+      "platform": "Hands",
+      "practiceOrder": 7,
+      "title": "Turn the board over",
+      "controls": "Touch FLIP / point and select   Turn over",
+      "text": "Press the red Flip button beside the practice board. Wait for the hatch to open and the board to turn, then come back up. The same control turns an engine workpiece when needed.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "flip",
+          "target": 1,
+          "label": "Flip the practice board"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-mobile-pan",
+      "platform": "Mobile",
+      "practiceOrder": 2,
+      "title": "Move and zoom",
+      "controls": "Two fingers   Move across view\nPinch   Zoom",
+      "text": "Drag with two fingers to move the practice board across the view. Pinch your fingers together or apart to zoom. Try both gestures before continuing.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pan-build",
+          "target": 10,
+          "label": "Move the board with two fingers"
+        },
+        {
+          "id": "zoom-build",
+          "target": 0.07,
+          "label": "Pinch to zoom"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-pan",
+      "platform": "AR",
+      "practiceOrder": 2,
+      "title": "Move and zoom",
+      "controls": "Two fingers   Move across view\nPinch   Zoom",
+      "text": "Drag with two fingers to move the practice board across the view. Pinch your fingers together or apart to zoom. Try both gestures before continuing.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "pan-build",
+          "target": 10,
+          "label": "Move the board with two fingers"
+        },
+        {
+          "id": "zoom-build",
+          "target": 0.07,
+          "label": "Pinch to zoom"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-finish",
+      "platform": "PC",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-touch-finish",
+      "platform": "Touch",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-vr-finish",
+      "platform": "VR",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-hands-finish",
+      "platform": "Hands",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-mobile-finish",
+      "platform": "Mobile",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-ar-finish",
+      "platform": "AR",
+      "practiceOrder": 10,
+      "title": "Finish the practice board",
+      "controls": "Fit the remaining cubes, gold cylinder and purple ball",
+      "text": "Fit the remaining shapes into their matching targets on the practice board. Take as long as you need. The engine chapter starts after the board is complete.",
+      "difficulty": "",
+      "actions": [
+        {
+          "id": "place",
+          "target": 5,
+          "label": "Fit all five practice shapes"
+        }
+      ]
+    },
+    {
+      "id": "tutorial-pc-fit-medium",
+      "platform": "PC",
+      "practiceOrder": 5,
+      "title": "Fit the positioned cube",
+      "controls": "Placement mode   Aim at its visible ghost + click\nQ   Return to carry mode if you need another cube",
+      "text": "Move the cube close to a matching ghost on the practice board. Aim at the visible target and click to fit it. Medium difficulty aligns the final rotation for you.",
+      "difficulty": "Medium",
+      "actions": [
+        {
+          "id": "place",
+          "target": 1,
+          "label": "Fit one cube"
+        }
+      ]
+    }
   ]
 }

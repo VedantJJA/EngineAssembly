@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -17,21 +16,39 @@ namespace EngineAssembly
             public float appliedEdge,appliedOpacity;public bool appliedSection;
         }
         readonly Dictionary<Renderer,Entry> entries=new Dictionary<Renderer,Entry>();
+        readonly Dictionary<Material,Material> sectionMaterials=new Dictionary<Material,Material>();
         readonly HashSet<Renderer> selection=new HashSet<Renderer>(),contextSet=new HashSet<Renderer>();
         Vector4 plane;float edge=.001f;
+        public int SharedSectionMaterialCount=>sectionMaterials.Count;
+        public int CachedRendererCount=>entries.Count;
+        public float ContextVisibility(Renderer renderer)=>entries.TryGetValue(renderer,out var entry)?entry.opacity:1;
         Entry Find(Renderer renderer)
         {
             if(entries.TryGetValue(renderer,out var entry))return entry;
             entry=new Entry{renderer=renderer,originals=renderer.sharedMaterials,originalBlock=new MaterialPropertyBlock(),block=new MaterialPropertyBlock(),shadow=renderer.shadowCastingMode};
             renderer.GetPropertyBlock(entry.originalBlock);renderer.GetPropertyBlock(entry.block);
-            entry.display=entry.originals.Select(m=>m?new Material(m){name=m.name+" display section"}:null).ToArray();
-            renderer.sharedMaterials=entry.display;entries[renderer]=entry;return entry;
+            entries[renderer]=entry;return entry;
         }
         void Apply(Entry entry,bool force=false)
         {
             if(!entry.renderer)return;
             if(!force && entry.applied && entry.appliedSection==entry.section && entry.appliedOpacity==entry.opacity && (!entry.section || entry.appliedPlane==plane && entry.appliedEdge==edge))return;
-            if(!entry.applied || entry.appliedSection!=entry.section)foreach(var material in entry.display)if(material && material.HasProperty("_Cull"))material.SetFloat("_Cull",entry.section?0:2);
+            if(!entry.applied || entry.appliedSection!=entry.section)
+            {
+                if(entry.section && entry.display==null)
+                {
+                    entry.display=new Material[entry.originals.Length];
+                    for(int i=0;i<entry.originals.Length;i++)
+                    {
+                        var original=entry.originals[i];
+                        if(!original || !original.HasProperty("_Cull")){entry.display[i]=original;continue;}
+                        if(!sectionMaterials.TryGetValue(original,out var material))
+                        {material=new Material(original){name=original.name+" shared section"};material.SetFloat("_Cull",0);sectionMaterials.Add(original,material);}
+                        entry.display[i]=material;
+                    }
+                }
+                entry.renderer.sharedMaterials=entry.section?entry.display:entry.originals;
+            }
             entry.block.SetFloat("_ContextOpacity",entry.opacity);entry.block.SetFloat("_SectionEnabled",entry.section?1:0);
             entry.block.SetVector("_SectionPlane",plane);entry.block.SetFloat("_SectionEdgeWidth",edge);entry.renderer.SetPropertyBlock(entry.block);
             entry.renderer.shadowCastingMode=entry.section || entry.camPose || entry.opacity<1?ShadowCastingMode.Off:entry.shadow;
@@ -44,10 +61,10 @@ namespace EngineAssembly
             entry.camPose=active;entry.camFrame=matrix;entry.camAxis=stations;entry.camOffsets=offsets;entry.block.SetFloat("_CamPoseWarp",active?1:0);if(frame){entry.block.SetMatrix("_EngineToWorld",matrix);entry.block.SetMatrix("_WorldToEngine",frame.worldToLocalMatrix);}
             entry.block.SetVector("_CamAxisStations",stations);entry.block.SetVector("_CamPhaseOffsets",offsets);Apply(entry,true);
         }
-        public void SetContext(IEnumerable<Renderer> context)
+        public void SetContext(IEnumerable<Renderer> context,float visibility=.28f)
         {
             contextSet.Clear();foreach(var renderer in context)if(renderer){contextSet.Add(renderer);Find(renderer);}
-            foreach(var entry in entries.Values){float opacity=contextSet.Contains(entry.renderer) ? .28f : 1;if(entry.opacity==opacity)continue;entry.opacity=opacity;Apply(entry);}
+            foreach(var entry in entries.Values){float opacity=contextSet.Contains(entry.renderer) ? Mathf.Clamp01(visibility) : 1;if(entry.opacity==opacity)continue;entry.opacity=opacity;Apply(entry);}
         }
         public void SetSection(IEnumerable<Renderer> shells,bool enabled,Vector3 point,Vector3 normal,float width)
         {
@@ -61,9 +78,9 @@ namespace EngineAssembly
             foreach(var entry in entries.Values)
             {
                 if(entry.renderer){entry.renderer.sharedMaterials=entry.originals;entry.renderer.SetPropertyBlock(entry.originalBlock);entry.renderer.shadowCastingMode=entry.shadow;}
-                foreach(var material in entry.display)if(material)Destroy(material);
             }
-            entries.Clear();
+            foreach(var material in sectionMaterials.Values)if(material)Destroy(material);
+            sectionMaterials.Clear();entries.Clear();
         }
         void OnDestroy()=>Restore();
     }

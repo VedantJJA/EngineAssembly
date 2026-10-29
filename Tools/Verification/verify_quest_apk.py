@@ -33,6 +33,10 @@ try:
     check('quest2' in metadata.get('com.oculus.supportedDevices','').lower(), 'Manifest explicitly supports Quest 2')
     features = {node.attrib.get(attr+'name') for node in root.iter('uses-feature')}
     check('android.hardware.vr.headtracking' in features, 'Quest manifest declares headset tracking')
+    permissions = {node.attrib.get(attr+'name') for node in root.iter('uses-permission')}
+    check('com.oculus.permission.HAND_TRACKING' in permissions, 'Quest declares permission for optical hand tracking')
+    hand_feature = next((node for node in root.iter('uses-feature') if node.attrib.get(attr+'name') == 'oculus.software.handtracking'), None)
+    check(hand_feature is not None and hand_feature.attrib.get(attr+'required') == 'false', 'Optical hands are supported while Touch controllers remain available')
     with zipfile.ZipFile(apk) as archive:
         check(archive.testzip() is None, 'Quest APK passes archive integrity checks')
         names = archive.namelist()

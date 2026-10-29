@@ -56,25 +56,104 @@ namespace EngineAssembly.Editor
         public static void Create()
         {
             if(EditorApplication.isPlaying)throw new InvalidOperationException("Exit Play mode before creating AR scenes.");
-            Copy(SpatialFallbackSceneBuilder.AssemblyPath,AssemblyPath,"MobileAssemblyARFallback");
-            Copy(SpatialFallbackSceneBuilder.DisplayPath,DisplayPath,"MobileDisplayARFallback");
+            if(!IsCurrent(AssemblyPath))BuildFresh(SpatialFallbackSceneBuilder.AssemblyPath,AssemblyPath,"MobileAssemblyARFallback");
+            if(!IsCurrent(DisplayPath))BuildFresh(SpatialFallbackSceneBuilder.DisplayPath,DisplayPath,"MobileDisplayARFallback");
+            Register();
+        }
+        [MenuItem("Tools/Engine Assembly/AR/Rebuild Vuforia AR Scenes From Scratch")]
+        public static void Rebuild()
+        {
+            if(EditorApplication.isPlaying)throw new InvalidOperationException("Exit Play mode before rebuilding AR scenes.");
+            BuildFresh(SpatialFallbackSceneBuilder.AssemblyPath,AssemblyPath,"MobileAssemblyARFallback");
+            BuildFresh(SpatialFallbackSceneBuilder.DisplayPath,DisplayPath,"MobileDisplayARFallback");
+            Register();
+        }
+        static void Register()
+        {
             var paths=new[]{AssemblyPath,DisplayPath};
             EditorBuildSettings.scenes=EditorBuildSettings.scenes.Where(s=>!paths.Contains(s.path)).Concat(paths.Select(p=>new EditorBuildSettingsScene(p,true))).ToArray();
             ConfigureSDK();AssetDatabase.SaveAssets();
         }
-        static void Copy(string source,string destination,string fallback)
+        static bool IsCurrent(string path)
         {
-            if(!File.Exists(destination) && !AssetDatabase.CopyAsset(source,destination))throw new IOException("Unable to copy "+source);
-            var previous=SceneManager.GetActiveScene();var scene=EditorSceneManager.OpenScene(destination,OpenSceneMode.Additive);
+            if(!File.Exists(path))return false;
+            var scene=SceneManager.GetSceneByPath(path);bool opened=!scene.IsValid() || !scene.isLoaded;
+            if(opened)scene=EditorSceneManager.OpenScene(path,OpenSceneMode.Additive);
             try
             {
-                var host=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<SpatialExperienceRig>()).Single().gameObject;
-                var provider=host.GetComponent<VuforiaGroundPlaneProvider>();if(!provider)provider=host.AddComponent<VuforiaGroundPlaneProvider>();
-                var session=host.GetComponent<MobileARSession>();if(!session)session=host.AddComponent<MobileARSession>();
-                session.Configure(provider,fallback);EditorSceneManager.SaveScene(scene);
+#if ENGINE_VUFORIA
+                var providers=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<VuforiaGroundPlaneProvider>(true)).ToArray();
+                return providers.Length==1 && providers[0].SceneConfigured;
+#else
+                return false;
+#endif
             }
-            finally{SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true);}
+            finally{if(opened)EditorSceneManager.CloseScene(scene,true);}
         }
+        static void BuildFresh(string source,string destination,string fallback)
+        {
+            // Reuse only the authored engine/content data from the non-AR
+            // experience. Nothing is copied from the previous AR scene.
+            if(Application.isBatchMode && string.IsNullOrEmpty(SceneManager.GetActiveScene().path))
+                EditorSceneManager.OpenScene(ExperienceMenuBuilder.ScenePath,OpenSceneMode.Single);
+            var previous=SceneManager.GetActiveScene();string previousPath=previous.path;
+            var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+            SceneManager.SetActiveScene(scene);
+            var existing=SceneManager.GetSceneByPath(destination);
+            bool replaceOpen=existing.IsValid() && existing.isLoaded;
+            if(replaceOpen)EditorSceneManager.CloseScene(existing,true);
+            Scene preview=default;
+            try
+            {
+                preview=EditorSceneManager.OpenPreviewScene(source);
+                var bundle=new GameObject("Engine Experience");SceneManager.MoveGameObjectToScene(bundle,preview);
+                foreach(var root in preview.GetRootGameObjects().Where(r=>r!=bundle))root.transform.SetParent(bundle.transform,true);
+                var content=UnityEngine.Object.Instantiate(bundle);content.name="Engine Experience";SceneManager.MoveGameObjectToScene(content,scene);
+                EditorSceneManager.ClosePreviewScene(preview);preview=default;
+                var host=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<SpatialExperienceRig>()).Single().gameObject;
+                var provider=host.AddComponent<VuforiaGroundPlaneProvider>();
+                host.AddComponent<MobileARSession>().Configure(provider,fallback);
+#if ENGINE_VUFORIA
+                var factory=AppDomain.CurrentDomain.GetAssemblies().First(a=>a.GetName().Name=="Vuforia.Unity.Editor").GetType("Vuforia.EditorClasses.GameObjectFactory");
+                Func<string,GameObject> create=method=>(GameObject)factory.GetMethod(method).Invoke(null,null);
+                var ground=new GameObject("Vuforia Ground Plane").transform;
+                var camera=create("CreateARCamera");camera.transform.SetParent(ground,false);
+                camera.GetComponent<Vuforia.VuforiaBehaviour>().enabled=false;
+                camera.GetComponent<Camera>().enabled=false;camera.GetComponent<Camera>().nearClipPlane=.01f;camera.GetComponent<Camera>().farClipPlane=50;
+                camera.GetComponent<AudioListener>().enabled=false;
+                foreach(var component in camera.GetComponents<MonoBehaviour>().Where(c=>c.GetType().Name=="DefaultInitializationErrorHandler"))UnityEngine.Object.DestroyImmediate(component);
+                var cameraData=camera.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();if(!cameraData)cameraData=camera.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+                cameraData.renderPostProcessing=false;cameraData.antialiasing=UnityEngine.Rendering.Universal.AntialiasingMode.None;
+                var stage=create("CreateGroundPlaneStage");stage.transform.SetParent(ground,false);
+                // Session controls visibility; an SDK observer handler must not
+                // toggle gameplay children while the camera initializes.
+                foreach(var handler in stage.GetComponents<DefaultObserverEventHandler>())UnityEngine.Object.DestroyImmediate(handler);
+                var plane=create("CreatePlaneFinder");plane.transform.SetParent(ground,false);
+                UnityEngine.Object.DestroyImmediate(plane.GetComponent<Vuforia.AnchorInputListenerBehaviour>());
+                var indicator=new GameObject("Detected Surface Pose");indicator.transform.SetParent(plane.transform,false);
+                var finder=plane.GetComponent<Vuforia.PlaneFinderBehaviour>();finder.PlaneIndicator=indicator;finder.Height=1.2f;finder.HitTestMode=Vuforia.HitTestMode.AUTOMATIC;
+                finder.OnAutomaticHitTest=new Vuforia.HitTestEvent();finder.OnInteractiveHitTest=new Vuforia.HitTestEvent();
+                var positioning=plane.GetComponent<Vuforia.ContentPositioningBehaviour>();positioning.AnchorStage=stage.GetComponent<Vuforia.AnchorBehaviour>();positioning.DuplicateStage=false;positioning.OnContentPlaced=new Vuforia.ContentPlacedEvent();
+                provider.Configure(ground,camera.GetComponent<Camera>(),finder,positioning,positioning.AnchorStage,indicator);
+                Persist(finder.OnAutomaticHitTest,provider.HandleSurfaceHit);Persist(finder.OnInteractiveHitTest,provider.HandleSurfaceHit);Persist(positioning.OnContentPlaced,provider.HandleContentPlaced);
+#endif
+                RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.65f,.68f,.72f);
+                if(!EditorSceneManager.SaveScene(scene,destination))throw new IOException("Unable to save rebuilt AR scene: "+destination);
+            }
+            finally
+            {
+                if(preview.IsValid())EditorSceneManager.ClosePreviewScene(preview);
+                if(previousPath==destination)SceneManager.SetActiveScene(scene);
+                else{if(previous.IsValid() && previous.isLoaded)SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true);}
+            }
+        }
+#if ENGINE_VUFORIA
+        static void Persist<T>(UnityEngine.Events.UnityEvent<T> value,UnityEngine.Events.UnityAction<T> callback)
+        {
+            for(int i=0;i<value.GetPersistentEventCount();i++)if(value.GetPersistentTarget(i)==(UnityEngine.Object)callback.Target && value.GetPersistentMethodName(i)==callback.Method.Name)return;
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(value,callback);
+        }
+#endif
         public static void CreateBatch()
         {
             Create();

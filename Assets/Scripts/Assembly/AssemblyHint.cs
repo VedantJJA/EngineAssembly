@@ -5,7 +5,7 @@ namespace EngineAssembly
     {
         AssemblyManager manager;
         AssemblyVisual source,target;
-        public bool Enabled { get; private set; } = true;
+        public bool Enabled=>WorkshopGuidance.Hints;
         public AssemblyPart HighlightedPart { get; private set; }
         void Awake()
         {
@@ -13,7 +13,7 @@ namespace EngineAssembly
             source=new GameObject("Next part hint").AddComponent<AssemblyVisual>();source.transform.SetParent(transform,false);
             target=new GameObject("Next socket hint").AddComponent<AssemblyVisual>();target.transform.SetParent(transform,false);
         }
-        public void Toggle() { Enabled=!Enabled;Refresh(); }
+        public void Toggle() { WorkshopGuidance.SetHints(!Enabled);Refresh(); }
         void Update()=>Refresh();
         void Refresh()
         {
@@ -23,7 +23,7 @@ namespace EngineAssembly
             if(!HighlightedPart) { source.Clear();target.Clear();return; }
             if(manager.TargetFrame(HighlightedPart.Definition).GetComponentInParent<PickupablePlatform>() is PickupablePlatform platform && platform.IsFlipping){source.Clear();target.Clear();return;}
             var player=FindAnyObjectByType<PlayerAssemblyController>();
-            if(player && player.CurrentHeldPart==HighlightedPart && player.CarryMode)source.Clear();else source.Hover(HighlightedPart,true,true);
+            if(manager.GetComponent<MobileAssemblyController>() || player && player.CurrentHeldPart==HighlightedPart && player.CarryMode)source.Clear();else source.Hover(HighlightedPart,true,true);
             if(held) { target.Clear();return; }
             if((manager.Task==AssemblyTask.Assemble || manager.Mode==WorkshopMode.Edit) && (!manager.RepairActive || manager.Repair.IsPlacementStep))
                 target.ShowGhost(HighlightedPart,HighlightedPart.TargetSocket,AssemblyVisual.Ready,true);

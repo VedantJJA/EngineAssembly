@@ -46,7 +46,7 @@ namespace EngineAssembly.Editor
                 foreach (var feature in openXR.GetFeatures<UnityEngine.XR.OpenXR.Features.OpenXRFeature>())
                 {
                     // Both the current and legacy Quest features can alter the launcher.
-                    if (feature && (feature.GetType().Name == "MetaQuestFeature" || feature.GetType().Name == "OculusQuestFeature"))
+                    if (feature && (feature.GetType().Name == "MetaQuestFeature" || feature.GetType().Name == "OculusQuestFeature" || feature.GetType().Name=="HandTracking" || feature.GetType().Name=="MetaHandTrackingAim"))
                         feature.enabled = false;
                 }
                 EditorUtility.SetDirty(openXR);

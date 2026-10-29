@@ -6,11 +6,14 @@ namespace EngineAssembly
     public sealed class PCDisplayChapter : MonoBehaviour
     {
         public const string ChapterId="engine-display";
-        AssemblyManager manager;RectTransform card,controls;TextMeshProUGUI title,description,playLabel,sectionLabel,cycleLabel,infoTab,motionTab,audioLabel,speedLabel;NarrationSpeech speech;AssemblyPickupQuery query;
-        EngineOperatingAnimation operation;EngineOperationNarrator explanation;PCDisplayTimeline timeline;AssemblyTimelineScrubber scrubber;bool motion;string spokenStep,currentVoice;
+        AssemblyManager manager;RectTransform card,controls,settingsPanel;bool settingsOpen;TextMeshProUGUI title,description,playLabel,sectionLabel,cycleLabel,infoTab,motionTab,audioLabel,speedLabel;NarrationSpeech speech;AssemblyPickupQuery query;
+        EngineOperatingAnimation operation;EngineOperationNarrator explanation;PCDisplayTimeline timeline;AssemblyTimelineScrubber scrubber;bool motion;int shownStep=-2;string spokenStep,currentVoice;
         public PCDisplayTimeline Timeline=>timeline;
         public EngineOperatingAnimation Operation=>operation;
         public EngineOperationNarrator Explanation=>explanation;
+        public bool MotionMode=>motion;
+        public bool SettingsOpen=>manager && manager.DisplayActive && settingsOpen;
+        public EngineDisplayStation Station {get;private set;}
         public bool TimelineAudioEnabled=>DisplayPlaybackSettings.AudioEnabled;
         public void SetTimelineAudio(bool enabled){DisplayPlaybackSettings.AudioEnabled=enabled;if(!enabled && !motion)speech.Stop();spokenStep=null;if(audioLabel)audioLabel.text="TIMELAPSE AUDIO · "+(enabled?"ON":"OFF");if(enabled && timeline && timeline.Playing)ShowTimelineStep(timeline.Current);}
         public void SetPlaybackSpeed(float speed){DisplayPlaybackSettings.Speed=speed;if(speedLabel)speedLabel.text="ASSEMBLY SPEED · "+DisplayPlaybackSettings.Speed.ToString("0.00")+"×";}
@@ -19,13 +22,15 @@ namespace EngineAssembly
         void Update()
         {
             EnsureChapter();var ui=manager.GetComponent<AssemblyWorkshopUI>();bool shown=manager.DisplayActive && (!ui || !ui.IsOpen);
-            if(manager.DisplayActive)CreateCard();else StopAnimation();
-            if(card)card.gameObject.SetActive(shown);if(controls)controls.gameObject.SetActive(shown);
+            if(manager.DisplayActive){CreateCard();if(!Station)Station=EngineDisplayStation.Create(this,manager);}else StopAnimation();
+            if(Station)Station.gameObject.SetActive(manager.DisplayActive);
+            if(card)card.gameObject.SetActive(shown && !WorkshopTutorial.IsOpen && (!string.IsNullOrEmpty(currentVoice) || motion || timeline.Active && timeline.Position<1));if(controls)controls.gameObject.SetActive(shown);if(settingsPanel)settingsPanel.gameObject.SetActive(shown && settingsOpen && !WorkshopTutorial.IsOpen);
             if(!manager.DisplayActive && speech.Source.isPlaying)speech.Stop();
-            if(!operation)return;
+            if(!operation || !shown)return;
             playLabel.text=motion?(explanation.Active?(explanation.Paused?"RESUME EXPLANATION":"PAUSE EXPLANATION"):operation.Paused?"PLAY ENGINE":"PAUSE ENGINE"):(timeline.Playing?"PAUSE TIMELAPSE":"PLAY TIMELAPSE");
-            sectionLabel.text=motion?(operation.SectionEnabled?"SECTION ON":"SECTION OFF"):"REPLAY VOICE";
-            cycleLabel.text=motion?operation.CycleSummary:timeline.Active?"Assembly timeline · "+Mathf.FloorToInt(timeline.Position*timeline.StepCount)+" / "+timeline.StepCount:"Select a component, or play the assembly timeline";
+            sectionLabel.text="CAPTIONS · "+(WorkshopGuidance.Captions?"ON":"OFF");
+            if(motion)cycleLabel.text=operation.CycleSummary;
+            else {int step=timeline.Active?Mathf.FloorToInt(timeline.Position*timeline.StepCount):-1;if(step!=shownStep){shownStep=step;cycleLabel.text=step<0?"Choose a mode in Display Settings":"Assembly timeline · "+step+" / "+timeline.StepCount;}}
             scrubber.SetValue(motion?operation.CrankAngle/720:timeline.Position);
             TabTint(infoTab,!motion);TabTint(motionTab,motion);
             if(operation.Active && !operation.Paused && !explanation.Active){title.text="Inside the running engine";description.text=operation.Explanation;}
@@ -36,7 +41,7 @@ namespace EngineAssembly
         }
         public void SetMotionMode(bool value)
         {
-            if(!manager.DisplayActive)return;CreateCard();if(motion==value && (!value || operation.Active))return;explanation.Cancel();speech.Stop();currentVoice=null;motion=value;
+            if(!manager.DisplayActive)return;CreateCard();if(motion==value && (!value || operation.Active))return;explanation.Cancel();speech.Stop();currentVoice=null;shownStep=-2;motion=value;
             if(value){timeline.Stop();operation.Play();operation.Paused=true;title.text="Inside the running engine";description.text=operation.Explanation;}
             else {operation.Stop();timeline.SetValue(timeline.Position);ShowTimelineStep(timeline.Current);}
         }
@@ -57,6 +62,7 @@ namespace EngineAssembly
         public bool Inspect(Ray ray)
         {
             if(!manager.DisplayActive)return false;
+            Physics.SyncTransforms();
             if(!query){var player=FindAnyObjectByType<PlayerAssemblyController>();query=player?player.GetComponent<AssemblyPickupQuery>():gameObject.AddComponent<AssemblyPickupQuery>();}
             // Ignore only the surfaces removed by the display shader. Physical walls still block selection.
             for(int i=0;i<32;i++)
@@ -71,32 +77,49 @@ namespace EngineAssembly
         void CreateCard()
         {
             if(card)return;var ui=manager.GetComponent<AssemblyWorkshopUI>();var canvas=ui?ui.WorkshopCanvas:manager.GetComponentInChildren<Canvas>();if(!canvas)return;
+            EngineSurfaceLibrary.Apply(manager.AssemblyRoot);
             var captions=EngineDisplayCaption.Create(canvas.transform,speech,false);card=(RectTransform)captions.transform;title=captions.Heading;description=captions.Text;
-            title.text="Complete engine";description.text="Select a component to hear its purpose. Choose Info / Timeline to watch the build, or Engine Motion to see how the engine works.";captions.Context.text="Engine display";
+            title.text="Complete engine";description.text="Select a component to hear its purpose. Choose Info / Timeline to watch the build, or Engine Motion to see how the engine works.";captions.Context.text="";
             operation=gameObject.GetComponent<EngineOperatingAnimation>()??gameObject.AddComponent<EngineOperatingAnimation>();operation.Configure(manager.AssemblyRoot,manager.Recipe,Camera.main);
             explanation=gameObject.GetComponent<EngineOperationNarrator>()??gameObject.AddComponent<EngineOperationNarrator>();explanation.Configure(operation,speech,(heading,text)=>{title.text=heading;description.text=text;});
             timeline=gameObject.GetComponent<PCDisplayTimeline>()??gameObject.AddComponent<PCDisplayTimeline>();timeline.Configure(manager,speech);timeline.StepChanged=ShowTimelineStep;
-            controls=new GameObject("Engine operating controls",typeof(RectTransform)).GetComponent<RectTransform>();controls.SetParent(canvas.transform,false);controls.anchorMin=controls.anchorMax=new Vector2(.5f,0);controls.pivot=new Vector2(.5f,0);controls.sizeDelta=new Vector2(850,260);controls.anchoredPosition=new Vector2(0,22);
-            infoTab=Control("INFO / TIMELINE",()=>SetMotionMode(false),0,114,418);motionTab=Control("ENGINE MOTION",()=>SetMotionMode(true),432,114,418);
-            playLabel=Control("PLAY ENGINE",TogglePlay,0);sectionLabel=Control("SECTION OFF",ToggleSection,284);Control("ASSEMBLED VIEW",StopAnimation,568);
-            var readout=new GameObject("Four-stroke cycle",typeof(RectTransform)).GetComponent<RectTransform>();readout.SetParent(controls,false);readout.anchorMin=Vector2.zero;readout.anchorMax=Vector2.right;readout.offsetMin=new Vector2(0,82);readout.offsetMax=new Vector2(0,110);cycleLabel=readout.gameObject.AddComponent<TextMeshProUGUI>();cycleLabel.font=Resources.Load<TMP_FontAsset>("WorkshopBody");cycleLabel.fontSize=19;cycleLabel.color=WorkshopTheme.Text;cycleLabel.alignment=TextAlignmentOptions.Center;cycleLabel.raycastTarget=false;
-            var rail=new GameObject("Display timeline scrubber",typeof(RectTransform)).GetComponent<RectTransform>();rail.SetParent(controls,false);rail.anchorMin=rail.anchorMax=Vector2.zero;rail.pivot=Vector2.zero;rail.anchoredPosition=new Vector2(12,64);rail.sizeDelta=new Vector2(826,14);var image=rail.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=WorkshopTheme.Border;image.raycastPadding=new Vector4(-8,-10,-8,-10);WorkshopUIArt.Card(image);
-            var fill=new GameObject("Fill",typeof(RectTransform)).GetComponent<RectTransform>();fill.SetParent(rail,false);fill.anchorMin=Vector2.zero;fill.anchorMax=Vector2.one;fill.offsetMin=fill.offsetMax=Vector2.zero;var fillImage=fill.gameObject.AddComponent<UnityEngine.UI.Image>();fillImage.color=WorkshopTheme.Accent;fillImage.raycastTarget=false;
-            var thumb=new GameObject("Thumb",typeof(RectTransform)).GetComponent<RectTransform>();thumb.SetParent(rail,false);thumb.sizeDelta=new Vector2(20,30);var thumbImage=thumb.gameObject.AddComponent<UnityEngine.UI.Image>();thumbImage.color=WorkshopTheme.Text;thumbImage.raycastTarget=false;WorkshopUIArt.Card(thumbImage);
-            scrubber=rail.gameObject.AddComponent<AssemblyTimelineScrubber>();scrubber.Configure(fill,thumb);scrubber.changed=value=>{explanation.Cancel();speech.Stop();if(motion){operation.Paused=true;operation.SetCrankAngle(value*720);}else {timeline.Playing=false;timeline.SetValue(value);}};
-            audioLabel=Control("TIMELAPSE AUDIO · "+(TimelineAudioEnabled?"ON":"OFF"),()=>SetTimelineAudio(!TimelineAudioEnabled),0,170,418);
-            speedLabel=Control("ASSEMBLY SPEED · "+DisplayPlaybackSettings.Speed.ToString("0.00")+"×",()=>{},432,170,418);speedLabel.transform.parent.GetComponent<WorkshopCard>().enabled=false;
-            var speedRail=Instantiate(rail,controls);speedRail.name="Assembly speed slider";speedRail.anchoredPosition=new Vector2(444,226);speedRail.sizeDelta=new Vector2(394,12);
-            var speed=speedRail.GetComponent<AssemblyTimelineScrubber>();speed.Configure((RectTransform)speedRail.Find("Fill"),(RectTransform)speedRail.Find("Thumb"));speed.changed=value=>{SetPlaybackSpeed(.1f+value*3.9f);speed.SetValue(value);};speed.SetValue((DisplayPlaybackSettings.Speed-.1f)/3.9f);
-            Control("EXPLAIN ENGINE CYCLE",ExplainEngine,0,220,418);
+            controls=Rect("Engine operating controls",canvas.transform,new Vector2(850,92));controls.anchorMin=controls.anchorMax=new Vector2(.5f,0);controls.pivot=new Vector2(.5f,0);controls.anchoredPosition=new Vector2(0,20);
+            playLabel=Control("PLAY ENGINE",TogglePlay,0,0,228);
+            Control("DISPLAY SETTINGS",()=>settingsOpen=!settingsOpen,650,0,200).text="SETTINGS";
+            cycleLabel=Text(controls,"Display progress",19,0,58,850,28);cycleLabel.alignment=TextAlignmentOptions.Center;cycleLabel.color=WorkshopTheme.OverlayText;cycleLabel.outlineColor=new Color(.03f,.06f,.10f,.95f);cycleLabel.outlineWidth=.18f;cycleLabel.UpdateMeshPadding();
+            scrubber=Rail(controls,"Display timeline scrubber",250,18,376,value=>{explanation.Cancel();speech.Stop();if(motion){operation.Paused=true;operation.SetCrankAngle(value*720);}else {timeline.Playing=false;timeline.SetValue(value);}});
+            settingsPanel=Rect("Display settings",canvas.transform,new Vector2(800,630));settingsPanel.anchorMin=settingsPanel.anchorMax=new Vector2(.5f,.5f);settingsPanel.pivot=new Vector2(.5f,.5f);var panelImage=settingsPanel.gameObject.AddComponent<UnityEngine.UI.Image>();panelImage.color=WorkshopTheme.Surface;WorkshopUIArt.Card(panelImage);
+            Text(settingsPanel,"ENGINE DISPLAY",28,24,568,600,40);Control("DONE",()=>settingsOpen=false,644,568,132,settingsPanel);
+            infoTab=Control("INFO / TIMELINE",()=>SetMotionMode(false),24,500,366,settingsPanel);motionTab=Control("ENGINE MOTION",()=>SetMotionMode(true),410,500,366,settingsPanel);
+            audioLabel=Control("TIMELAPSE AUDIO · "+(TimelineAudioEnabled?"ON":"OFF"),()=>SetTimelineAudio(!TimelineAudioEnabled),24,426,366,settingsPanel);
+            sectionLabel=Control("CAPTIONS",()=>WorkshopGuidance.SetCaptions(!WorkshopGuidance.Captions),410,426,366,settingsPanel);
+            speedLabel=Text(settingsPanel,"",23,24,358,752,36);SetPlaybackSpeed(DisplayPlaybackSettings.Speed);
+            var speed=Rail(settingsPanel,"Assembly speed slider",28,330,744,value=>SetPlaybackSpeed(.1f+value*3.9f));speed.SetValue((DisplayPlaybackSettings.Speed-.1f)/3.9f);
+            var engineSpeedLabel=Text(settingsPanel,"Engine movement · 12 rpm",23,24,266,752,36);
+            var engineSpeed=Rail(settingsPanel,"Engine movement speed",28,234,744,value=>{operation.SetSpeed(4+value*26);engineSpeedLabel.text="Engine movement · "+operation.TeachingRPM.ToString("0")+" rpm";});engineSpeed.SetValue(8f/26);
+            Control("EXPLAIN ENGINE CYCLE",ExplainEngine,24,144,366,settingsPanel);Control("ASSEMBLED VIEW",()=>{StopAnimation();settingsOpen=false;},410,144,366,settingsPanel);
+            Text(settingsPanel,"Select a display mode, then use Play and the timeline below the engine.",23,24,48,752,70);
+            settingsPanel.gameObject.SetActive(false);if(QuestVRSession.Instance && QuestVRSession.Instance.Active)WorkshopTypography.ApplyVR(canvas);
         }
-        TextMeshProUGUI Control(string text,System.Action action,float x,float y=0,float width=276)
+        static RectTransform Rect(string name,Transform parent,Vector2 size){var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);rect.sizeDelta=size;return rect;}
+        TextMeshProUGUI Control(string text,System.Action action,float x,float y=0,float width=276,RectTransform parent=null)
         {
-            var rect=new GameObject(text,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(controls,false);rect.anchorMin=rect.anchorMax=Vector2.zero;rect.pivot=Vector2.zero;rect.sizeDelta=new Vector2(width,y>0?42:52);rect.anchoredPosition=new Vector2(x,y);
+            var rect=Rect(text,parent?parent:controls,new Vector2(width,48));rect.anchorMin=rect.anchorMax=Vector2.zero;rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(x,y);
             var image=rect.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=WorkshopTheme.AccentWash;WorkshopUIArt.Card(image);var button=rect.gameObject.AddComponent<WorkshopCard>();button.normal=WorkshopTheme.AccentWash;button.highlight=WorkshopTheme.Hover;button.clicked=action;
-            var label=new GameObject("Label",typeof(RectTransform)).GetComponent<RectTransform>();label.SetParent(rect,false);label.anchorMin=Vector2.zero;label.anchorMax=Vector2.one;label.offsetMin=label.offsetMax=Vector2.zero;var tmp=label.gameObject.AddComponent<TextMeshProUGUI>();tmp.text=text;tmp.font=Resources.Load<TMP_FontAsset>("WorkshopHeading");tmp.fontSize=20;tmp.color=WorkshopTheme.Text;tmp.alignment=TextAlignmentOptions.Center;tmp.raycastTarget=false;return tmp;
+            var tmp=Text(rect,text,22,8,2,width-16,44);tmp.alignment=TextAlignmentOptions.Center;return tmp;
         }
-        static void TabTint(TextMeshProUGUI label,bool selected){var card=label.transform.parent.GetComponent<WorkshopCard>();card.normal=selected?WorkshopTheme.AccentWash:WorkshopTheme.Surface;card.GetComponent<UnityEngine.UI.Image>().color=card.normal;}
+        static TextMeshProUGUI Text(RectTransform parent,string text,float size,float x,float y,float width,float height)
+        {
+            var rect=Rect(text,parent,new Vector2(width,height));rect.anchorMin=rect.anchorMax=Vector2.zero;rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(x,y);var label=rect.gameObject.AddComponent<TextMeshProUGUI>();label.font=Resources.Load<TMP_FontAsset>("WorkshopBody");label.text=text;label.fontSize=size;label.color=WorkshopTheme.Text;label.raycastTarget=false;return label;
+        }
+        static AssemblyTimelineScrubber Rail(RectTransform parent,string name,float x,float y,float width,System.Action<float> changed)
+        {
+            var rail=Rect(name,parent,new Vector2(width,14));rail.anchorMin=rail.anchorMax=Vector2.zero;rail.pivot=Vector2.zero;rail.anchoredPosition=new Vector2(x,y);var image=rail.gameObject.AddComponent<UnityEngine.UI.Image>();image.color=WorkshopTheme.Border;image.raycastPadding=new Vector4(-8,-14,-8,-14);WorkshopUIArt.Card(image);
+            var fill=Rect("Fill",rail,Vector2.zero);fill.anchorMin=Vector2.zero;fill.anchorMax=Vector2.one;fill.offsetMin=fill.offsetMax=Vector2.zero;var fillImage=fill.gameObject.AddComponent<UnityEngine.UI.Image>();fillImage.color=WorkshopTheme.Accent;fillImage.raycastTarget=false;
+            var thumb=Rect("Thumb",rail,new Vector2(20,30));var thumbImage=thumb.gameObject.AddComponent<UnityEngine.UI.Image>();thumbImage.color=WorkshopTheme.Text;thumbImage.raycastTarget=false;WorkshopUIArt.Card(thumbImage);
+            var scrubber=rail.gameObject.AddComponent<AssemblyTimelineScrubber>();scrubber.Configure(fill,thumb);scrubber.changed=changed;return scrubber;
+        }
+        static void TabTint(TextMeshProUGUI label,bool selected){var card=label.transform.parent.GetComponent<WorkshopCard>();var colour=selected?WorkshopTheme.AccentWash:WorkshopTheme.Surface;if(card.normal==colour)return;card.normal=colour;card.GetComponent<UnityEngine.UI.Image>().color=colour;}
         TextMeshProUGUI Label(string name,Vector2 min,Vector2 max,int size){var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(card,false);rect.anchorMin=Vector2.up;rect.anchorMax=Vector2.one;rect.offsetMin=new Vector2(min.x,max.y);rect.offsetMax=new Vector2(max.x,min.y);var label=rect.gameObject.AddComponent<TextMeshProUGUI>();label.font=Resources.Load<TMP_FontAsset>("WorkshopBody");label.color=WorkshopTheme.Text;label.fontSize=size;label.raycastTarget=false;return label;}
     }
 }

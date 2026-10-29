@@ -2,6 +2,7 @@
     "passed": true,
     "checks": [
         "Production runtime Plane Finder accepts hit events before activation",
+        "Vuforia accepts valid tracked and extended poses while rejecting positionless tracking",
         "Asynchronous scene/session transition completed",
         "SDK startup exception reaches a usable fallback in MobileAssemblyAR",
         "Asynchronous scene/session transition completed",
@@ -32,7 +33,7 @@
         "Source parts and socket frames inherit one presentation scale",
         "AR uses a tabletop presentation scale without editing CAD meshes",
         "AR arrow toggle points to the next placement ghost",
-        "AR arrow button can turn the pointer off",
+        "AR guidance settings can turn the pointer off",
         "AR pinch keeps the elevated focused point stationary",
         "Pinch scales only the active build, never the workbench or shared anchor",
         "Gestures never move the tracked camera",

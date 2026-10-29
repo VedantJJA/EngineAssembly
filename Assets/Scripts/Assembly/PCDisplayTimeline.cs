@@ -10,12 +10,17 @@ namespace EngineAssembly
         sealed class Visual
         {
             public PartDefinition definition;public Transform transform;public MeshRenderer renderer;
-            public Vector3 localPosition,position,offset;public Quaternion localRotation,rotation;public bool enabled;public int depth;
+            public Vector3 localPosition,position,offset;public Quaternion localRotation,rotation;public bool enabled,housing;public int depth;public string carrier;
         }
         AssemblyManager manager;NarrationSpeech speech;Transform root;List<PartDefinition> steps;Visual[] visuals;
         Dictionary<string,int> indices;
         readonly Dictionary<string,Vector3> stageOffsets=new Dictionary<string,Vector3>();
-        readonly HashSet<Renderer> faded=new HashSet<Renderer>();EngineSectionView treatment;
+        readonly Dictionary<string,Visual> byId=new Dictionary<string,Visual>();
+        readonly Dictionary<string,float> stepSeconds=new Dictionary<string,float>();
+        readonly Dictionary<string,string> voices=new Dictionary<string,string>();
+        readonly HashSet<Renderer> faded=new HashSet<Renderer>();EngineSectionView treatment;Quaternion orientation=Quaternion.identity,wantedOrientation=Quaternion.identity;Vector3 mainPivot;readonly Dictionary<string,Vector3> pivots=new Dictionary<string,Vector3>();
+        public Quaternion PresentationOrientation=>orientation;
+        public bool IsTurning=>Quaternion.Angle(orientation,wantedOrientation)>.1f;
         public bool Active{get;private set;}
         public bool Playing{get;set;}
         public float Position{get;private set;}=1;
@@ -24,26 +29,33 @@ namespace EngineAssembly
         public bool AudioEnabled=>DisplayPlaybackSettings.AudioEnabled;
         public float PlaybackSpeed=>DisplayPlaybackSettings.Speed;
         public Action<PartDefinition> StepChanged;
-        public void Configure(AssemblyManager manager,NarrationSpeech speech){this.manager=manager;this.speech=speech;root=manager.AssemblyRoot;steps=EngineLearningContent.Timeline(manager.Recipe);indices=steps.Select((p,i)=>(p.id,i)).ToDictionary(p=>p.id,p=>p.i);treatment=manager.GetComponent<EngineSectionView>()??manager.gameObject.AddComponent<EngineSectionView>();}
+        public void Configure(AssemblyManager manager,NarrationSpeech speech)
+        {
+            this.manager=manager;this.speech=speech;root=manager.AssemblyRoot;steps=EngineLearningContent.Timeline(manager.Recipe);indices=steps.Select((p,i)=>(p.id,i)).ToDictionary(p=>p.id,p=>p.i);treatment=manager.GetComponent<EngineSectionView>()??manager.gameObject.AddComponent<EngineSectionView>();
+            foreach(var part in steps){stepSeconds[part.id]=manager.Recipe.subAssemblies.Exists(g=>g.rootPartId==part.id)?5:part.id.Contains("Bolt") || part.id.Contains("Screw") || part.id.Contains("Nut")?2.6f:3.8f;voices[part.id]=DisplayPlaybackSettings.Description(part).voiceId;}
+        }
         public bool IsFaded(Renderer renderer)=>faded.Contains(renderer);
         void Cache()
         {
-            var list=new List<Visual>();
+            var list=new List<Visual>();byId.Clear();
+            var definitions=manager.Recipe.parts.ToDictionary(p=>p.id);var groups=manager.Recipe.subAssemblies.ToDictionary(g=>g.id);
             foreach(var mesh in root.GetComponentsInChildren<MeshFilter>(true))
             {
-                var d=manager.Recipe.parts.FirstOrDefault(p=>p.id==mesh.name);if(d==null || !mesh.TryGetComponent<MeshRenderer>(out var renderer))continue;
+                if(!definitions.TryGetValue(mesh.name,out var d) || !mesh.TryGetComponent<MeshRenderer>(out var renderer))continue;
                 var t=mesh.transform;int depth=0;for(var parent=t.parent;parent;parent=parent.parent)depth++;
                 var scale=new Vector3(t.lossyScale.x/root.lossyScale.x,t.lossyScale.y/root.lossyScale.y,t.lossyScale.z/root.lossyScale.z);
-                var group=manager.Recipe.subAssemblies.FirstOrDefault(g=>g.id==d.subAssemblyId);var frame=group!=null?manager.Recipe.parts.First(p=>p.id==group.rootPartId).targetRotation:Quaternion.identity;
-                list.Add(new Visual{definition=d,transform=t,renderer=renderer,localPosition=t.localPosition,localRotation=t.localRotation,position=root.InverseTransformPoint(t.position),rotation=Quaternion.Inverse(root.rotation)*t.rotation,enabled=renderer.enabled,depth=depth,
-                    offset=frame*AssemblyMotion.DisplayInsertionOffset(d,mesh.sharedMesh.bounds,scale)});
+                SubAssemblyDefinition group=null;if(!string.IsNullOrEmpty(d.subAssemblyId))groups.TryGetValue(d.subAssemblyId,out group);var frame=group!=null?definitions[group.rootPartId].targetRotation:Quaternion.identity;
+                var visual=new Visual{definition=d,transform=t,renderer=renderer,localPosition=t.localPosition,localRotation=t.localRotation,position=root.InverseTransformPoint(t.position),rotation=Quaternion.Inverse(root.rotation)*t.rotation,enabled=renderer.enabled,depth=depth,
+                    offset=frame*AssemblyMotion.DisplayInsertionOffset(d,mesh.sharedMesh.bounds,scale),carrier=group?.rootPartId,housing=d.id.StartsWith("101_") || d.id.StartsWith("401_") || d.id.StartsWith("701_") || d.id.StartsWith("501_Front_") || d.id.StartsWith("601_")};
+                list.Add(visual);byId[d.id]=visual;
             }
             visuals=list.OrderBy(v=>v.depth).ToArray();stageOffsets.Clear();
-            var all=BoundsFor(visuals);
+            var all=BoundsFor(visuals);mainPivot=all.center;pivots.Clear();
             foreach(var group in manager.Recipe.subAssemblies)
             {
                 var members=visuals.Where(v=>v.definition.subAssemblyId==group.id).ToArray();if(members.Length==0)continue;var bounds=BoundsFor(members);
                 stageOffsets[group.id]=new Vector3(all.center.x-bounds.center.x,all.min.y-bounds.min.y,all.center.z-bounds.center.z);
+                pivots[group.id]=bounds.center+stageOffsets[group.id];
             }
         }
         Bounds BoundsFor(IEnumerable<Visual> set)
@@ -54,27 +66,32 @@ namespace EngineAssembly
         public void SetValue(float value)
         {
             if(!Active){Cache();Active=true;}Position=Mathf.Clamp01(value);var next=steps[Mathf.Clamp(Mathf.FloorToInt(Position*steps.Count+.00001f),0,steps.Count-1)];bool changed=Current!=next;Current=next;
-            string workspace=Position>=1?null:Current.subAssemblyId;
+            string workspace=Position>=1?null:Current.subAssemblyId;var frameOffset=string.IsNullOrEmpty(workspace)?Vector3.zero:stageOffsets[workspace];
+            wantedOrientation=Position>=1?Quaternion.identity:DisplayWorkpieceOrientation.For(manager.Recipe,steps,Mathf.FloorToInt(Position*steps.Count),workspace);if(!Playing)orientation=wantedOrientation;
+            var pivot=string.IsNullOrEmpty(workspace)?mainPivot:pivots[workspace];
             foreach(var visual in visuals)
             {
                 var d=visual.definition;float fraction=Progress(d.id);bool visible=fraction>0;
                 if(!string.IsNullOrEmpty(workspace))visible&=d.subAssemblyId==workspace;
-                else if(!string.IsNullOrEmpty(d.subAssemblyId)){var carrier=manager.Recipe.subAssemblies.First(g=>g.id==d.subAssemblyId).rootPartId;visible&=Progress(carrier)>0;}
-                var offset=string.IsNullOrEmpty(workspace)?Vector3.zero:stageOffsets[workspace];float t=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,.76f,fraction));
-                visual.renderer.enabled=visible;visual.transform.SetPositionAndRotation(root.TransformPoint(visual.position+offset+visual.offset*(1-t)),root.rotation*visual.rotation);
+                else if(visual.carrier!=null)visible&=Progress(visual.carrier)>0;
+                if(visual.renderer.enabled!=visible)visual.renderer.enabled=visible;
+                // Only the entering part moves. Unchanged parts do not dirty the transform hierarchy.
+                float t=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,.76f,fraction));
+                var position=root.TransformPoint(pivot+orientation*(visual.position+frameOffset+visual.offset*(1-t)-pivot));var rotation=root.rotation*orientation*visual.rotation;
+                if(visual.transform.position!=position || visual.transform.rotation!=rotation)visual.transform.SetPositionAndRotation(position,rotation);
             }
-            faded.Clear();var fitting=visuals.FirstOrDefault(v=>v.definition.id==Current.id);
-            if(Position<1 && fitting!=null)foreach(var housing in visuals.Where(v=>v.renderer.enabled && v!=fitting && new[]{"101_","401_","701_","501_Front_","601_"}.Any(v.definition.id.StartsWith)))if(housing.renderer.bounds.Intersects(fitting.renderer.bounds))faded.Add(housing.renderer);
-            treatment.SetContext(faded);Physics.SyncTransforms();if(changed)StepChanged?.Invoke(Current);
+            faded.Clear();
+            if(Position<1 && byId.TryGetValue(Current.id,out var fitting))
+                foreach(var housing in visuals)if(housing.housing && housing.renderer.enabled && housing!=fitting && housing.renderer.bounds.Intersects(fitting.renderer.bounds))faded.Add(housing.renderer);
+            treatment.SetContext(faded);if(changed)StepChanged?.Invoke(Current);
         }
         public void TogglePlay(){if(!Active || Position>=1){Current=null;Playing=true;SetValue(0);}else {Playing=!Playing;if(Playing)StepChanged?.Invoke(Current);}}
-        static string Voice(PartDefinition part)=>DisplayPlaybackSettings.Description(part).voiceId;
         void Update()
         {
             if(!Active || !Playing || Time.timeScale<=0)return;int index=Mathf.Clamp(Mathf.FloorToInt(Position*steps.Count),0,steps.Count-1);
-            var part=steps[index];float seconds=manager.Recipe.subAssemblies.Any(g=>g.rootPartId==part.id)?5:new[]{"Bolt","Screw","Nut"}.Any(part.id.Contains)?2.6f:3.8f;
-            float next=Position+Mathf.Min(Time.unscaledDeltaTime,.1f)*PlaybackSpeed/(steps.Count*seconds);
-            if(AudioEnabled && next*steps.Count>=index+1 && speech.IsBusy && (index+1>=steps.Count || Voice(steps[index+1])!=Voice(part)))next=(index+.9999f)/steps.Count;
+            if(IsTurning){orientation=Quaternion.RotateTowards(orientation,wantedOrientation,Mathf.Min(Time.unscaledDeltaTime,.1f)*225);SetValue(Position);return;}
+            var part=steps[index];float next=Position+Mathf.Min(Time.unscaledDeltaTime,.1f)*PlaybackSpeed/(steps.Count*stepSeconds[part.id]);
+            if(AudioEnabled && next*steps.Count>=index+1 && speech.IsBusy && (index+1>=steps.Count || voices[steps[index+1].id]!=voices[part.id]))next=(index+.9999f)/steps.Count;
             SetValue(next);if(Position>=1)Playing=false;
         }
         public void Stop(bool reset=false)
